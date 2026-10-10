@@ -280,6 +280,38 @@ def await_deployment(commit):
     raise ExportError('等待部署超时，请在仓库 Actions 查看该提交的结果；无需再次修改笔记')
 
 
+def publication_commit_message():
+    """Describe the public notes in the staged snapshot relative to HEAD."""
+    manifest_path = 'docs/publication.json'
+    previous = {}
+    if run('git', 'ls-tree', '--name-only', 'HEAD', '--', manifest_path,
+           capture=True, cwd=ROOT):
+        manifest = json.loads(run('git', 'show', 'HEAD:' + manifest_path,
+                                  capture=True, cwd=ROOT))
+        previous = {note['path']: note for note in manifest['notes']}
+    manifest = json.loads(run('git', 'show', ':' + manifest_path,
+                              capture=True, cwd=ROOT))
+    current = {note['path']: note for note in manifest['notes']}
+    changed = set(run('git', 'diff', '--cached', '--name-only', '--no-renames',
+                      '-z', '--', 'docs', capture=True, cwd=ROOT).split('\0'))
+    added = current.keys() - previous.keys()
+    removed = previous.keys() - current.keys()
+    updated = {path for path in current.keys() & previous.keys()
+               if 'docs/' + path in changed}
+    groups = [('add', added, current), ('update', updated, current),
+              ('remove', removed, previous)]
+    if sum(len(paths) for _, paths, _ in groups) == 1:
+        for verb, paths, notes in groups:
+            if paths:
+                path = next(iter(paths))
+                title = ' '.join(str(notes[path].get('title') or '').split()) or Path(path).stem
+                prefix = 'feat' if verb == 'add' else 'docs'
+                return f'{prefix}: {verb} 「{title}」'
+    summary = ', '.join(f'{verb} {len(paths)} note' + ('s' if len(paths) != 1 else '')
+                        for verb, paths, _ in groups if paths)
+    return 'docs: ' + (summary or 'update public snapshot')
+
+
 def publish():
     settings = config()['site']
     local = tomllib.loads((ROOT / 'local.toml').read_text())
@@ -304,7 +336,7 @@ def publish():
     run('git', 'add', '-A', '--', 'docs')
     diff = subprocess.run(['git', 'diff', '--cached', '--quiet'], cwd=ROOT)
     if diff.returncode == 1:
-        run('git', 'commit', '-m', '更新公开笔记')
+        run('git', 'commit', '-m', publication_commit_message())
     elif diff.returncode != 0:
         raise ExportError('无法检查待提交内容')
     else:

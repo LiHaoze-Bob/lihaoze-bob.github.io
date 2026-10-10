@@ -52,6 +52,8 @@ cp local.example.toml local.toml
 
 `publish` 完成检查后提交、推送并等待该提交的 GitHub Actions 部署结果，只有成功才提示「已上线」。重复点击受互斥锁保护，内容没变化不会生成空提交。
 
+提交信息按本次公开笔记变化自动生成，标题保留原文：单篇新增用 `feat: add 「标题」`，更新用 `docs: update 「标题」`，撤下用 `docs: remove 「标题」`；多篇变化用数量汇总，例如 `docs: add 2 notes, update 3 notes`。只改图片、目录或发布元数据时使用 `docs: update public snapshot`。
+
 ## 排错
 
 - **缺失图片或歧义链接**：按报错修正引用，使用明确的相对路径。
