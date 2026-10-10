@@ -222,14 +222,28 @@ def prepare(write_export=False, theme=None):
         return manifest
 
 
-def preview(theme=None):
-    prepare(theme=theme)
+def preview_location():
+    """Expose the build at the same base path as the published site."""
     preview_root = RUNTIME / 'preview'
     preview_root.mkdir(exist_ok=True)
-    target = preview_root / 'notes-site'
-    if not target.exists():
-        target.symlink_to(ROOT / 'site', target_is_directory=True)
-    url = 'http://127.0.0.1:8765/notes-site/'
+    prefix = urlsplit(config()['site']['url']).path.strip('/')
+    if prefix:
+        target = preview_root / prefix
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if not target.is_symlink() and not target.exists():
+            target.symlink_to(ROOT / 'site', target_is_directory=True)
+    else:
+        for source in (ROOT / 'site').iterdir():
+            target = preview_root / source.name
+            if not target.is_symlink() and not target.exists():
+                target.symlink_to(source, target_is_directory=source.is_dir())
+    path = '/' + prefix + '/' if prefix else '/'
+    return preview_root, 'http://127.0.0.1:8765' + path
+
+
+def preview(theme=None):
+    prepare(theme=theme)
+    preview_root, url = preview_location()
     try:
         with urlopen(url + 'publication.json', timeout=2) as response:
             json.loads(response.read())

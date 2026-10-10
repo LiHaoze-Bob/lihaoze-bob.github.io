@@ -6,7 +6,7 @@ title: sychostar
 tagline: My Obsidian notes
 description: 课程笔记、技术积累与阅读记录
 url: https://lihaoze-bob.github.io
-baseurl: /notes-site
+baseurl: ''
 github:
   username: LiHaoze-Bob
 social:

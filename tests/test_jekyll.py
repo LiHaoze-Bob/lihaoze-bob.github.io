@@ -303,7 +303,7 @@ def test_built_breadcrumbs_link_every_public_parent(tmp_path):
         assert 'note-breadcrumbs' in crumb.get('class', [])
         assert soup.select_one('link[href$="/breadcrumbs.css"]')
         assert [span.get_text(strip=True) for span in crumb.select('span')] == titles
-        expected = ['/notes-site/' if p == 'index.md' else '/notes-site/' + page_url(p) for p in parents]
+        expected = ['/' if p == 'index.md' else '/' + page_url(p) for p in parents]
         assert [a['href'] for a in crumb.select('a')] == expected
         assert crumb.select_one('[aria-current="page"]').get_text() == titles[-1]
         assert '秘密' not in str(crumb)
@@ -495,7 +495,7 @@ def test_built_post_navigation_uses_only_same_folder_in_filename_order(tmp_path)
         for button, offset in zip(buttons, [-1, 1]):
             j = i + offset
             if 0 <= j < len(siblings):
-                assert button['href'] == '/notes-site/' + page_url('courses/课程2/' + siblings[j] + '.md')
+                assert button['href'] == '/' + page_url('courses/课程2/' + siblings[j] + '.md')
                 assert button.get_text(strip=True) == titles[j]
             else:
                 assert not button.get('href')

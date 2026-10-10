@@ -158,7 +158,7 @@ def test_pure_production_build_has_search_navigation_dates_and_assets(tmp_path):
     assert 'Posted Sep 14, 2026' in soup.select_one('.post-meta').get_text(' ', strip=True)
     assert 'Updated Sep 16, 2026' in soup.select_one('.post-meta').get_text(' ', strip=True)
     assert soup.select_one('script[src$="tex-mml-chtml.js"]')
-    assert soup.select_one('#breadcrumb a[href="/notes-site/courses/"]')
+    assert soup.select_one('#breadcrumb a[href="/courses/"]')
     assert soup.select_one('.post-navigation a[aria-label="Newer"]')['href'].endswith('/Lecture10/')
     assert not soup.select_one('.post-navigation a[aria-label="Older"]')
     assert (site / 'pagefind/pagefind.js').is_file()
@@ -167,15 +167,15 @@ def test_pure_production_build_has_search_navigation_dates_and_assets(tmp_path):
     assert (site / 'assets/lib/fontawesome-free/webfonts/fa-solid-900.woff2').is_file()
     course = BeautifulSoup((site / 'courses/index.html').read_text(), 'html.parser')
     assert course.select_one('#sidebar .section-tags h2').get_text(strip=True) == 'Tags'
-    assert course.select_one('#sidebar .section-tags li a')['href'] == '/notes-site/tags/ai-agent/'
+    assert course.select_one('#sidebar .section-tags li a')['href'] == '/tags/ai-agent/'
     for section, tag in [('courses', 'AI/Agent'), ('reading', '阅读'), ('knowledge', '工具')]:
         listing = BeautifulSoup((site / section / 'index.html').read_text(), 'html.parser')
         assert [a.get_text(strip=True) for a in listing.select('#sidebar .section-tags li a')] == [tag]
-        assert listing.select_one('#sidebar .all-tags')['href'] == '/notes-site/tags/'
+        assert listing.select_one('#sidebar .all-tags')['href'] == '/tags/'
     assert not soup.select_one('.section-tags')  # Article pages keep their table of contents.
     tags = BeautifulSoup((site / 'tags/index.html').read_text(), 'html.parser')
     chips = tags.select('.tag-cloud .tag-chip')
     assert len(chips) == 3
-    assert chips[0]['href'] == '/notes-site/tags/ai-agent/'
+    assert chips[0]['href'] == '/tags/ai-agent/'
     assert [chip.select_one('.tag-count').get_text() for chip in chips] == ['2', '1', '1']
     assert not tags.select_one('#sidebar')

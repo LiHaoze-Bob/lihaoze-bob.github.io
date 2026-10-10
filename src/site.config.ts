@@ -1,11 +1,11 @@
 import type { Config, IntegrationUserConfig, ThemeUserConfig } from 'astro-pure/types'
 
-export const base = '/notes-site'
+export const base = ''
 export const href = (path: string) => base + (path.startsWith('/') ? path : '/' + path)
 
 export const comments = {
   enable: true,
-  repo: 'LiHaoze-Bob/notes-site',
+  repo: 'LiHaoze-Bob/lihaoze-bob.github.io',
   repoId: 'R_kgDOUaolUQ',
   category: 'Announcements',
   categoryId: 'DIC_kwDOUaolUc4DG49S'

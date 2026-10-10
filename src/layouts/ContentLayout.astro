@@ -13,7 +13,7 @@ interface Props {
   math?: boolean
 }
 
-const { meta, highlightColor, back = '/notes-site/', ...props } = Astro.props
+const { meta, highlightColor, back = '/', ...props } = Astro.props
 ---
 
 <PageLayout {meta} {highlightColor} {...props}>

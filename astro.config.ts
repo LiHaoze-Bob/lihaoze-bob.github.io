@@ -4,7 +4,7 @@ import config from './src/site.config'
 
 export default defineConfig({
   site: 'https://lihaoze-bob.github.io',
-  base: '/notes-site',
+  base: '/',
   output: 'static',
   trailingSlash: 'always',
   publicDir: process.env.ASTRO_PUBLIC_DIR || './.runtime/astro-public',

@@ -1,7 +1,7 @@
 [site]
 name = "sychostar"
-url = "https://lihaoze-bob.github.io/notes-site/"
-repository = "LiHaoze-Bob/notes-site"
+url = "https://lihaoze-bob.github.io/"
+repository = "LiHaoze-Bob/lihaoze-bob.github.io"
 branch = "main"
 theme = "pure"
 
