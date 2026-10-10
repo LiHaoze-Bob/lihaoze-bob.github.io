@@ -48,6 +48,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     </>}
     <script>
       import mediumZoom from 'medium-zoom'
+      import { renderMermaid } from '../scripts/mermaid'
+      void renderMermaid()
       mediumZoom('#content img.zoomable', { background: 'var(--main-bg)', margin: 24 })
       document.querySelectorAll<HTMLButtonElement>('.note-code .code-header button').forEach(button => {
         button.addEventListener('click', async () => {
