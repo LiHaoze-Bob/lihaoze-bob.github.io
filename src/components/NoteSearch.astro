@@ -1,0 +1,64 @@
+---
+import { Icon } from 'astro-pure/user'
+import { notes } from '../lib/content'
+import NoteTitle from './NoteTitle.astro'
+import '../styles/search.css'
+
+const titles = notes.map(({ url, title, subtitle }) => ({ url, title, subtitle }))
+const sections = [
+  { value: '', label: '全部', count: notes.length },
+  ...Object.entries({ courses: 'Course', reading: 'Reading', knowledge: 'Tech' }).map(([route, label]) => ({
+    value: label, label, count: notes.filter(note => note.route.startsWith(`${route}/`)).length
+  }))
+]
+const recentNotes = [...new Map([
+  ...notes.slice(0, 8),
+  ...sections.filter(section => section.value).flatMap(section => notes.filter(note =>
+    note.directory?.[0] === section.value).slice(0, 8))
+].map(note => [note.url, note])).values()]
+---
+<note-search data-note-titles={JSON.stringify(titles)}>
+  <div class='search-intro'>
+    <span class='search-eyebrow'>NOTES / SEARCH</span>
+    <h1>搜索笔记</h1>
+    <p>从 {notes.length} 篇公开笔记中，查找标题、章节和正文。</p>
+  </div>
+  <form class='search-form' role='search'>
+    <label class='sr-only' for='search-input'>搜索笔记</label>
+    <div class='search-box'>
+      <Icon name='search' class='search-icon' />
+      <input id='search-input' type='search' name='q' placeholder='输入关键词，例如：红黑树、RISC-V、Agent'
+        autocomplete='off' spellcheck='false' enterkeyhint='search' aria-describedby='search-help' />
+      <button type='button' class='search-clear' aria-label='清空搜索' hidden>清空</button>
+      <kbd class='search-shortcut' aria-hidden='true'>⌘ K</kbd>
+    </div>
+    <div class='search-filters' role='group' aria-label='搜索栏目'>
+      {sections.map(section => <button type='button' data-section={section.value} aria-pressed={section.value === '' ? 'true' : 'false'}>
+        {section.label}<span>{section.count}</span>
+      </button>)}
+    </div>
+  </form>
+  <p id='search-help' class='search-help'>多个关键词用空格分隔，缩小查找范围。<span>↑ ↓ 选择结果 · Enter 打开 · Esc 清空</span></p>
+  <div class='search-feedback'>
+    <p class='search-status' role='status' aria-live='polite' aria-atomic='true'></p>
+    <button type='button' class='search-retry' hidden>重试</button>
+  </div>
+  <ul class='search-results' aria-label='搜索结果' hidden></ul>
+  <button type='button' class='search-more' hidden>显示更多结果</button>
+  <section class='search-recent' aria-labelledby='search-recent-heading'>
+    <h2 id='search-recent-heading'>最近发布</h2>
+    <ul>
+      {recentNotes.map((note, index) => <li hidden={index >= 8} data-section={{ courses: 'Course', reading: 'Reading', knowledge: 'Tech' }[note.route.split('/')[0]]}>
+        <a href={note.url}><NoteTitle title={note.title} subtitle={note.subtitle} /></a>
+        <p>{note.directory?.join(' / ')}</p>
+      </li>)}
+    </ul>
+    <p class='search-recent-empty' hidden>这个栏目暂时没有最近发布的笔记，可以输入关键词查找。</p>
+  </section>
+  <noscript><p>启用 JavaScript 后可使用全文搜索，也可以从上方的笔记链接开始阅读。</p></noscript>
+</note-search>
+<script>
+  import { setupSearch } from '../scripts/search'
+  const root = document.querySelector<HTMLElement>('note-search')
+  if (root) setupSearch(root)
+</script>

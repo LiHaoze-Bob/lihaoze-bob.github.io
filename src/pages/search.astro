@@ -1,7 +1,9 @@
 ---
-import { PFSearch } from 'astro-pure/components/pages'
+import NoteSearch from '../components/NoteSearch.astro'
 import BaseLayout from '../layouts/BaseLayout.astro'
 ---
-<BaseLayout meta={{ title: 'Search' }}>
-  <main class='search-page'><h1>Search</h1><p>搜索公开笔记的标题和正文。</p><PFSearch /></main>
+<BaseLayout meta={{ title: '搜索笔记' }}>
+  <main class='search-page'>
+    <NoteSearch />
+  </main>
 </BaseLayout>

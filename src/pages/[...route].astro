@@ -44,8 +44,12 @@ const isSection = page && ['courses', 'reading', 'knowledge'].includes(page.rout
         <span aria-hidden='true'>›</span><span aria-current='page'><NoteTitle title={page.title} subtitle={page.subtitle} /></span>
       </nav>
       <div class='note-heading' data-pagefind-meta='title[data-search-title]' data-search-title={page.subtitle ? `${page.title} · ${page.subtitle}` : page.title}>
-        <h1 class='text-2xl font-medium sm:text-3xl'>{page.title}</h1>
-        {page.subtitle && <p class='note-subtitle'>{page.subtitle}</p>}
+        {page.isNote && <>
+          <span hidden data-pagefind-filter='kind:note' />
+          <span hidden data-pagefind-meta='directory[data-directory]' data-directory={page.directory?.join(' / ')} data-pagefind-filter='section[data-section]' data-section={{ courses: 'Course', reading: 'Reading', knowledge: 'Tech' }[page.route.split('/')[0]]} />
+        </>}
+        <h1 class='text-2xl font-medium sm:text-3xl' data-pagefind-weight='10'>{page.title}</h1>
+        {page.subtitle && <p class='note-subtitle' data-pagefind-weight='7'>{page.subtitle}</p>}
       </div>
       {(page.publishedAt || page.isNote) && <div class='post-meta'>
         {page.publishedAt && <span>Posted <time datetime={page.publishedAt}>{date(page.publishedAt)}</time></span>}

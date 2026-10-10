@@ -34,17 +34,17 @@ import { href } from '../site.config'
             </a>
           ))
         }
-        <div class='flex w-full grow flex-row justify-end gap-x-3 sm:w-fit sm:gap-x-5'>
-          <a class='px-1 py-2 transition-none sm:px-2' href={href('/search/')} title='Search'>
-            <span class='sr-only'>Search</span>
-            <Icon name='search' class='size-5' />
-          </a>
-        </div>
       </div>
     </div>
 
     {/* buttons */}
     <div class='z-30 flex gap-x-4 group-[.not-top]:gap-x-2' style='transition:gap 0.3s'>
+      <a
+        class='header-search rounded-md border p-1.5 transition-colors hover:bg-border sm:group-[.not-top]:rounded-xl'
+        href={href('/search/')} title='搜索笔记（⌘ / Ctrl + K）' aria-label='搜索笔记' aria-keyshortcuts='Meta+K Control+K'
+      >
+        <Icon name='search' class='size-5' />
+      </a>
       <button
         id='toggleDarkMode'
         class='group/dark box-content size-5 rounded-md border p-1.5 transition-colors hover:bg-border sm:group-[.not-top]:rounded-xl'
@@ -102,6 +102,20 @@ import { href } from '../site.config'
       // Menu
       this.querySelector('#toggleMenu')?.addEventListener('click', () => {
         this.classList.toggle('expanded')
+      })
+
+      document.addEventListener('keydown', (event) => {
+        if (!(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey || event.key.toLowerCase() !== 'k' || event.isComposing) return
+        const target = event.target
+        if (target instanceof HTMLElement && target.closest('input, textarea, select, [contenteditable="true"]') && target.id !== 'search-input') return
+        event.preventDefault()
+        const searchInput = document.querySelector<HTMLInputElement>('#search-input')
+        if (searchInput) {
+          searchInput.focus()
+          searchInput.select()
+        } else {
+          window.location.assign((this.querySelector('.header-search') as HTMLAnchorElement).href)
+        }
       })
     }
   }

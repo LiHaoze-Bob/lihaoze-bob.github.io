@@ -148,6 +148,11 @@ def test_pure_production_build_has_search_navigation_dates_and_assets(tmp_path):
     assert neighbor.select_one('.note-title-secondary').get_text() == '第十讲'
     assert soup.select_one('.note-heading').get_text(' ', strip=True) == 'Lecture2 中文 示例'
     assert soup.select_one('.note-heading').get('data-search-title') == 'Lecture2 中文 · 示例'
+    assert soup.select_one('[data-pagefind-filter="kind:note"]')
+    search_metadata = soup.select_one('[data-pagefind-meta="directory[data-directory]"]')
+    assert search_metadata['data-directory'] == 'Course / 测试'
+    assert search_metadata['data-section'] == 'Course'
+    assert search_metadata['data-pagefind-filter'] == 'section[data-section]'
     assert [a.get_text(strip=True) for a in soup.select('#headerExpandContent > div > a')] == ['Course', 'Reading', 'Tech', 'About']
     assert soup.select_one('toc-heading a')['href'] == '#中文章节'
     assert 'Posted Sep 14, 2026' in soup.select_one('.post-meta').get_text(' ', strip=True)

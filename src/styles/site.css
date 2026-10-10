@@ -62,6 +62,8 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .search-page { max-width: 780px; margin-inline: auto; }
 .search-page h1 { font-size: 2rem; font-weight: 600; margin-bottom: .8rem; }
 .search-page p { color: var(--text-muted-color); }
+.search-page .search-note-link .note-title-primary { display: block; color: var(--text-color); font-size: 1.15rem; font-weight: 600; line-height: 1.5; }
+.search-page .search-note-link .note-title-secondary { display: block; margin-top: .15rem; font-size: .9rem; line-height: 1.6; }
 .prose { line-height: 1.9; overflow-wrap: anywhere; }
 .prose h2 { font-weight: 600; font-size: 1.55rem; margin: 2.5rem 0 1rem; }
 .prose h3 { font-weight: 600; }
