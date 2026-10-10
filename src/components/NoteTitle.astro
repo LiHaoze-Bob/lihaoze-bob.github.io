@@ -1,0 +1,5 @@
+---
+interface Props { title: string; subtitle?: string }
+const { title, subtitle } = Astro.props
+---
+<span class='note-title-pair'><span class='note-title-primary'>{title}</span>{subtitle && subtitle !== title && <> <span class='note-title-secondary'>{subtitle}</span></>}</span>

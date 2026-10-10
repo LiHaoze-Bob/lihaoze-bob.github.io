@@ -18,7 +18,7 @@ publish: true
 
 `publish.toml` 限定课程、技术积累、Tools、Reading 和 Paper 五个源目录。`local.toml` 保存本机 Vault 路径并被 Git 忽略。GitHub Actions 只构建已导出的公开内容。
 
-可选属性 `title` 设置网页标题，`nav_order` 用数字控制同层笔记顺序。目录保留原层级、按数字自然排序；目录名称可在 `publish.toml` 的 `labels` 中设置。
+Pure 网站的普通笔记使用文件名（不含 `.md`）作为主标题，属性 `title` 或正文第一个一级标题作为副标题；两者相同时省略副标题。文章页、首页、课程目录、标签文章列表、路径导航和上一篇／下一篇统一使用这两层名称，搜索也包含两者。`index.md` 目录首页保留原有栏目标题。Chirpy 回退主题继续使用原标题。`nav_order` 用数字控制同层笔记顺序。目录保留原层级、按数字自然排序；目录名称可在 `publish.toml` 的 `labels` 中设置。
 
 ## 图片、链接与撤下页面
 

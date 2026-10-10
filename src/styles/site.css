@@ -31,6 +31,13 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .note-preview { border-bottom: 1px solid var(--main-border-color); padding: 1.8rem 0; }
 .note-preview-meta { display: flex; gap: 1.2rem; color: var(--text-muted-color); font-size: .8rem; }
 .note-preview h2 { font-size: 1.45rem; font-weight: 600; line-height: 1.5; margin: .55rem 0; overflow-wrap: anywhere; }
+.note-preview-subtitle { color: var(--text-muted-color); font-size: 1rem; margin: -.25rem 0 .65rem; overflow-wrap: anywhere; }
+.note-title-pair { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .15em .65em; min-width: 0; max-width: 100%; }
+.note-title-primary { font-weight: 500; overflow-wrap: anywhere; }
+.note-title-secondary { font-size: .88em; font-weight: 400; color: var(--text-muted-color); overflow-wrap: anywhere; }
+.note-heading { margin-bottom: .85rem; }
+.note-heading h1 { line-height: 1.35; overflow-wrap: anywhere; }
+.note-subtitle { color: var(--text-muted-color); font-size: 1.15rem; line-height: 1.6; margin-top: .4rem; overflow-wrap: anywhere; }
 .note-summary { font-size: .95rem; color: var(--text-muted-color); margin-bottom: .65rem; }
 .note-directory { font-size: .78rem; color: var(--text-muted-color); overflow-wrap: anywhere; }
 .pagination { display: flex; justify-content: center; gap: .7rem; margin: 2rem 0; }
@@ -38,15 +45,19 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .pagination a[aria-current='page'] { background: hsl(var(--muted)); }
 .note-breadcrumbs { display: flex; gap: .5rem; white-space: nowrap; overflow-x: auto; align-items: baseline; font-size: .8rem; color: var(--text-muted-color); padding: .2rem 0 .6rem; margin-bottom: .65rem; }
 .note-breadcrumbs a { flex: 0 0 auto; }
+.note-breadcrumbs > [aria-current] { flex: 0 0 auto; }
+.note-breadcrumbs .note-title-pair { flex-wrap: nowrap; }
 .post-meta { display: flex; flex-wrap: wrap; gap: 1rem; color: var(--text-muted-color); font-size: .85rem; }
 .post-desc { color: var(--text-muted-color); margin-top: 1rem; }
 .note-tags { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; font-size: .8rem; }
 .note-tags a { text-decoration: none; border: 1px solid var(--main-border-color); border-radius: .4rem; padding: .15rem .5rem; }
-.archive-list li span { color: var(--text-muted-color); margin-left: .5rem; }
+.archive-list > li > span { color: var(--text-muted-color); margin-left: .5rem; }
 .post-navigation { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 1rem; border-top: 1px solid var(--main-border-color); padding-top: 1.4rem; }
 .post-navigation > * { display: flex; flex-direction: column; gap: .35rem; overflow-wrap: anywhere; font-size: .95rem; }
 .post-navigation > :last-child { text-align: right; }
 .post-navigation small { color: var(--text-muted-color); font-size: .8rem; }
+.post-navigation .note-title-pair { display: flex; flex-direction: column; align-items: flex-start; gap: .15rem; }
+.post-navigation > :last-child .note-title-pair { align-items: flex-end; }
 .post-navigation .disabled { opacity: .45; }
 .search-page { max-width: 780px; margin-inline: auto; }
 .search-page h1 { font-size: 2rem; font-weight: 600; margin-bottom: .8rem; }
@@ -96,6 +107,8 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   .note-code[data-language="mermaid"] .mermaid svg { min-width: min(var(--mermaid-width, 100%), 48rem); }
   #main-container { padding: 1rem 1.25rem 0; }
   .note-preview h2 { font-size: 1.25rem; }
+  .note-subtitle { font-size: 1rem; }
+  .home-post-title .note-title-pair { display: flex; flex-direction: column; align-items: flex-start; }
   .prose img[align='right'] { float: none; width: 100%; margin: 0 auto 1rem; }
   .post-navigation { gap: .65rem; }
 }

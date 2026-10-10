@@ -9,6 +9,7 @@ const { notes, current = 1, count = 1 } = Astro.props
     <article class='note-preview'>
       <div class='note-preview-meta'><time datetime={note.publishedAt}>{date(note.publishedAt!)}</time><span>{note.directory?.[0]}</span></div>
       <h2><a href={note.url}>{note.title}</a></h2>
+      {note.subtitle && <p class='note-preview-subtitle'>{note.subtitle}</p>}
       {note.cardHeadings?.length ? <p class='note-summary'>{note.cardHeadings.join(' · ')}</p> : null}
       <p class='note-directory'>{note.directory?.join(' / ')}</p>
     </article>

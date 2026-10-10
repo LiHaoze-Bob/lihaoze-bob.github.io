@@ -15,7 +15,7 @@ import markdown
 from scripts.exporter import frontmatter, page_url
 from scripts.steam import MARKER as STEAM_MARKER, render_card as steam_card
 from scripts.jekyll import (breadcrumbs, card_directory, card_headings, custom_callout_styles,
-                            folder_navigation, folder_tree, post_date, render, section_list)
+                            folder_navigation, folder_tree, note_title_html, post_date, render, section_list)
 
 
 def slug(value: str) -> str:
@@ -31,6 +31,13 @@ def stage(docs: Path, work: Path, template: Path, settings: dict, labels: dict) 
     baseurl = settings.get('baseurl', '')
     sections = {'courses/index.md': 'Course', 'reading/index.md': 'Reading', 'knowledge/index.md': 'Tech'}
     tabs = {path: (None, {'title': title}) for path, title in sections.items()}
+    # Derive display titles from the public paths, including older snapshots.
+    # Keep the original title for body rendering and directory index pages.
+    for source, note in notes.items():
+        if posixpath.basename(source) != 'index.md':
+            title = posixpath.basename(source).removesuffix('.md')
+            notes[source] = {**note, 'title': title,
+                             'subtitle': note['title'] if note['title'] != title else None}
     navigation = folder_navigation({path: note for path, note in notes.items() if path not in sections})
     available = {path.relative_to(docs).as_posix() for path in docs.rglob('*.md')}
     pages = []
@@ -41,13 +48,19 @@ def stage(docs: Path, work: Path, template: Path, settings: dict, labels: dict) 
             continue
         metadata, body = frontmatter(path.read_text())
         heading = BeautifulSoup(markdown.markdown(body), 'html.parser').find('h1')
-        title = sections.get(source) or metadata.get('title') or (heading.get_text() if heading else posixpath.basename(source).removesuffix('.md'))
-        content = render(body, source, baseurl, title, theme='pure')
+        original_title = sections.get(source) or metadata.get('title') or (heading.get_text() if heading else posixpath.basename(source).removesuffix('.md'))
+        title = notes.get(source, {}).get('title', original_title) if source not in sections else sections[source]
+        subtitle = notes.get(source, {}).get('subtitle')
+        content = render(body, source, baseurl, original_title, theme='pure')
         folder = posixpath.dirname(source)
         if source in sections:
             introduction = content if source in notes else ''
             tree = section_list if source.startswith('knowledge/') else folder_tree
             content = introduction + tree(notes, folder, baseurl, labels, available)
+        elif source.endswith('/index.md') and source not in notes:
+            tree = section_list if source.startswith('knowledge/') else folder_tree
+            anchor = BeautifulSoup(content, 'html.parser').find('span', id=True, recursive=False)
+            content = (str(anchor) if anchor else '') + tree(notes, folder, baseurl, labels, available)
         elif source in notes and source.startswith('courses/') and source.endswith('/index.md'):
             content += ('<section class="course-folder-index"><h2 id="course-notes">课程笔记</h2>'
                         + folder_tree(notes, folder, baseurl, labels, available) + '</section>')
@@ -63,11 +76,11 @@ def stage(docs: Path, work: Path, template: Path, settings: dict, labels: dict) 
             tags = tags.split()
         pages.append({
             'route': unquote(page_url(source)).strip('/'),
-            'url': baseurl + '/' + page_url(source), 'title': title, 'html': content,
+            'url': baseurl + '/' + page_url(source), 'title': title, 'subtitle': subtitle, 'html': content,
             'description': metadata.get('description'), 'headings': headings,
             'breadcrumbs': breadcrumbs(source, notes, tabs, labels),
             'directory': card_directory(source, labels),
-            'cardHeadings': card_headings(body, title),
+            'cardHeadings': card_headings(body, original_title),
             'publishedAt': post_date(metadata.get('date') or record['published_at']) if record else None,
             'updatedAt': post_date(record['updated_at']) if record.get('updated_at') else None,
             'tags': tags,
@@ -87,7 +100,7 @@ def stage(docs: Path, work: Path, template: Path, settings: dict, labels: dict) 
         for title, grouped in groups.items():
             route = kind + '/' + slug(title)
             body = '<ul class="archive-list">' + ''.join(
-                '<li><a href="' + html.escape(page['url'], quote=True) + '">' + html.escape(page['title']) + '</a></li>'
+                '<li><a href="' + html.escape(page['url'], quote=True) + '">' + note_title_html(page['title'], page.get('subtitle')) + '</a></li>'
                 for page in sorted(grouped, key=lambda page: page['publishedAt'], reverse=True)) + '</ul>'
             pages.append({'route': route, 'url': baseurl + '/' + route + '/', 'title': title,
                           'html': body, 'headings': [], 'breadcrumbs': [{'title': kind.title(), 'url': '/' + kind + '/'}], 'isNote': False})

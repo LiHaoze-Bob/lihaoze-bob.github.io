@@ -178,6 +178,14 @@ def post_date(value) -> str:
         raise ExportError('笔记 date 必须为 ISO 日期或日期时间：' + str(value)) from exc
 
 
+def note_title_html(title: str, subtitle: str | None = None) -> str:
+    if not subtitle or subtitle == title:
+        return html.escape(title)
+    return ('<span class="note-title-pair"><span class="note-title-primary">'
+            + html.escape(title) + '</span> <span class="note-title-secondary">'
+            + html.escape(subtitle) + '</span></span>')
+
+
 def folder_tree(notes: dict, section: str, baseurl: str, labels: dict,
                 available_pages: set[str] | None = None) -> str:
     """Render a section's public folder hierarchy in manifest order."""
@@ -187,7 +195,8 @@ def folder_tree(notes: dict, section: str, baseurl: str, labels: dict,
 
     def link(path: str, title: str) -> str:
         url = baseurl + '/' + page_url(path)
-        return f'<a href="{html.escape(url, quote=True)}">{html.escape(title)}</a>'
+        subtitle = section_notes.get(path, {}).get('subtitle')
+        return f'<a href="{html.escape(url, quote=True)}">{note_title_html(title, subtitle)}</a>'
 
     def children(folder: str, top: bool = False) -> str:
         prefix = folder + '/'
@@ -259,7 +268,8 @@ def section_list(notes: dict, section: str, baseurl: str, labels: dict,
 
     def link(path: str, title: str) -> str:
         url = baseurl + '/' + page_url(path)
-        return f'<a href="{html.escape(url, quote=True)}">{html.escape(title)}</a>'
+        subtitle = section_notes.get(path, {}).get('subtitle')
+        return f'<a href="{html.escape(url, quote=True)}">{note_title_html(title, subtitle)}</a>'
 
     # Direct labels come from the configured source groups, so empty groups are
     # visible in the intended order. Any unlabelled group is appended naturally.
@@ -366,7 +376,8 @@ def folder_navigation(notes: dict) -> dict:
             for direction, offset in [('previous', -1), ('next', 1)]:
                 neighbor = paths[i + offset] if 0 <= i + offset < len(paths) else None
                 neighbors['folder_' + direction] = (
-                    {'url': '/' + page_url(neighbor), 'title': notes[neighbor]['title']}
+                    {'url': '/' + page_url(neighbor), 'title': notes[neighbor]['title'],
+                     **({'subtitle': notes[neighbor]['subtitle']} if notes[neighbor].get('subtitle') else {})}
                     if neighbor else None
                 )
             navigation[path] = neighbors

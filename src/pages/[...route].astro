@@ -6,6 +6,7 @@ import '../../site-template/assets/css/about.css'
 import Home from '../components/Home.astro'
 import PageViews from '../components/PageViews.astro'
 import Comments from '../components/Comments.astro'
+import NoteTitle from '../components/NoteTitle.astro'
 import SectionTags from '../components/SectionTags.astro'
 import TagsPage from '../components/TagsPage.astro'
 import { pages, notes, date, type NotePage } from '../lib/content'
@@ -37,12 +38,15 @@ const isSection = page && ['courses', 'reading', 'knowledge'].includes(page.rout
       {isSection ? <SectionTags section={page.route} /> : page.headings.length > 0 && <TOC headings={page.headings} />}
     </Fragment>
     <Fragment slot='header'>
-      <nav id='breadcrumb' class='note-breadcrumbs' aria-label='当前位置'>
+      <nav id='breadcrumb' class='note-breadcrumbs' aria-label='当前位置' data-pagefind-ignore>
         <a href={href('/')}>Home</a>
-        {page.breadcrumbs.map(crumb => <><span aria-hidden='true'>›</span><a href={href(crumb.url)}>{crumb.title}</a></>)}
-        <span aria-hidden='true'>›</span><span aria-current='page'>{page.title}</span>
+        {page.breadcrumbs.map(crumb => <><span aria-hidden='true'>›</span><a href={href(crumb.url)}><NoteTitle title={crumb.title} subtitle={crumb.subtitle} /></a></>)}
+        <span aria-hidden='true'>›</span><span aria-current='page'><NoteTitle title={page.title} subtitle={page.subtitle} /></span>
       </nav>
-      <h1 class='text-2xl font-medium sm:mb-2 sm:text-3xl' data-pagefind-meta='title'>{page.title}</h1>
+      <div class='note-heading' data-pagefind-meta='title[data-search-title]' data-search-title={page.subtitle ? `${page.title} · ${page.subtitle}` : page.title}>
+        <h1 class='text-2xl font-medium sm:text-3xl'>{page.title}</h1>
+        {page.subtitle && <p class='note-subtitle'>{page.subtitle}</p>}
+      </div>
       {(page.publishedAt || page.isNote) && <div class='post-meta'>
         {page.publishedAt && <span>Posted <time datetime={page.publishedAt}>{date(page.publishedAt)}</time></span>}
         {page.updatedAt && <span>Updated <time datetime={page.updatedAt}>{date(page.updatedAt)}</time></span>}
@@ -55,7 +59,7 @@ const isSection = page && ['courses', 'reading', 'knowledge'].includes(page.rout
     {page.isNote && <Fragment slot='bottom'><nav class='post-navigation' aria-label='同目录文章'>
       {(['folder_previous', 'folder_next'] as const).map((key, i) => {
         const neighbor = page[key]
-        return neighbor ? <a href={href(neighbor.url)} aria-label={i === 0 ? 'Older' : 'Newer'}><small>{i === 0 ? '← Older' : 'Newer →'}</small><span>{neighbor.title}</span></a> : <span class='disabled' aria-label={i === 0 ? 'Older' : 'Newer'}><small>{i === 0 ? '← Older' : 'Newer →'}</small><span>—</span></span>
+        return neighbor ? <a href={href(neighbor.url)} aria-label={i === 0 ? 'Older' : 'Newer'}><small>{i === 0 ? '← Older' : 'Newer →'}</small><NoteTitle title={neighbor.title} subtitle={neighbor.subtitle} /></a> : <span class='disabled' aria-label={i === 0 ? 'Older' : 'Newer'}><small>{i === 0 ? '← Older' : 'Newer →'}</small><span>—</span></span>
       })}
     </nav><Comments /></Fragment>}
   </ContentLayout>
