@@ -1,6 +1,18 @@
 {
   "notes": [
     {
+      "path": "courses/Agents-CMU/Agents-CMU.md",
+      "title": "index",
+      "published_at": "2026-10-11T11:06:08+08:00",
+      "content_hash": "b38a96b0e9b2323d64155f6ea4c13f6b23f281ee069f090140e13d4a0c5e5c0f"
+    },
+    {
+      "path": "courses/Agents-CMU/lec01.md",
+      "title": "Course Overview: What Is an Agent?",
+      "published_at": "2026-10-11T11:06:08+08:00",
+      "content_hash": "00c13da2cddf50a13e45a7c633e89604f0fc5827b8eacd7a6526787dc2fb9847"
+    },
+    {
       "path": "courses/CO-ZJU/lab1.md",
       "title": "lab1",
       "published_at": "2026-09-30T19:40:55+08:00",
@@ -179,6 +191,7 @@
     }
   ],
   "images": [
+    "assets/notes/00b398d49e6f5a485527.png",
     "assets/notes/03adc2f7b56feb9d8442.png",
     "assets/notes/081e55519d2e2a46fe0d.png",
     "assets/notes/0cc4f3614a6b1e239d94.png",
@@ -205,6 +218,7 @@
     "assets/notes/50eb772569f473efb879.png",
     "assets/notes/5ceb58b842c6aece8cf8.png",
     "assets/notes/5fc11935b9ae64a77ae5.png",
+    "assets/notes/5fff3a43528af2950cf3.png",
     "assets/notes/64c4272b865ce9cff6b4.png",
     "assets/notes/64f57dded036c73811b7.png",
     "assets/notes/6559d739a3cacbae1725.png",
@@ -219,6 +233,7 @@
     "assets/notes/89c189d210ac45a77db3.png",
     "assets/notes/939a8c2cfef10bbb095b.png",
     "assets/notes/98d4a8f3f6ebea9f2b4c.png",
+    "assets/notes/98dfe7a6b98486cc3cf8.png",
     "assets/notes/9905beb0d0a42e457c9f.png",
     "assets/notes/9beed1d4ebb6030b53d4.png",
     "assets/notes/9bfb31a1934a99adff90.png",
