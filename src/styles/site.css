@@ -70,7 +70,14 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .prose :is(h2,h3,h4,h5,h6) { scroll-margin-top: 5rem; }
 .prose .arithmatex { overflow-x: auto; overflow-y: hidden; }
 .prose mjx-container[display='true'] { overflow-x: auto; padding-bottom: .5rem; }
-.prose img { max-width: 100%; height: auto; }
+.prose img {
+  display: block;
+  max-width: min(100%, 600px);
+  max-height: min(500px, 70vh);
+  height: auto;
+  object-fit: contain;
+  margin-inline: auto;
+}
 .prose img[align='right'] { float: right; width: min(55%,420px); margin: 0 0 1rem 1rem; }
 .prose .obsidian-callout .callout-title { margin: 0; padding: .5rem .75rem; }
 .prose .obsidian-callout > :not(.callout-title) { margin: .6rem .9rem; }
