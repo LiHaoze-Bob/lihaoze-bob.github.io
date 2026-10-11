@@ -79,9 +79,6 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   margin-inline: auto;
 }
 .prose img[align='right'] { float: right; width: min(55%,420px); margin: 0 0 1rem 1rem; }
-.prose .obsidian-callout .callout-title { margin: 0; padding: .5rem .75rem; }
-.prose .obsidian-callout > :not(.callout-title) { margin: .6rem .9rem; }
-.prose .obsidian-callout p { margin-top: .6rem; margin-bottom: .6rem; }
 .prose .tabsdown-site button { font-family: inherit; }
 .tabsdown-site__tab { background: var(--main-bg); }
 .note-code { border: 1px solid var(--main-border-color); border-radius: .65rem; margin: 1.3rem 0; overflow: hidden; background: hsl(var(--muted)); }

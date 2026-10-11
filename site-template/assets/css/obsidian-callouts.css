@@ -1,87 +1,128 @@
-/* Blue Topaz uses a tinted title and a colored left border for callouts. */
+/* Match Blue Topaz with shade-callout-style and admonition-bg-color-same.
+   Lucide icons are local SVG masks; see assets/lib/lucide/LICENSE. */
 .obsidian-callout {
-  --callout-rgb: 8 109 221;
-  --callout-icon: "\f05a";
-  margin: 0.75rem 0 1rem;
-  border: 0;
-  border-left: 4px solid rgb(var(--callout-rgb) / 40%);
-  border-radius: 0.25rem;
-  background: rgb(var(--callout-rgb) / 7%);
+  --callout-blue: 8 109 221;
+  --callout-cyan: 0 191 188;
+  --callout-green: 8 185 78;
+  --callout-orange: 236 117 0;
+  --callout-red: 233 49 71;
+  --callout-purple: 120 82 238;
+  --callout-rgb: var(--callout-blue);
+  --callout-icon: url('../lib/lucide/pencil.svg');
+  margin: 1em 0;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: rgb(var(--callout-rgb) / 10%);
+  box-shadow: inset 0 0 0 2px rgb(var(--callout-rgb) / 25%), 0 .5px 1px .5px rgb(0 0 0 / 10%);
   color: var(--text-color);
+  line-height: 1.5;
   overflow: hidden;
+  mix-blend-mode: darken;
+}
+
+:root:is(.dark, [data-bs-theme='dark']) .obsidian-callout {
+  --callout-blue: 2 122 255;
+  --callout-cyan: 83 223 221;
+  --callout-green: 68 207 110;
+  --callout-orange: 233 151 63;
+  --callout-red: 251 70 76;
+  --callout-purple: 168 130 255;
+  mix-blend-mode: lighten;
 }
 
 .obsidian-callout > .callout-title {
-  display: block;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
   margin: 0;
-  padding: 0.5rem 0.75rem;
-  background: rgb(var(--callout-rgb) / 15%);
-  color: var(--text-color);
-  font-weight: 700;
-  line-height: 1.5;
-}
-
-.obsidian-callout > .callout-title::before {
-  content: var(--callout-icon);
-  display: inline-block;
-  width: 1.25em;
-  margin-right: 0.4em;
+  padding: 6px;
+  background: rgb(var(--callout-rgb) / 40%);
   color: rgb(var(--callout-rgb));
-  font: var(--fa-font-solid);
-  text-align: center;
-  -webkit-font-smoothing: antialiased;
+  font-size: inherit;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
-.obsidian-callout > :not(.callout-title) {
-  margin: 0.6rem 0.9rem;
+.obsidian-callout .callout-title-inner {
+  min-width: 0;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+.obsidian-callout .callout-title-inner :is(strong, em) { color: inherit; }
+
+.obsidian-callout .callout-icon,
+.obsidian-callout .callout-fold {
+  display: block;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 1.3em;
+  background-color: currentColor;
+  -webkit-mask: var(--callout-icon) center / 20px 1em no-repeat;
+  mask: var(--callout-icon) center / 20px 1em no-repeat;
+}
+.obsidian-callout .callout-fold {
+  --callout-icon: url('../lib/lucide/chevron-down.svg');
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+  transition: transform 100ms ease-in-out;
 }
 
-.obsidian-callout > :last-child { margin-bottom: 0.8rem; }
+.obsidian-callout > .callout-content {
+  margin: 0;
+  padding: 5px 15px;
+  overflow-x: auto;
+}
+.obsidian-callout > .callout-content > p { margin: 1em 0; }
 
+/* Keep native disclosure keyboard support and no-JavaScript behavior. */
 details.obsidian-callout > summary { cursor: pointer; list-style: none; }
 details.obsidian-callout > summary::-webkit-details-marker { display: none; }
-details.obsidian-callout > summary::after {
-  content: "\f078";
-  float: right;
-  font: var(--fa-font-solid);
-  transition: transform 0.2s;
-}
-details.obsidian-callout[open] > summary::after { transform: rotate(180deg); }
+details.obsidian-callout:not([open]) > summary .callout-fold { transform: rotate(-90deg); }
 
-.obsidian-callout[data-callout="note"] { --callout-icon: "\f044"; }
-.obsidian-callout[data-callout="todo"] { --callout-icon: "\f0ae"; }
+@media (prefers-reduced-motion: reduce) {
+  .obsidian-callout .callout-fold { transition: none; }
+}
 
-.obsidian-callout:is([data-callout="abstract"], [data-callout="summary"], [data-callout="tldr"]) {
-  --callout-rgb: 0 191 188;
-  --callout-icon: "\f03a";
+.obsidian-callout[data-callout='info'] { --callout-icon: url('../lib/lucide/info.svg'); }
+.obsidian-callout[data-callout='todo'] { --callout-icon: url('../lib/lucide/check-circle-2.svg'); }
+.obsidian-callout:is([data-callout='abstract'], [data-callout='summary'], [data-callout='tldr']) {
+  --callout-rgb: var(--callout-cyan);
+  --callout-icon: url('../lib/lucide/clipboard-list.svg');
 }
-.obsidian-callout:is([data-callout="tip"], [data-callout="hint"], [data-callout="important"]) {
-  --callout-rgb: 0 191 188;
-  --callout-icon: "\f0eb";
+.obsidian-callout:is([data-callout='tip'], [data-callout='hint'], [data-callout='important']) {
+  --callout-rgb: var(--callout-cyan);
+  --callout-icon: url('../lib/lucide/flame.svg');
 }
-.obsidian-callout:is([data-callout="success"], [data-callout="check"], [data-callout="done"]) {
-  --callout-rgb: 8 185 78;
-  --callout-icon: "\f058";
+.obsidian-callout:is([data-callout='success'], [data-callout='check'], [data-callout='done']) {
+  --callout-rgb: var(--callout-green);
+  --callout-icon: url('../lib/lucide/check.svg');
 }
-.obsidian-callout:is([data-callout="question"], [data-callout="help"], [data-callout="faq"]) {
-  --callout-rgb: 236 117 0;
-  --callout-icon: "\f059";
+.obsidian-callout:is([data-callout='question'], [data-callout='help'], [data-callout='faq']) {
+  --callout-rgb: var(--callout-orange);
+  --callout-icon: url('../lib/lucide/help-circle.svg');
 }
-.obsidian-callout:is([data-callout="warning"], [data-callout="caution"], [data-callout="attention"]) {
-  --callout-rgb: 236 117 0;
-  --callout-icon: "\f071";
+.obsidian-callout:is([data-callout='warning'], [data-callout='caution'], [data-callout='attention']) {
+  --callout-rgb: var(--callout-orange);
+  --callout-icon: url('../lib/lucide/alert-triangle.svg');
 }
-.obsidian-callout:is([data-callout="failure"], [data-callout="fail"], [data-callout="missing"]) {
-  --callout-rgb: 233 49 71;
-  --callout-icon: "\f057";
+.obsidian-callout:is([data-callout='failure'], [data-callout='fail'], [data-callout='missing']) {
+  --callout-rgb: var(--callout-red);
+  --callout-icon: url('../lib/lucide/x.svg');
 }
-.obsidian-callout:is([data-callout="danger"], [data-callout="error"]) {
-  --callout-rgb: 233 49 71;
-  --callout-icon: "\f0e7";
+.obsidian-callout:is([data-callout='danger'], [data-callout='error']) {
+  --callout-rgb: var(--callout-red);
+  --callout-icon: url('../lib/lucide/zap.svg');
 }
-.obsidian-callout[data-callout="bug"] { --callout-rgb: 233 49 71; --callout-icon: "\f188"; }
-.obsidian-callout[data-callout="example"] { --callout-rgb: 120 82 238; --callout-icon: "\f0c5"; }
-.obsidian-callout:is([data-callout="quote"], [data-callout="cite"]) {
+.obsidian-callout[data-callout='bug'] {
+  --callout-rgb: var(--callout-red);
+  --callout-icon: url('../lib/lucide/bug.svg');
+}
+.obsidian-callout[data-callout='example'] {
+  --callout-rgb: var(--callout-purple);
+  --callout-icon: url('../lib/lucide/list.svg');
+}
+.obsidian-callout:is([data-callout='quote'], [data-callout='cite']) {
   --callout-rgb: 158 158 158;
-  --callout-icon: "\f10d";
+  --callout-icon: url('../lib/lucide/quote.svg');
 }

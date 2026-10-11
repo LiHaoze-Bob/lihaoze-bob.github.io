@@ -244,8 +244,29 @@ def test_callout_manager_colors_and_icons_become_safe_css():
         'bad"]': {'light_color': '999, 0, 0'},
     })
     assert 'data-callout="intro"' in css and '--callout-rgb: 83 223 221' in css
-    assert '--callout-icon: "\\f13d"' in css
+    assert '--callout-icon: url("../lib/lucide/anchor.svg")' in css
     assert 'bad' not in css
+
+
+def test_callout_title_and_nested_content_keep_separate_rendering_regions():
+    source = '''> [!note] **重点**
+> 第一段。
+>
+> > [!tip]- 内层提示
+> > 内层正文。
+>
+> 最后一段。'''
+    soup = BeautifulSoup(render(convert_callouts(source), 'courses/例.md', ''), 'html.parser')
+    outer = soup.select_one('div.obsidian-callout')
+    title = outer.select_one(':scope > .callout-title')
+    assert title.select_one('.callout-title-inner strong').get_text() == '重点'
+    assert title.select_one('.callout-icon')['aria-hidden'] == 'true'
+    content = outer.select_one(':scope > .callout-content')
+    assert [p.get_text() for p in content.find_all('p', recursive=False)] == ['第一段。', '最后一段。']
+    inner = content.select_one('details.obsidian-callout')
+    assert not inner.has_attr('open')
+    assert inner.select_one(':scope > summary .callout-fold')['aria-hidden'] == 'true'
+    assert inner.select_one(':scope > .callout-content').get_text(strip=True) == '内层正文。'
 
 
 def test_code_html_stays_literal():

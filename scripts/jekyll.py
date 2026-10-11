@@ -85,6 +85,22 @@ def render(body: str, source: str, baseurl: str, title: str | None = None,
             title = prompt.find('summary', recursive=False)
             if title:
                 title['class'] = ['callout-title']
+        if title:
+            if title.name == 'p':
+                title.name = 'div'
+            label = soup.new_tag('span', attrs={'class': 'callout-title-inner'})
+            for child in list(title.contents):
+                label.append(child.extract())
+            icon = soup.new_tag('span', attrs={'class': 'callout-icon', 'aria-hidden': 'true'})
+            title.append(icon)
+            title.append(label)
+            if prompt.name == 'details':
+                title.append(soup.new_tag('span', attrs={'class': 'callout-fold', 'aria-hidden': 'true'}))
+        content = soup.new_tag('div', attrs={'class': 'callout-content'})
+        for child in list(prompt.contents):
+            if child is not title:
+                content.append(child.extract())
+        prompt.append(content)
     for code in soup.select('pre > code'):
         language = next((c.removeprefix('language-') for c in code.get('class', [])
                          if c.startswith('language-')), 'plaintext')
@@ -135,14 +151,14 @@ def render(body: str, source: str, baseurl: str, title: str | None = None,
 
 
 CALLOUT_ICONS = {
-    'lucide-anchor': '\\f13d',
-    'lucide-blend': '\\f042',
-    'lucide-book-open-check': '\\f518',
-    'lucide-aperture': '\\f140',
-    'lucide-book': '\\f02d',
-    'lucide-book-open': '\\f518',
-    'lucide-apple': '\\f5d1',
-    'lucide-airplay': '\\e163',
+    'lucide-anchor': 'anchor',
+    'lucide-blend': 'blend',
+    'lucide-book-open-check': 'book-open-check',
+    'lucide-aperture': 'aperture',
+    'lucide-book': 'book',
+    'lucide-book-open': 'book-open',
+    'lucide-apple': 'apple',
+    'lucide-airplay': 'airplay',
 }
 
 
@@ -166,7 +182,7 @@ def custom_callout_styles(callouts: dict) -> str:
                 )
         icon = CALLOUT_ICONS.get(definition.get('icon'))
         if icon:
-            rules.append(f'{selector} {{ --callout-icon: "{icon}"; }}')
+            rules.append(f'{selector} {{ --callout-icon: url("../lib/lucide/{icon}.svg"); }}')
     return '\n'.join(rules) + ('\n' if rules else '')
 
 

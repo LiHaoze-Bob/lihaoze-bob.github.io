@@ -14,6 +14,14 @@ Chirpy layouts, styles and JavaScript are provided by the MIT-licensed `jekyll-t
 
 `assets/css/breadcrumbs.css` keeps that hierarchy visible in Chirpy's compact top bar.
 
+## Callout icons
+
+`assets/lib/lucide/` contains the Lucide SVG shapes used by the locally installed
+Obsidian app for built-in callouts and the configured Callout Manager types.
+They are rendered as CSS masks to retain the callout color. Lucide's ISC and
+Feather's MIT notices are retained in that directory's `LICENSE` file; see the
+[Lucide project](https://github.com/lucide-icons/lucide).
+
 ## Education images
 
 School marks are used only to identify the author's education; they are not covered by the theme's software license. The original image files are retained without modification; the homepage crops and fades them with CSS.

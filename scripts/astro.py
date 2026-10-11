@@ -124,7 +124,7 @@ def stage(docs: Path, work: Path, template: Path, settings: dict, labels: dict) 
     data = work / 'content.json'
     data.write_text(json.dumps({'pages': pages}, ensure_ascii=False, default=str))
     shutil.copy2(docs / 'publication.json', public / 'publication.json')
-    for directory in ('images', 'lib/fonts', 'lib/fontawesome-free', 'vendor/mathjax'):
+    for directory in ('images', 'lib/fonts', 'lib/fontawesome-free', 'lib/lucide', 'vendor/mathjax'):
         original = template / 'assets' / directory
         if original.exists():
             shutil.copytree(original, public / 'assets' / directory)

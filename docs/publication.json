@@ -293,15 +293,15 @@
       "light_color": "83, 223, 221",
       "dark_color": "83, 223, 221"
     },
-    "algorithm": {
-      "icon": "lucide-apple",
-      "light_color": "168, 130, 255",
-      "dark_color": "168, 130, 255"
-    },
     "application": {
       "icon": "lucide-airplay",
       "light_color": "83, 223, 221",
       "dark_color": "83, 223, 221"
+    },
+    "idea": {
+      "icon": "lucide-apple",
+      "light_color": "227, 107, 167",
+      "dark_color": "227, 107, 167"
     }
   }
 }
