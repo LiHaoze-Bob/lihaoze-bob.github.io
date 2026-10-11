@@ -75,6 +75,39 @@ def test_render_strikethrough_without_changing_code_or_escaped_tildes():
     assert '~~原样~~' in soup.get_text()
 
 
+@pytest.mark.parametrize('theme', ['pure', 'chirpy'])
+def test_render_obsidian_highlights_preserving_formatting_and_literal_examples(theme):
+    body = r'''==中文高亮==，前==重点==后，==**强调**与$x^2$==。
+
+`==行内代码==`，\==原样\==，未闭合==文字。
+
+```text
+==代码块==
+```
+
+!!! note "提示"
+    ==提示高亮==
+
+```tabsdown
+tab: 一
+==面板高亮==
+tab: 二
+普通正文。
+```
+'''
+    soup = BeautifulSoup(render(body, 'courses/示例.md', '', theme=theme), 'html.parser')
+    marks = soup.find_all('mark')
+    assert [item.get_text() for item in marks] == [
+        '中文高亮', '重点', '强调与\\(x^2\\)', '提示高亮', '面板高亮']
+    assert marks[2].strong.get_text() == '强调'
+    assert marks[2].select_one('.arithmatex').get_text() == '\\(x^2\\)'
+    assert soup.select_one('p code').get_text() == '==行内代码=='
+    code_block = soup.select_one('.note-code pre code, .rouge-code pre')
+    assert code_block.get_text().strip() == '==代码块=='
+    assert '==原样==' in soup.get_text()
+    assert '未闭合==文字' in soup.get_text()
+
+
 def test_obsidian_single_newlines_render_inside_text_blocks_only():
     body = '''第一行
 第二行
