@@ -16,6 +16,10 @@ Chirpy layouts, styles and JavaScript are provided by the MIT-licensed `jekyll-t
 
 ## Callout icons
 
+`assets/css/obsidian-callouts.css` adapts the shade callout presentation from
+[Blue Topaz](https://github.com/PKM-er/Blue-Topaz_Obsidian-css). Its attribution
+and MIT license are retained in the stylesheet header.
+
 `assets/lib/lucide/` contains the Lucide SVG shapes used by the locally installed
 Obsidian app for built-in callouts and the configured Callout Manager types.
 They are rendered as CSS masks to retain the callout color. Lucide's ISC and
