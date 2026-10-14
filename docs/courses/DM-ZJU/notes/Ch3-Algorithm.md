@@ -1,8 +1,8 @@
 ---
 tags:
-- algorithms
 - computational-complexity-theory
 - Turing-machine
+- algorithm
 title: Ch3-Algorithm
 ---
 !!! abstract

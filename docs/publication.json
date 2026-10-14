@@ -13,6 +13,12 @@
       "content_hash": "00c13da2cddf50a13e45a7c633e89604f0fc5827b8eacd7a6526787dc2fb9847"
     },
     {
+      "path": "courses/Agents-CMU/lec02.md",
+      "title": "Agent Capabilities 1: Tool Use",
+      "published_at": "2026-10-14T22:22:16+08:00",
+      "content_hash": "71a6baa850c57d8c148df19e414cad22be36e8a765c3fef8413c8983c61913de"
+    },
+    {
       "path": "courses/CO-ZJU/lab1.md",
       "title": "lab1",
       "published_at": "2026-09-30T19:40:55+08:00",
@@ -22,7 +28,8 @@
       "path": "courses/CO-ZJU/lab2.md",
       "title": "IP核集成SOC设计",
       "published_at": "2026-10-10T19:32:05+08:00",
-      "content_hash": "8050896e53db941336c9953c781d82371e8ef40bcc9d69fb6a7e1219e87002bb"
+      "content_hash": "f2ac39f27703cbeca7a3cc6f3c8cf7cd5aca67d2946cdf90e94114ed2213be92",
+      "updated_at": "2026-10-14T22:22:16+08:00"
     },
     {
       "path": "courses/CS312-Stanford/index.md",
@@ -81,7 +88,8 @@
       "path": "courses/DM-ZJU/notes/Ch3-Algorithm.md",
       "title": "Ch3-Algorithm",
       "published_at": "2026-09-15T11:15:17+08:00",
-      "content_hash": "1ba578c195c173148fd0b51323d5977348ff2a07c1cb469f138a1508a4e86d0e"
+      "content_hash": "56e361ce9257c2032a13382b7d888072271b420aa9de39e7afa610a6eb5aa412",
+      "updated_at": "2026-10-14T22:22:16+08:00"
     },
     {
       "path": "courses/DM-ZJU/notes/Ch5-Induction-and-Recursion.md",
@@ -175,7 +183,8 @@
       "path": "knowledge/tech/Can I Run AI.md",
       "title": "Can I Run AI",
       "published_at": "2026-09-15T14:49:36+08:00",
-      "content_hash": "5a19fad5330f19ec1e86e925eac8b3f2f6e824f9bdb429821c8f78f3ef173de9"
+      "content_hash": "c930c8ca0898094022fba22dcc17477220a170b21c5b8bc02397d7925b3afc0b",
+      "updated_at": "2026-10-14T22:22:16+08:00"
     },
     {
       "path": "knowledge/tech/What to commit in Github.md",
@@ -187,7 +196,8 @@
       "path": "knowledge/tools/IPA 自动续签.md",
       "title": "IPA 自动续签",
       "published_at": "2026-09-16T23:09:35+08:00",
-      "content_hash": "d92dba58419a4205835d690561fd61eda47dc891ba5e2bbceeb5b677841abc50"
+      "content_hash": "c51eab47e9cb85890b7ef87d03268cdd6a452c0b230fc7f7d94eb142ca345a17",
+      "updated_at": "2026-10-14T22:22:16+08:00"
     }
   ],
   "images": [
@@ -198,6 +208,7 @@
     "assets/notes/0cebe0a3046f2bd6dfa4.png",
     "assets/notes/0eb5cb5f46f2e47afc90.png",
     "assets/notes/0ffa82664e2832635e1f.png",
+    "assets/notes/14faf63c3287fb8a7184.png",
     "assets/notes/20ddae621e3ba084d548.png",
     "assets/notes/2141b4c2f17e56881ee8.png",
     "assets/notes/23a3659729e6fa093cc4.png",
@@ -224,6 +235,7 @@
     "assets/notes/6559d739a3cacbae1725.png",
     "assets/notes/657e270d5c9c4599bda1.png",
     "assets/notes/66e42b7c08fe8e91610d.png",
+    "assets/notes/6867efeadd3871b0cdb3.png",
     "assets/notes/69f57f2d503ede07f994.png",
     "assets/notes/6a2c18cddf77fb133b34.png",
     "assets/notes/7cb14c508f430ef7232a.png",
@@ -302,6 +314,11 @@
       "icon": "lucide-apple",
       "light_color": "227, 107, 167",
       "dark_color": "227, 107, 167"
+    },
+    "workflow": {
+      "icon": "lucide-workflow",
+      "light_color": "168, 130, 255",
+      "dark_color": "168, 130, 255"
     }
   }
 }

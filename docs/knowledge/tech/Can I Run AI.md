@@ -1,7 +1,5 @@
 ---
 tags:
-- AI/本地模型
-- AI/Agent
 - Ollama
 - macOS
 title: Can I Run AI

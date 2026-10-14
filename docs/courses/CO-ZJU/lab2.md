@@ -1,4 +1,6 @@
 ---
+tags:
+- CPU
 title: IP核集成SOC设计
 ---
 # IP核集成SOC设计 {#ip核集成soc设计}
