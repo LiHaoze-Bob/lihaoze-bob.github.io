@@ -81,11 +81,6 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .prose img[align='right'] { float: right; width: min(55%,420px); margin: 0 0 1rem 1rem; }
 .prose .tabsdown-site button { font-family: inherit; }
 .tabsdown-site__tab { background: var(--main-bg); }
-.note-code { border: 1px solid var(--main-border-color); border-radius: .65rem; margin: 1.3rem 0; overflow: hidden; background: hsl(var(--muted)); }
-.note-code .code-header { display: flex; justify-content: space-between; align-items: center; padding: .3rem .9rem; border-bottom: 1px solid var(--main-border-color); color: var(--text-muted-color); font-size: .75rem; }
-.note-code button { border: 1px solid var(--main-border-color); border-radius: .3rem; padding: .1rem .5rem; cursor: pointer; }
-.note-code pre { margin: 0; padding: 1rem; overflow-x: auto; font-size: .85rem; line-height: 1.65; background: transparent; color: var(--text-color); border-radius: 0; }
-.note-code code { font-family: 'SFMono-Regular', Consolas, monospace; padding: 0; }
 .note-code[data-language="mermaid"] .mermaid { padding: 1rem; overflow-x: auto; }
 .note-code[data-language="mermaid"] .mermaid svg { display: block; height: auto; margin: 0 auto; }
 .note-code pre[hidden] { display: none; }

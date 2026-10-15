@@ -8,8 +8,25 @@ import yaml
 from scripts.astro import stage
 from scripts.exporter import Exporter
 from scripts.site import build_snapshot
+from scripts.jekyll import render
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_pure_code_preserves_informal_json_http_and_literal_html_without_error_tokens():
+    samples = [
+        ('json', 'weather_tool = {"name": "get_weather"}\n'),
+        ('json', 'response = client.chat.completions.create(model=model)\n'),
+        ('http', 'GET /weather?city=Pittsburgh&units=F\nX-API-Key: 调用者的密钥\n'),
+        ('unknown-example', '<img src="secret"> & {{ literal }}\n'),
+    ]
+    for language, source in samples:
+        soup = BeautifulSoup(render(f'```{language}\n{source}```', 'example.md', '',
+                                    theme='pure'), 'html.parser')
+        block = soup.select_one('.note-code')
+        assert block['data-language'] == language
+        assert block.code.get_text() == source
+        assert not block.select('.err, img')
 
 
 def snapshot(tmp_path):

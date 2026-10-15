@@ -20,6 +20,11 @@ Chirpy layouts, styles and JavaScript are provided by the MIT-licensed `jekyll-t
 [Blue Topaz](https://github.com/PKM-er/Blue-Topaz_Obsidian-css). Its attribution
 and MIT license are retained in the stylesheet header.
 
+`src/styles/code.css` adapts Blue Topaz's default code theme and reading-view
+spacing, with its attribution and MIT license retained in the stylesheet.
+Pure code highlighting uses the MIT-licensed [Prism](https://prismjs.com/)
+at build time; its package includes the upstream license.
+
 `assets/lib/lucide/` contains the Lucide SVG shapes used by the locally installed
 Obsidian app for built-in callouts and the configured Callout Manager types.
 They are rendered as CSS masks to retain the callout color. Lucide's ISC and

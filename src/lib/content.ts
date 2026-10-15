@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs'
+import { highlightCodeBlocks } from './code.mjs'
 
 export interface NotePage {
   route: string
@@ -21,7 +22,9 @@ export interface NotePage {
 }
 
 const data = JSON.parse(readFileSync(process.env.ASTRO_CONTENT_FILE || '.runtime/astro-content.json', 'utf8'))
-export const pages: NotePage[] = data.pages
+export const pages: NotePage[] = data.pages.map((page: NotePage) => ({
+  ...page, html: highlightCodeBlocks(page.html)
+}))
 export const notes = pages.filter(page => page.isNote).sort((a, b) =>
   Date.parse(b.publishedAt || '') - Date.parse(a.publishedAt || '') || a.route.localeCompare(b.route))
 

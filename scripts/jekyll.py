@@ -118,10 +118,12 @@ def render(body: str, source: str, baseurl: str, title: str | None = None,
                  f'<pre class="lineno">{lines}</pre></td><td class="rouge-code">'
                  f'<pre>{colored}</pre></td></tr></tbody></table></code></pre></div></div>')
         if theme == 'pure':
+            # Pygments adds a final newline; keep that contract with Prism too.
+            literal = html.escape(text if text.endswith('\n') else text + '\n')
             block = (f'<div class="note-code" data-language="{html.escape(language, quote=True)}">'
-                     '<div class="code-header"><span>' + html.escape(language) + '</span>'
+                     '<div class="code-header">'
                      '<button type="button" aria-label="复制代码">Copy</button></div>'
-                     f'<pre class="highlight"><code>{colored}</code></pre></div>')
+                     f'<pre class="highlight"><code>{literal}</code></pre></div>')
         code.parent.replace_with(BeautifulSoup(block, 'html.parser'))
     for code in soup.select('code'):
         if not code.find_parent(class_='highlight'):
