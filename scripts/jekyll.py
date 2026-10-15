@@ -122,6 +122,7 @@ def render(body: str, source: str, baseurl: str, title: str | None = None,
             literal = html.escape(text if text.endswith('\n') else text + '\n')
             block = (f'<div class="note-code" data-language="{html.escape(language, quote=True)}">'
                      '<div class="code-header">'
+                     f'<span class="code-language">{html.escape(language)}</span>'
                      '<button type="button" aria-label="复制代码">Copy</button></div>'
                      f'<pre class="highlight"><code>{literal}</code></pre></div>')
         code.parent.replace_with(BeautifulSoup(block, 'html.parser'))

@@ -30,7 +30,7 @@ Pure 正文图片默认居中，宽度不超过正文和 600px，高度不超过
 
 支持 [Tabsdown](https://github.com/grafanaKibana/obsidian-tabsdown) 围栏及嵌套标签页。导出后保留位置、换行、密度、外观、配色和对齐配置，并支持鼠标与键盘切换；浏览器禁用 JavaScript 时改为依次显示所有面板，不会隐藏正文。无效的标签数量、重复标签、未知配置或未闭合围栏会阻止发布。
 
-Pure 代码块在构建时使用 Prism 高亮，配色和间距对齐 Obsidian Blue Topaz 的默认代码主题，支持深浅色切换。复制按钮位于右上角，桌面悬停或键盘聚焦时出现，触屏保持可见。JSON、HTTP 等不完整的教学片段保留原文，不加语法错误红框；未知语言按纯文本显示。样式位于 `src/styles/code.css`，不会随 Obsidian 设置变化自动同步。
+Pure 代码块在构建时使用 Prism 高亮，配色和间距对齐 Obsidian Blue Topaz 的默认代码主题，支持深浅色切换。左上角常显围栏声明的语言类型（如 `python`、`json`、`http`）；复制按钮位于右上角，桌面悬停或键盘聚焦时出现，触屏保持可见。JSON、HTTP 等不完整的教学片段保留原文，不加语法错误红框；未知语言按纯文本显示。样式位于 `src/styles/code.css`，不会随 Obsidian 设置变化自动同步。
 
 将 `publish` 改成 `false` 后再次发布，对应页面和不再使用的图片会从当前网站及搜索索引移除。已经公开的 Git 历史仍保留旧内容。笔记移动或重命名会改变网址。
 

@@ -13,6 +13,22 @@ from scripts.jekyll import render
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_pure_code_displays_language_without_including_label_in_copied_code():
+    for language, source in [
+        ('python', 'print("hello")\n'),
+        ('json', '{"ok": true}\n'),
+        ('http', 'GET /weather\n'),
+        ('unknown-example', '<literal>\n'),
+    ]:
+        soup = BeautifulSoup(render(f'```{language}\n{source}```', 'example.md', '',
+                                    theme='pure'), 'html.parser')
+        label = soup.select_one('.note-code .code-header .code-language')
+        assert label is not None
+        assert label.get_text() == language
+        assert soup.select_one('.note-code code').get_text() == source
+        assert soup.select_one('.code-header button[aria-label="复制代码"]')
+
+
 def test_pure_code_preserves_informal_json_http_and_literal_html_without_error_tokens():
     samples = [
         ('json', 'weather_tool = {"name": "get_weather"}\n'),
