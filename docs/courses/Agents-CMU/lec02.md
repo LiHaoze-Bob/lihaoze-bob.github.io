@@ -9,6 +9,14 @@ title: 'Agent Capabilities 1: Tool Use'
 # Agent Capabilities 1: Tool Use {#agent-capabilities-1-tool-use}
 
 
+!!! tip "Readings"
+    - [ ] [What Are Tools Anyway?](https://arxiv.org/abs/2403.15452)
+    - [ ] [CodeAct](https://arxiv.org/abs/2402.01030)
+    - [ ] [XGrammar](https://arxiv.org/abs/2411.15100)
+
+
+
+
 !!! workflow
     由于一些内容是方法论或是简单易懂的例子，而且过于结构化的笔记对于阅读和写作的时间成本消耗过大，所以我会跳过一些内容(它们在PPT中有完整的呈现!)，更专注于写一些interesting或是让我启发的东西。另外，由于不是结构化的内容，文章的标题也不是完全并列的关系，而是一些小专题的感觉🥳
 
