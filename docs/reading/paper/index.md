@@ -1,3 +1,3 @@
 # Paper
 
-暂无公开笔记。
+- [Language Models Can Teach Themselves to Use Tools](Toolformer.md)
