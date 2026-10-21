@@ -33,6 +33,12 @@
       "updated_at": "2026-10-14T22:22:16+08:00"
     },
     {
+      "path": "courses/CO-ZJU/lab3.md",
+      "title": "乘除与浮点加法",
+      "published_at": "2026-10-21T18:53:49+08:00",
+      "content_hash": "8d7de355d4048b272d9633cbbd9be5324245dabffc792dc0ba049ebf4f87f3f5"
+    },
+    {
       "path": "courses/CS312-Stanford/index.md",
       "title": "CS312-Stanford",
       "published_at": "2026-09-24T16:07:13+08:00",
