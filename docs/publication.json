@@ -4,13 +4,15 @@
       "path": "courses/Agents-CMU/Agents-CMU.md",
       "title": "index",
       "published_at": "2026-10-11T11:06:08+08:00",
-      "content_hash": "b38a96b0e9b2323d64155f6ea4c13f6b23f281ee069f090140e13d4a0c5e5c0f"
+      "content_hash": "023b24d7564712eac461ca73fcfd263fa0424548d9c0da0b8edc61a03515a24e",
+      "updated_at": "2026-10-21T19:06:50+08:00"
     },
     {
       "path": "courses/Agents-CMU/lec01.md",
       "title": "Course Overview: What Is an Agent?",
       "published_at": "2026-10-11T11:06:08+08:00",
-      "content_hash": "00c13da2cddf50a13e45a7c633e89604f0fc5827b8eacd7a6526787dc2fb9847"
+      "content_hash": "2d6cebd98e3948ccd954cf9ccaf8513c843829195e4d1e3024bc26dd5c99bc0f",
+      "updated_at": "2026-10-21T19:06:50+08:00"
     },
     {
       "path": "courses/Agents-CMU/lec02.md",
@@ -18,6 +20,12 @@
       "published_at": "2026-10-14T22:22:16+08:00",
       "content_hash": "f0d0cf47c0e9ad788b455e85ccaf8f50a5759e6952a10d1d7ff3d2a9f36d0cac",
       "updated_at": "2026-10-15T08:11:48+08:00"
+    },
+    {
+      "path": "courses/CO-ZJU/lab0.md",
+      "title": "Vivado介绍和模块封装",
+      "published_at": "2026-10-21T19:06:50+08:00",
+      "content_hash": "3f7fff2da8ba58fb6a00456806c19d7e3b5a98629f3034ec8bd8f2981dd02351"
     },
     {
       "path": "courses/CO-ZJU/lab1.md",

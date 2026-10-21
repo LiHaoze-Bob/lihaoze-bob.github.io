@@ -11,7 +11,7 @@ title: 'Course Overview: What Is an Agent?'
 
 
 !!! important "Readings"
-    - [ ] [Toolformer](https://arxiv.org/abs/2210.03629)
+    - [x] [Toolformer](https://arxiv.org/abs/2210.03629) ✅ 2026-10-20
     - [ ] [ReAct](https://arxiv.org/abs/2210.03629)
 
 
