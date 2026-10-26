@@ -1,6 +1,8 @@
 import hashlib
 import json
+import xml.etree.ElementTree as ET
 from pathlib import Path
+from urllib.parse import unquote
 
 from bs4 import BeautifulSoup
 import yaml
@@ -212,3 +214,41 @@ def test_pure_production_build_has_search_navigation_dates_and_assets(tmp_path):
     assert chips[0]['href'] == '/tags/ai-agent/'
     assert [chip.select_one('.tag-count').get_text() for chip in chips] == ['2', '1', '1']
     assert not tags.select_one('#sidebar')
+
+
+def test_pure_feed_contains_full_readable_articles_and_absolute_resources(tmp_path):
+    docs = snapshot(tmp_path)
+    article = docs / 'courses/测试/Lecture2 中文.md'
+    with article.open('a') as output:
+        output.write('''
+
+![示意图](/assets/images/avatar.png)
+
+??? note "折叠补充"
+    折叠内容也要完整显示。
+
+文章最后一段。<a href="#中文章节">回到章节</a>
+''')
+    work = tmp_path / 'build'
+    build_snapshot(docs, work, theme='pure')
+    channel = ET.parse(work / 'site/feed.xml').getroot().find('channel')
+    items = channel.findall('item')
+    assert len(items) == 4  # Only published notes, no private notes or generated indexes.
+    item = next(item for item in items if item.findtext('title') == 'Lecture2 中文')
+    body = item.findtext('{http://purl.org/rss/1.0/modules/content/}encoded')
+    assert body, 'RSS must include the full article, not only its heading summary'
+    soup = BeautifulSoup(body, 'html.parser')
+    assert '文章最后一段。' in soup.get_text()
+    assert '面板一。' in soup.get_text() and '面板二。' in soup.get_text()
+    assert '折叠内容也要完整显示。' in soup.get_text()
+    assert soup.select_one('details').has_attr('open')
+    assert soup.select_one('code').get_text().strip() == '<img src="private"> & {{ site.title }} {% include missing.html %}'
+    assert not soup.select('button, script, style')
+    assert soup.img['src'] == 'https://lihaoze-bob.github.io/assets/images/avatar.png'
+    links = [unquote(link['href']) for link in soup.select('a[href]')]
+    assert 'https://lihaoze-bob.github.io/courses/测试/Lecture10/#章节' in links
+    assert unquote(item.findtext('link')) + '#中文章节' in links
+    assert item.findtext('description') == '中文章节'
+    assert item.findtext('pubDate') == 'Mon, 14 Sep 2026 04:30:00 GMT'
+    assert item.findtext('guid') == item.findtext('link')
+    assert 'PRIVATE_SENTINEL' not in body
