@@ -220,12 +220,16 @@ def test_pure_feed_contains_full_readable_articles_and_absolute_resources(tmp_pa
     docs = snapshot(tmp_path)
     article = docs / 'courses/测试/Lecture2 中文.md'
     with article.open('a') as output:
-        output.write('''
+        output.write(r'''
 
 ![示意图](/assets/images/avatar.png)
 
 ??? note "折叠补充"
     折叠内容也要完整显示。
+
+$$
+\frac{1}{2} + x^2
+$$
 
 文章最后一段。<a href="#中文章节">回到章节</a>
 ''')
@@ -241,10 +245,22 @@ def test_pure_feed_contains_full_readable_articles_and_absolute_resources(tmp_pa
     assert '文章最后一段。' in soup.get_text()
     assert '面板一。' in soup.get_text() and '面板二。' in soup.get_text()
     assert '折叠内容也要完整显示。' in soup.get_text()
-    assert soup.select_one('details').has_attr('open')
+    assert not soup.select('details, summary')
+    callout = next(block for block in soup.select('blockquote') if '折叠补充' in block.get_text())
+    assert callout.strong.get_text(strip=True) == '折叠补充'
+    assert '折叠内容也要完整显示。' in callout.get_text()
+    assert soup.select_one('blockquote strong').get_text(strip=True) == '自定义标题'
+    assert not soup.select('.arithmatex, svg, math')
+    formulas = soup.select('img[src*="/assets/rss-math/"]')
+    assert len(formulas) == 3  # Inline, Tabsdown panel, and display math.
+    assert {'x^2', 'y=2', '\\frac{1}{2} + x^2'} == {image['alt'].strip() for image in formulas}
+    for image in formulas:
+        asset = work / 'site' / image['src'].split('github.io/')[1]
+        assert asset.read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
+        assert int(image['width']) > 0 and int(image['height']) > 0
     assert soup.select_one('code').get_text().strip() == '<img src="private"> & {{ site.title }} {% include missing.html %}'
     assert not soup.select('button, script, style')
-    assert soup.img['src'] == 'https://lihaoze-bob.github.io/assets/images/avatar.png'
+    assert soup.select_one('img[alt="示意图"]')['src'] == 'https://lihaoze-bob.github.io/assets/images/avatar.png'
     links = [unquote(link['href']) for link in soup.select('a[href]')]
     assert 'https://lihaoze-bob.github.io/courses/测试/Lecture10/#章节' in links
     assert unquote(item.findtext('link')) + '#中文章节' in links
