@@ -1,11 +1,17 @@
 {
   "notes": [
     {
+      "path": "courses/ADS-ZJU/Dynamic Programming.md",
+      "title": "Dynamic Programming",
+      "published_at": "2026-11-01T22:21:15+08:00",
+      "content_hash": "dee013854f34837bdfe225290361e8b7ebc866963616a22ba57e0b73055eb9a2"
+    },
+    {
       "path": "courses/Agents-CMU/Agents-CMU.md",
       "title": "index",
       "published_at": "2026-10-11T11:06:08+08:00",
-      "content_hash": "023b24d7564712eac461ca73fcfd263fa0424548d9c0da0b8edc61a03515a24e",
-      "updated_at": "2026-10-21T19:06:50+08:00"
+      "content_hash": "a6b71bf86f03e24031081c65dfca56130b502eeaa95a4f2d26e5e4ca3555f6dd",
+      "updated_at": "2026-11-01T22:21:15+08:00"
     },
     {
       "path": "courses/Agents-CMU/lec01.md",
@@ -234,6 +240,7 @@
     "assets/notes/081e55519d2e2a46fe0d.png",
     "assets/notes/0cc4f3614a6b1e239d94.png",
     "assets/notes/0cebe0a3046f2bd6dfa4.png",
+    "assets/notes/0cfc71af767e038f1b1d.png",
     "assets/notes/0eb5cb5f46f2e47afc90.png",
     "assets/notes/0ffa82664e2832635e1f.png",
     "assets/notes/14faf63c3287fb8a7184.png",
@@ -279,6 +286,7 @@
     "assets/notes/87c576923c31c9a2a4fc.png",
     "assets/notes/89c189d210ac45a77db3.png",
     "assets/notes/8b42f8f96b8bb372e7f4.png",
+    "assets/notes/910f1545b5ddb23ff45c.png",
     "assets/notes/91d3b3f25362a6e87630.png",
     "assets/notes/939a8c2cfef10bbb095b.png",
     "assets/notes/98d4a8f3f6ebea9f2b4c.png",
@@ -368,6 +376,11 @@
       "icon": "lucide-workflow",
       "light_color": "168, 130, 255",
       "dark_color": "168, 130, 255"
+    },
+    "links": {
+      "icon": "link",
+      "light_color": "208, 181, 48",
+      "dark_color": "208, 181, 48"
     }
   }
 }

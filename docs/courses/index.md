@@ -1,5 +1,6 @@
 # 课程笔记
 
+- [ADS-ZJU](ADS-ZJU/index.md)
 - [Agents-CMU](Agents-CMU/index.md)
 - [CO-ZJU](CO-ZJU/index.md)
 - [CS312-Stanford](CS312-Stanford/index.md)

@@ -20,9 +20,11 @@ After this course, we can do：
 
 
 
-!!! tip "links"
+!!! links
     [11-768课程链接](https://www.cmu-agents.com/#/)
     [schedule](https://www.cmu-agents.com/#/schedule)
+    [讲义精读@xbsheng](https://xbsheng.github.io/cmu-agents/)
+    [@Haowen.AI](https://mp.weixin.qq.com/s/6m6SfhnA3xtPxvzoAh9mKQ)
 
 
 
