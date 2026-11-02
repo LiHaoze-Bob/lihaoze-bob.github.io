@@ -28,8 +28,10 @@ title: Dynamic Programming
 | Divide & Conquer    | Tree                 |
 | Dynamic Programming | DAG，in-degree > 1    |
 | Greedy              | Incremental Subgraph |
+
 关于dp,有两种实现方式：
- - Top down: record subproblem solutions in a memo and re-use(recursion + memoization)
+
+- Top down: record subproblem solutions in a memo and re-use(recursion + memoization)
 - Bottom up: solve subproblems in topological sort order (usually via loops)
 
 解题时可以分析具体例子，思考最小子问题是什么，再写出状态转移方程，然后是边界情况的定义
