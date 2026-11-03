@@ -2,6 +2,7 @@
 import { Icon } from 'astro-pure/user'
 import { profile } from '../data/profile'
 import snapshot from '../data/github-profile.json'
+import { formatActivityUpdatedAt } from '../lib/github-profile.mjs'
 import { notes, date } from '../lib/content'
 import { href } from '../site.config'
 
@@ -37,6 +38,7 @@ const stats = 'https://github-stats-extended.vercel.app/api?username=LiHaoze-Bob
       {notes.slice(0, 5).map((note, index) => <li><span aria-hidden='true'>#{String(index + 1).padStart(2, '0')}</span><a href={note.url}>{note.subtitle || note.title}</a></li>)}
     </ol>
     <p class='github-obsidian'>Time @<span class='obsidian-brand'><img src={href('/assets/images/obsidian.svg')} width='16' height='18' alt='' />Obsidian</span> · <span data-github-obsidian>{snapshot.obsidian.replace(/^Time @Obsidian · /, '')}</span></p>
+    <p class='github-snapshot' data-github-updated>{formatActivityUpdatedAt(snapshot.sourceUpdatedAt)}</p>
   </section>
 
   <section class='github-coding about-activity' aria-labelledby='github-coding-title'>

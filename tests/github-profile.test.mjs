@@ -3,7 +3,7 @@ import test from 'node:test'
 import vm from 'node:vm'
 import { readFileSync } from 'node:fs'
 import ts from 'typescript'
-import { parseGitHubActivity } from '../src/lib/github-profile.mjs'
+import { parseGitHubActivity, formatActivityUpdatedAt } from '../src/lib/github-profile.mjs'
 
 const report = `Last 7 days (including today)
 2026-10-28 - 2026-11-03 (Asia/Shanghai)
@@ -45,8 +45,16 @@ test('accepts the producer’s no-activity reports without retaining stale usage
   assert.match(parseGitHubActivity(empty).weekly, /Total Time: 0 secs/)
 })
 
+test('preserves the upstream fetch timestamp instead of implying a live total', () => {
+  const updated = readme.replace('<!--END_SECTION:obsidian-->', '<!-- activity-updated-at: 2026-11-03T13:45:00Z -->\n<!--END_SECTION:obsidian-->')
+  assert.equal(parseGitHubActivity(updated).sourceUpdatedAt, '2026-11-03T13:45:00Z')
+  const empty = updated.replace('**41 mins** in the last 7 days', 'No activity tracked in the last 7 days yet.')
+  assert.match(parseGitHubActivity(empty).obsidian, /No activity tracked/)
+  assert.throws(() => parseGitHubActivity(updated.replace('2026-11-03T13:45:00Z', '2026-99-99T13:45:00Z')))
+})
+
 function client(fetch, pendingImage = false) {
-  const nodes = Object.fromEntries(['obsidian', 'weekly', 'snapshot', 'refresh'].map(key => [`[data-github-${key}]`, { textContent: `saved ${key}` }]))
+  const nodes = Object.fromEntries(['obsidian', 'weekly', 'snapshot', 'refresh', 'updated'].map(key => [`[data-github-${key}]`, { textContent: `saved ${key}` }]))
   const events = {}
   const img = { hidden: false, complete: !pendingImage, naturalWidth: 0, addEventListener: (name, callback) => { events[name] = callback } }
   const fallback = { hidden: true }
@@ -54,7 +62,7 @@ function client(fetch, pendingImage = false) {
   const compiled = ts.transpile(readFileSync(new URL('../src/scripts/github-profile.ts', import.meta.url), 'utf8'), { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 })
   const exports = {}, timers = new Map()
   let timerId = 0
-  vm.runInNewContext(compiled, { exports, require: () => ({ parseGitHubActivity }), AbortController, fetch,
+  vm.runInNewContext(compiled, { exports, require: () => ({ parseGitHubActivity, formatActivityUpdatedAt }), AbortController, fetch,
     setTimeout: fn => { timers.set(++timerId, fn); return timerId }, clearTimeout: id => timers.delete(id) })
   const done = exports.setupGitHubProfile(root)
   return { nodes, img, fallback, done, timers, events }
@@ -63,6 +71,7 @@ function client(fetch, pendingImage = false) {
 test('client updates public activity text and dates, and recovers already broken images', async () => {
   const h = client(async (_url, options) => {
     assert.equal(options.credentials, 'omit')
+    assert.equal(options.cache, 'no-store')
     return { ok: true, text: async () => readme }
   })
   assert.equal(h.nodes['[data-github-refresh]'].textContent, 'Checking GitHub for updates…')
@@ -74,6 +83,16 @@ test('client updates public activity text and dates, and recovers already broken
   assert.equal(h.img.hidden, true)
   assert.equal(h.fallback.hidden, false)
   assert.equal(h.timers.size, 0)
+})
+
+test('shows the source time next to Obsidian and keeps it on a failed refresh', async () => {
+  const updated = readme.replace('<!--END_SECTION:obsidian-->', '<!-- activity-updated-at: 2026-11-03T13:45:00Z -->\n<!--END_SECTION:obsidian-->')
+  const h = client(async () => ({ ok: true, text: async () => updated }))
+  await h.done
+  assert.equal(h.nodes['[data-github-updated]'].textContent, 'Updated 2026-11-03 21:45 (Asia/Shanghai) · refreshes hourly')
+  const offline = client(async () => { throw Error('offline') })
+  await offline.done
+  assert.equal(offline.nodes['[data-github-updated]'].textContent, 'saved updated')
 })
 
 test('network, HTTP and malformed README failures preserve all saved activity text', async () => {
