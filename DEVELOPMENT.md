@@ -42,7 +42,7 @@ The current publisher derives snapshot commit messages from note changes and pre
 
 ### Titles and ordering
 
-In Pure, a regular note's filename without `.md` is its main title. The `title` property or first level-one heading becomes a subtitle, omitted when it matches the main title. Article pages, the homepage, course indexes, tag listings, breadcrumbs, and previous/next navigation use both names; search indexes both. Directory landing pages named `index.md` retain their section titles. The Chirpy fallback keeps the original title behavior.
+In Pure, a regular note's filename without `.md` is its article title. The `title` property or first level-one heading becomes a subtitle, omitted when it matches the main title. Notes lists prefer a meaningful subtitle as the visible title and include the filename in the directory line; the placeholder subtitle `index` is ignored. Directory information appears on hover or keyboard focus on desktop and stays visible on touchscreens. Article pages, course indexes, tag listings, breadcrumbs, and previous/next navigation retain both names; search indexes both. Directory landing pages named `index.md` retain their section titles. The Chirpy fallback keeps the original title behavior.
 
 Use a numeric `nav_order` to order sibling notes. Directories retain their hierarchy and use natural numeric sorting. Set directory display names in the `labels` table of `publish.toml`.
 
@@ -66,17 +66,17 @@ Set `publish` to `false` and publish again to remove a page, its unused images, 
 
 ## Site structure and presentation
 
-Pure provides the header, reading layout, right-hand table of contents, theme switcher, and Pagefind search. The homepage takes inspiration from [Arthals' ink](https://arthals.ink/), with a centered avatar, soft gradients, columns, a personal introduction, the ten latest notes, and education cards. Narrow screens use one column. The avatar enlarges on hover; education cards include school marks and official links and rise on hover or keyboard focus. Reduced-motion preferences disable movement animations.
+Pure provides the header, reading layout, right-hand table of contents, theme switcher, and Pagefind search. The personal pages take inspiration from [pseudoyu](https://www.pseudoyu.com/): a narrow, left-aligned introduction, text links, a small header avatar, and a subtle static dot background. Home, Projects, and About use English and a 680px reading width; notes keep their language and existing reader layout. The header is in normal document flow, with an accessible expandable menu on narrow screens.
 
 The RSS feed at `/feed.xml` includes the full rendered body of every public note in `content:encoded`, alongside its summary. Body links and images use absolute URLs, callouts become always-visible blockquotes with bold titles, and script-dependent buttons are removed for feed readers. MathJax 3.2.2 renders inline and display formulas at build time into PNGs under `/assets/rss-math/`, with TeX source as alt text. These images are hosted with the site and have a white background for readability in light and dark readers; invalid TeX stays visible as literal text. Article URLs, GUIDs, and publication dates stay stable.
 
-The header links to Course, Reading, Tech, and About. Course, Reading, and Tech landing pages show a sidebar tag cloud for their public notes, ordered by frequency. On narrow screens, a sidebar button reveals it. Empty sections show an empty state; View all opens the global tag page. That page uses a wrapping tag cloud with public-note counts, sorted by frequency, with larger text for common tags. Image zoom, code copying, MathJax, and RSS remain available. PWA offline caching is not configured.
+The header links to Notes, Projects, and About. Notes provides All / Courses / Reading / Articles links. The three section landing pages show a sidebar tag cloud for their public notes, ordered by frequency. On narrow screens, a sidebar button reveals it. Empty sections show an empty state; View all opens the global tag page. That page uses a wrapping tag cloud with public-note counts, sorted by frequency, with larger text for common tags. Image zoom, code copying, MathJax, and RSS remain available. PWA offline caching is not configured.
 
 ### Files to edit
 
 | Path | Purpose |
 | --- | --- |
-| `src/site.config.ts` | Pure site name, description, navigation, social links, comments, and feature settings |
+| `src/site.config.ts` | Pure display name, description, navigation, social links, comments, and feature settings |
 | `src/layouts/`, `src/components/`, `src/styles/` | Pure layouts, note lists, and presentation |
 | `astro.config.ts` | Static build and GitHub Pages base path |
 | `publish.toml` | Source mappings, directory labels, and default theme (`pure` or `chirpy`) |
@@ -86,13 +86,13 @@ The header links to Course, Reading, Tech, and About. Course, Reading, and Tech 
 
 ### Sections and navigation
 
-Course uses `/courses/`. Tech uses `/knowledge/`, with `/knowledge/tech/` and `/knowledge/tools/`. Reading uses `/reading/`, with `/reading/reading/` and `/reading/paper/`.
+The public content types are **Courses** (`/courses/`), **Reading** (`/reading/`), and **Articles** (`/knowledge/`). `src/data/sections.json` owns their displayed labels, old search aliases, and storage-only folder names. Sources and destination paths in `publish.toml` remain unchanged.
 
-Course preserves the source folder hierarchy. Tech landing pages list public notes with article icons beneath their top-level groups, without showing deeper folder nesting. Reading keeps the full collapsible directory tree and article icons. Note URLs and breadcrumbs retain the complete hierarchy in every section.
+Courses contains notes organized around a course, including labs and supporting topics, and preserves the directory tree. Reading contains source-centered notes on papers, books, and articles. Articles contains standalone explanations, practical guides, and reflections. Reading and Articles show flat date-ordered lists, including all their public descendants. Topics remain searchable through existing tags; no extra frontmatter is required.
 
-Breadcrumbs show the full path, such as Home › Course › FDS-ZJU › notes › Algorithm Analysis. Each parent directory links back to its index. Narrow windows keep the full path with horizontal scrolling. Directory names come from `labels`, then the public directory index title, then the folder name. Top-level sections use their sidebar names.
+`/notes/` is the complete feed, ten notes per page. `/page2/` and later URLs remain valid, and page one links to `/notes/`. Each page groups its own entries by year in Asia/Shanghai. Lists retain filename titles, original subtitles, dates, and display directories; they do not show long summaries.
 
-Course and Reading trees use native browser disclosure controls. Legacy tag, category, and pagination URLs remain available.
+The display paths of Reading and Articles omit only their known storage folders (`reading/paper`, `reading/reading`, `knowledge/tech`, `knowledge/tools`), retaining deeper meaningful directories. Courses keeps its full hierarchy. Raw paths, old intermediate indexes, category/tag URLs, and comment mappings remain stable. Article Back links return to Notes; breadcrumb Home links return to the personal homepage.
 
 ### Publication dates and directory indexes
 
@@ -102,22 +102,19 @@ A public `index.md` takes precedence as its directory's landing page. Course dir
 
 Older / Newer navigation stays within the same folder and sorts public articles naturally by original filename, placing Lecture2 before Lecture10. It ignores publication dates, display titles, and `nav_order`, and does not enter subfolders. Older points to the preceding note; Newer points to the following note. Buttons are disabled at either end.
 
-### Homepage and quotes
+### Personal pages and quotes
 
-The homepage uses a compact list of dates and titles. More notes opens subsequent pages, and existing pagination URLs remain valid. Later pages use detailed lists with summaries from the first four distinct headings at the outermost heading level, separated by ` · `. Headings inside code and callouts, repeated article titles, and formulas are excluded. Notes without section headings have no summary.
+Edit identity, education, and projects in `src/data/profile.ts`. Home is a short English introduction with inline school, projects-page, note-section, and contact links. Projects presents LingxiGlove and ZJU Sports Hub with summaries, repository links, and stable anchors. About contains the GitHub profile modules, education, music, Steam, Bangumi, and random quotes. Pure removes the legacy introduction and contribution fragment during adaptation to avoid duplicates; Chirpy retains those modules.
 
-Detailed lists show the full public directory path, such as `Course / FDS-ZJU / notes`, using labels from `publish.toml` and allowing long paths to wrap. Edit the homepage introduction and education cards in `src/components/Home.astro`; homepage styles live in `src/styles/home.css`.
+Personal page styles live in `src/styles/home.css`, scoped to avoid changing note readers. All Pure interface text is English, while note content, titles, tags, and directory names retain their original language. Note bodies keep a separate `zh-CN` language marker. The shared neutral palette lives in `src/styles/app.css`; only personal pages add a faint dot pattern. Footer authorship and RSS identity stay `sychostar`.
 
-To add random homepage quotes, edit `src/data/quotes.json`:
+About-specific section hierarchy lives in `src/styles/about.css`. The public Bangumi watchlist uses the account and saved cards in `src/data/bangumi.json`. The browser refreshes public anime entries marked Watching, shows up to four, and keeps the dated snapshot if the request fails. Cover failures retain a placeholder and title. No credentials are required. GitHub and Bangumi display source content in its original language.
 
-```json
-[
-  "Your first quote.",
-  "Your second quote. — Author"
-]
-```
+Shared Python directory and Steam renderers accept `lang="en"` for Pure and default to `zh-CN` for Chirpy. The Steam card carries `data-ui-lang` so live updates use the same interface language as the publication snapshot. Changing interface language must not translate user content or alter publication identities.
 
-After rebuilding and deploying, each homepage load or refresh selects a local quote beneath the education cards. No external API is used. Without JavaScript, the first quote appears. An empty array (`[]`) hides the area, and blank entries are ignored. Use double-quoted strings, separate them with commas, omit a trailing comma, and escape embedded double quotes as `\"`.
+The Pagefind build hook in `astro.config.ts` indexes all pages with `forceLanguage: "zh"`, independently of the English HTML interface language. This preserves segmentation inside Chinese sentences; the search UI still filters to public notes with `kind:note`. Pagefind 1.5.2 is pinned directly, matching the existing installed version.
+
+Edit `src/data/quotes.json` to change About quotes. Each load selects a local quote; without JavaScript the first quote appears. An empty array hides the area, and blank entries are ignored. No external quote service is used.
 
 ### Steam card
 
@@ -152,11 +149,11 @@ Pure displays page views beneath About and note titles using [Busuanzi](https://
 
 The header search button works on desktop and mobile. Press `⌘K` on macOS or `Ctrl+K` elsewhere to open search; pressing it again on the search page selects the current query.
 
-Search covers titles, headings, and body text, with Course / Reading / Tech filters and space-separated keywords. Results include only public notes, excluding directory pages, tag indexes, and About.
+Search covers titles, headings, and body text, with Courses / Reading / Articles filters and space-separated keywords. Results include only public notes, excluding directory pages, tag indexes, and About.
 
 Each result shows the full directory path, a prominent filename title, a smaller original-note subtitle, a highlighted excerpt, and matching section links. Title matches receive extra weight, and results are sorted by relevance. Ten notes load at a time, with a button to load more. Search waits for input-method composition to finish and only displays results for the latest query. Empty queries show recently published notes; failed network loads can be retried.
 
-The URL stores the query and section in `q` and `section`, allowing sharing and restoring state after refresh or returning from an article. Use `↑` / `↓` to move between result links, `Enter` to open one, and `Esc` to clear the query. The component, behavior, and styles live in `src/components/NoteSearch.astro`, `src/scripts/search.ts`, and `src/styles/search.css`.
+Old `section=Course` and `section=Tech` links normalize to `Courses` and `Articles`, matching the rebuilt Pagefind index. The URL stores the query and section in `q` and `section`, allowing sharing and restoring state after refresh or returning from an article. Use `↑` / `↓` to move between result links, `Enter` to open one, and `Esc` to clear the query. The component, behavior, and styles live in `src/components/NoteSearch.astro`, `src/scripts/search.ts`, and `src/styles/search.css`.
 
 ## Switching to Chirpy
 
@@ -176,6 +173,8 @@ To switch permanently, change `theme = "pure"` to `theme = "chirpy"` in `publish
 The local tag `chirpy-before-astro-2026-09-29` (`9507ba0`) retains the full pre-migration source for reference. Do not reset the entire repository to that tag to change themes.
 
 ## Development checks
+
+About mirrors the public [GitHub profile README](https://github.com/LiHaoze-Bob/LiHaoze-Bob): greeting, social links, recent notes, Obsidian time, GitHub statistics, weekly coding activity, and contribution animation. `src/components/GitHubProfile.astro` owns these modules; recent notes use the local publication list. `src/data/github-profile.json` records a dated public activity snapshot. The browser refreshes only the marked Obsidian and WakaTime text blocks from the public README, with an eight-second timeout and the saved snapshot as fallback. Remote images have text/link fallbacks and light/dark variants where available. Builds do not fetch GitHub, and no private API token or GitHub workflow change is required. Update the saved snapshot manually when refreshing the baseline; preserve its source timestamp and report dates. The shared Chirpy About source retains its original modules.
 
 ```sh
 uv run --frozen pytest -q
@@ -217,6 +216,6 @@ Review source and export changes before committing. Automatic publishing refuses
 
 ## Credits and third-party notices
 
-The site uses [Astro Theme Pure](https://github.com/cworld1/astro-theme-pure), with a retained Chirpy fallback. Homepage layout inspiration comes from [Arthals' ink](https://arthals.ink/). Callout and code styling adapts Obsidian Blue Topaz.
+The site uses [Astro Theme Pure](https://github.com/cworld1/astro-theme-pure), with a retained Chirpy fallback. Personal page layout takes inspiration from [pseudoyu](https://www.pseudoyu.com/); the earlier homepage drew on [Arthals' ink](https://arthals.ink/). Callout and code styling adapts Obsidian Blue Topaz. JetBrains Mono is bundled under the SIL Open Font License, included alongside the font files.
 
 See [PURE-NOTICE.md](PURE-NOTICE.md) for Pure provenance and local changes, and [site-template/THIRD_PARTY.md](site-template/THIRD_PARTY.md) for bundled assets, versions, and license notices.
