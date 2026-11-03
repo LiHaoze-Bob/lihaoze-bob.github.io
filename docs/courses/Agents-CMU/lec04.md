@@ -27,20 +27,24 @@ Agents have a lot of shared task structure, so how can we updating agents.
 ![](../../assets/notes/9241e3388440ac1b1513.png)
 Except for skill as instruction, we have another type of skills that is induced from agents' self experience.
 ## Authored skills {#authored-skills}
- throw an example
- ```txt
- my-skill/
+
+throw an example
+
+```txt
+my-skill/
 ├── SKILL.md          # Required: metadata + instructions
 ├── scripts/          # Optional: executable code
 ├── references/       # Optional: documentation
 ├── assets/           # Optional: templates, resources
 └── ...               # Any additional files or directories
- ```
+```
+
 not all files will be read in one task, we use `progressive disclosure` as a strategy. in the process, agents load skills with tools: register the index of skills in the system prompt; model evaluates whether to load a certain skill; skill content as tool result
 
 ![](../../assets/notes/57eb521f5d82a037427f.png)
 
 so questions raised:
+
 - why markdown
 - the trigger threshold of progressive disclosure
 
