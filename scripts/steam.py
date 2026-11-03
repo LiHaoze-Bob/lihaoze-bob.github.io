@@ -76,7 +76,7 @@ def parse_profile(source: str) -> dict:
             'recentGames': games, 'updatedAt': datetime.now(timezone.utc).isoformat(timespec='seconds')}
 
 
-def render_card(template: Path) -> str:
+def render_card(template: Path, *, lang: str = 'zh-CN') -> str:
     path = template / '_data/steam.json'
     if not path.exists():
         return ''
@@ -90,33 +90,40 @@ def render_card(template: Path) -> str:
     def e(value):
         return escape(str(value), quote=True)
     date = datetime.fromisoformat(data['updatedAt']).astimezone(ZoneInfo('Asia/Shanghai')).strftime('%m-%d %H:%M')
+    english = lang == 'en'
+    def ui(en, zh):
+        return en if english else zh
     labels = {'offline': '离线', 'online': '在线', 'in-game': '游戏中', 'away': '离开',
               'busy': '忙碌', 'snooze': '睡眠', 'trade': '想要交易', 'play': '想要玩游戏', 'unknown': '状态未公开'}
+    if english:
+        labels = {'offline': 'Offline', 'online': 'Online', 'in-game': 'In game', 'away': 'Away',
+                  'busy': 'Busy', 'snooze': 'Snooze', 'trade': 'Looking to trade', 'play': 'Looking to play', 'unknown': 'Status is private'}
     status = data.get('status', 'unknown')
     if status not in labels:
         status = 'unknown'
     status_label = labels[status]
     if status == 'in-game' and data.get('currentGame'):
-        status_label = '正在玩 ' + data['currentGame']
-    status_html = f'<span class="steam-status" data-status="{status}" title="采集时的状态，非实时在线状态">{e(status_label)}</span>'
+        status_label = ui('Playing ', '正在玩 ') + data['currentGame']
+    status_html = f'<span class="steam-status" data-status="{status}" title="{ui('Status at collection time, not a live status', '采集时的状态，非实时在线状态')}">{e(status_label)}</span>'
     avatar = steam_image(data.get('avatar', ''))
     identity = (f'<img class="steam-avatar" src="{e(avatar)}" width="48" height="48" alt="" loading="lazy" />' if avatar else '')
     level = (f'<span class="steam-level">LV. {data["level"]}</span>' if data.get('level') is not None
              else '<span class="steam-level" hidden></span>')
     stats = ''.join(f'<div><dt>{label}</dt><dd>{data[key]}</dd></div>'
-                    for key, label in [('badges', '徽章'), ('games', '游戏')] if data.get(key) is not None)
-    recent = (f'近两周 <strong>{data["recentHours"]:g}</strong> 小时'
-              if data.get('recentHours') is not None else '游玩信息未公开')
+                    for key, label in [('badges', ui('Badges', '徽章')), ('games', ui('Games', '游戏'))] if data.get(key) is not None)
+    recent = (f'{ui("Past two weeks: ", "近两周 ")}<strong>{data["recentHours"]:g}</strong>{ui(" hours", " 小时")}'
+              if data.get('recentHours') is not None else ui('Playtime is private', '游玩信息未公开'))
     games = []
     for game in data.get('recentGames', []):
         image = steam_image(game.get('image', ''))
-        hours = f'<span>{game["hours"]:g} h 总计</span>' if game.get('hours') is not None else ''
+        hours = f'<span>{game["hours"]:g} h {ui("total", "总计")}</span>' if game.get('hours') is not None else ''
         cover = f'<img src="{e(image)}" width="184" height="69" alt="" loading="lazy" />' if image else ''
         games.append(f'<a class="steam-game" href="https://store.steampowered.com/app/{int(game["appid"])}/">'
                      f'{cover}<strong>{e(game["name"])}</strong>{hours}</a>')
-    covers = '<div class="steam-recent" aria-label="最近玩的游戏"' + ('' if games else ' hidden') + '>' + ''.join(games) + '</div>'
-    return f'''<section class="about-steam" aria-labelledby="about-steam-title" data-steam-endpoint="{e(endpoint)}">
+    covers = '<div class="steam-recent" aria-label="' + ui('Recently played games', '最近玩的游戏') + '"' + ('' if games else ' hidden') + '>' + ''.join(games) + '</div>'
+    return f'''<section class="about-steam" aria-labelledby="about-steam-title" data-steam-endpoint="{e(endpoint)}" data-ui-lang="{e(lang)}">
       <h2 id="about-steam-title">ON STEAM</h2>
+      <p class="about-personal-note">I play GAMES.</p>
       <div class="steam-card">
         <div class="steam-header">
           <a class="steam-identity" href="{PROFILE}">{identity}<div><strong>{e(data['name'])}</strong>{level}{status_html}</div></a>
@@ -124,7 +131,7 @@ def render_card(template: Path) -> str:
         </div>
         <p class="steam-playtime">{recent}</p>
         {covers}
-        <div class="steam-footer"><div class="steam-updates"><span class="steam-status-updated">状态采集于 <time datetime="{e(data['updatedAt'])}" title="北京时间">{date} CST</time></span><span class="steam-stats-updated">资料采集于 <time datetime="{e(data['updatedAt'])}" title="北京时间">{date} CST</time></span><span class="steam-refresh" role="status">发布时的快照</span></div><a href="{PROFILE}">Steam 主页 <span aria-hidden="true">↗</span></a></div>
+        <div class="steam-footer"><div class="steam-updates"><span class="steam-status-updated">{ui('Status collected at', '状态采集于')} <time datetime="{e(data['updatedAt'])}" title="{ui('Asia/Shanghai', '北京时间')}">{date} CST</time></span><span class="steam-stats-updated">{ui('Profile collected at', '资料采集于')} <time datetime="{e(data['updatedAt'])}" title="{ui('Asia/Shanghai', '北京时间')}">{date} CST</time></span><span class="steam-refresh" role="status">{ui('Snapshot at publication', '发布时的快照')}</span></div><a href="{PROFILE}">{ui('Steam profile', 'Steam 主页')} <span aria-hidden="true">↗</span></a></div>
       </div>
     </section>'''
 

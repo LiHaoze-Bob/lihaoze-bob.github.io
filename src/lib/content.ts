@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { highlightCodeBlocks } from './code.mjs'
+import { displayBreadcrumbs, displayDirectory, sectionFor } from './navigation.mjs'
 
 export interface NotePage {
   route: string
@@ -11,6 +12,9 @@ export interface NotePage {
   headings: { depth: number; slug: string; text: string }[]
   breadcrumbs: { title: string; subtitle?: string; url: string }[]
   directory?: string[]
+  displayDirectory?: string[]
+  displayBreadcrumbs?: { title: string; subtitle?: string; url: string }[]
+  section?: string
   cardHeadings?: string[]
   publishedAt?: string
   updatedAt?: string
@@ -23,7 +27,10 @@ export interface NotePage {
 
 const data = JSON.parse(readFileSync(process.env.ASTRO_CONTENT_FILE || '.runtime/astro-content.json', 'utf8'))
 export const pages: NotePage[] = data.pages.map((page: NotePage) => ({
-  ...page, html: highlightCodeBlocks(page.html)
+  ...page, html: highlightCodeBlocks(page.html),
+  displayDirectory: displayDirectory(page.route, page.directory),
+  displayBreadcrumbs: displayBreadcrumbs(page.breadcrumbs),
+  section: sectionFor(page.route)?.label
 }))
 export const notes = pages.filter(page => page.isNote).sort((a, b) =>
   Date.parse(b.publishedAt || '') - Date.parse(a.publishedAt || '') || a.route.localeCompare(b.route))

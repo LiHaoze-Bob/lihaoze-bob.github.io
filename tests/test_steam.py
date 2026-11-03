@@ -51,3 +51,16 @@ def test_render_escapes_text_and_omits_unknown_stats(tmp_path):
     assert not soup.select('script, img, .steam-stats dd')
     assert '游玩信息未公开' in soup.get_text()
     assert soup.select_one('time')['datetime'] == data['updatedAt']
+
+
+def test_english_card_preserves_chinese_content_and_legacy_default(tmp_path):
+    data = parse_profile('<span class="actual_persona_name">玩家</span>')
+    data.update(status='in-game', currentGame='中文游戏')
+    (tmp_path / '_data').mkdir()
+    (tmp_path / '_data/steam.json').write_text(json.dumps(data))
+    english = BeautifulSoup(render_card(tmp_path, lang='en'), 'html.parser')
+    assert english.select_one('.about-steam')['data-ui-lang'] == 'en'
+    assert english.select_one('.steam-status').get_text() == 'Playing 中文游戏'
+    assert 'Playtime is private' in english.get_text()
+    assert 'Snapshot at publication' in english.get_text()
+    assert '正在玩 中文游戏' in BeautifulSoup(render_card(tmp_path), 'html.parser').get_text()

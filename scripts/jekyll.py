@@ -123,7 +123,7 @@ def render(body: str, source: str, baseurl: str, title: str | None = None,
             block = (f'<div class="note-code" data-language="{html.escape(language, quote=True)}">'
                      '<div class="code-header">'
                      f'<span class="code-language">{html.escape(language)}</span>'
-                     '<button type="button" aria-label="复制代码">Copy</button></div>'
+                     '<button type="button" aria-label="Copy code">Copy</button></div>'
                      f'<pre class="highlight"><code>{literal}</code></pre></div>')
         code.parent.replace_with(BeautifulSoup(block, 'html.parser'))
     for code in soup.select('code'):
@@ -207,7 +207,7 @@ def note_title_html(title: str, subtitle: str | None = None) -> str:
 
 
 def folder_tree(notes: dict, section: str, baseurl: str, labels: dict,
-                available_pages: set[str] | None = None) -> str:
+                available_pages: set[str] | None = None, *, lang: str = 'zh-CN') -> str:
     """Render a section's public folder hierarchy in manifest order."""
     section_prefix = section + '/'
     section_notes = {path: note for path, note in notes.items()
@@ -235,7 +235,9 @@ def folder_tree(notes: dict, section: str, baseurl: str, labels: dict,
             title = labels.get(path, section_notes.get(index, {}).get('title', directory))
             descendants = [name[len(path) + 1:] for name in below if name.startswith(path + '/')]
             subfolders = len({name.split('/')[0] for name in descendants if '/' in name})
-            count = (f'{subfolders} 个子目录，' if subfolders else '') + f'{len(descendants)} 篇笔记'
+            count = ((f'{subfolders} folder{"s" if subfolders != 1 else ""} · ' if subfolders else '')
+                     + f'{len(descendants)} note{"s" if len(descendants) != 1 else ""}' if lang == 'en' else
+                     (f'{subfolders} 个子目录，' if subfolders else '') + f'{len(descendants)} 篇笔记')
             items = children(path)
             row = (
                 '<span class="course-label">'
@@ -268,19 +270,19 @@ def folder_tree(notes: dict, section: str, baseurl: str, labels: dict,
             leaves = []
         return ''.join(folders + leaves)
 
-    content = children(section, top=True) or '<p class="text-muted">暂无公开笔记。</p>'
+    content = children(section, top=True) or ('<p class="text-muted">No notes yet.</p>' if lang == 'en' else '<p class="text-muted">暂无公开笔记。</p>')
     stylesheet = html.escape(baseurl + '/assets/css/course-tree.css', quote=True)
     return f'<link rel="stylesheet" href="{stylesheet}"><div class="course-tree">{content}</div>'
 
 
 def course_tree(notes: dict, baseurl: str, labels: dict,
-                available_pages: set[str] | None = None) -> str:
+                available_pages: set[str] | None = None, *, lang: str = 'zh-CN') -> str:
     """Render the Course tab using the shared hierarchical folder view."""
-    return folder_tree(notes, 'courses', baseurl, labels, available_pages)
+    return folder_tree(notes, 'courses', baseurl, labels, available_pages, lang=lang)
 
 
 def section_list(notes: dict, section: str, baseurl: str, labels: dict,
-                 available_pages: set[str] | None = None) -> str:
+                 available_pages: set[str] | None = None, *, lang: str = 'zh-CN') -> str:
     """Render one group level, then flatten every public article below it."""
     prefix = section + '/'
     section_notes = {path: note for path, note in notes.items()
@@ -317,12 +319,12 @@ def section_list(notes: dict, section: str, baseurl: str, labels: dict,
             for path, note in grouped if path != index
         ]
         if not rows:
-            rows = ['<li class="list-group-item text-muted section-empty">暂无公开笔记。</li>']
+            rows = ['<li class="list-group-item text-muted section-empty">' + ('No notes yet.' if lang == 'en' else '暂无公开笔记。') + '</li>']
         row = (
             '<span class="course-label">'
             '<i class="far fa-folder-open fa-fw course-folder-open" aria-hidden="true"></i>'
             '<i class="far fa-folder fa-fw course-folder-closed" aria-hidden="true"></i>'
-            f'{link(index, title)}<span class="text-muted small">{count} 篇笔记</span></span>'
+            f'{link(index, title)}<span class="text-muted small">{count} ' + (('note' if count == 1 else 'notes') if lang == 'en' else '篇笔记') + '</span></span>'
         )
         branch = (
             f'<details open><summary class="card-header">{row}'
@@ -343,7 +345,7 @@ def section_list(notes: dict, section: str, baseurl: str, labels: dict,
         )
         cards.append(f'<div class="card categories"><ul class="list-group">{rows}</ul></div>')
 
-    content = ''.join(cards) or '<p class="text-muted">暂无公开笔记。</p>'
+    content = ''.join(cards) or ('<p class="text-muted">No notes yet.</p>' if lang == 'en' else '<p class="text-muted">暂无公开笔记。</p>')
     stylesheet = html.escape(baseurl + '/assets/css/course-tree.css', quote=True)
     return (f'<link rel="stylesheet" href="{stylesheet}">'
             f'<div class="course-tree section-list">{content}</div>')
