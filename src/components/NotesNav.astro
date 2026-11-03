@@ -1,0 +1,16 @@
+---
+import { sections } from '../lib/navigation.mjs'
+import { href } from '../site.config'
+interface Props { current?: string }
+const { current = '' } = Astro.props
+const links = [{ route: '', label: 'All' }, ...sections]
+---
+<nav class='notes-nav' aria-label='Note categories' data-pagefind-ignore>
+  <div>{links.map(section => <a href={href(section.route ? `/${section.route}/` : '/notes/')} aria-current={current === section.route ? 'page' : undefined}>{section.label}</a>)}</div>
+</nav>
+<style>
+  .notes-nav, .notes-nav > div { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.25rem; }
+  .notes-nav { justify-content: space-between; margin: 1.5rem 0 2.25rem; font-size: .9rem; }
+  .notes-nav a { color: var(--text-muted-color); padding: .2rem 0; text-decoration: none; border-bottom: 1px solid transparent; }
+  .notes-nav a[aria-current], .notes-nav a:hover { color: var(--text-color); border-color: currentColor; }
+</style>

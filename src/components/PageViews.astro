@@ -1,8 +1,9 @@
 ---
+interface Props { lang?: 'en' | 'zh-CN' }
 const productionOrigin = Astro.site?.origin
 ---
 
-<span class='page-views' data-production-origin={productionOrigin} data-pagefind-ignore title='本页累计访问次数（PV）；未加载时显示 —'>
+<span class='page-views' data-production-origin={productionOrigin} data-pagefind-ignore title='Total page views; — when unavailable'>
   <span id='busuanzi_value_page_pv' aria-live='polite'>—</span> views
 </span>
 

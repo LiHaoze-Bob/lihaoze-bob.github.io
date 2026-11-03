@@ -17,6 +17,9 @@ from scripts.steam import MARKER as STEAM_MARKER, render_card as steam_card
 from scripts.jekyll import (breadcrumbs, card_directory, card_headings, custom_callout_styles,
                             folder_navigation, folder_tree, note_title_html, post_date, render, section_list)
 
+SECTIONS = json.loads((Path(__file__).resolve().parents[1] / 'src/data/sections.json').read_text())
+DISPLAY_LABELS = {section['legacyLabel']: section['label'] for section in SECTIONS}
+
 
 def slug(value: str) -> str:
     return re.sub(r'[^\w-]+', '-', value.lower()).strip('-')
@@ -29,7 +32,7 @@ def stage(docs: Path, work: Path, template: Path, settings: dict, labels: dict) 
     manifest = json.loads((docs / 'publication.json').read_text())
     notes = {note['path']: note for note in manifest['notes']}
     baseurl = settings.get('baseurl', '')
-    sections = {'courses/index.md': 'Course', 'reading/index.md': 'Reading', 'knowledge/index.md': 'Tech'}
+    sections = {section['route'] + '/index.md': section['label'] for section in SECTIONS}
     tabs = {path: (None, {'title': title}) for path, title in sections.items()}
     # Derive display titles from the public paths, including older snapshots.
     # Keep the original title for body rendering and directory index pages.
@@ -56,14 +59,14 @@ def stage(docs: Path, work: Path, template: Path, settings: dict, labels: dict) 
         if source in sections:
             introduction = content if source in notes else ''
             tree = section_list if source.startswith('knowledge/') else folder_tree
-            content = introduction + tree(notes, folder, baseurl, labels, available)
+            content = introduction + tree(notes, folder, baseurl, labels, available, lang='en')
         elif source.endswith('/index.md') and source not in notes:
             tree = section_list if source.startswith('knowledge/') else folder_tree
             anchor = BeautifulSoup(content, 'html.parser').find('span', id=True, recursive=False)
-            content = (str(anchor) if anchor else '') + tree(notes, folder, baseurl, labels, available)
+            content = (str(anchor) if anchor else '') + tree(notes, folder, baseurl, labels, available, lang='en')
         elif source in notes and source.startswith('courses/') and source.endswith('/index.md'):
-            content += ('<section class="course-folder-index"><h2 id="course-notes">课程笔记</h2>'
-                        + folder_tree(notes, folder, baseurl, labels, available) + '</section>')
+            content += ('<section class="course-folder-index"><h2 id="course-notes">Course notes</h2>'
+                        + folder_tree(notes, folder, baseurl, labels, available, lang='en') + '</section>')
         soup = BeautifulSoup(content, 'html.parser')
         for stylesheet in soup.select('link[rel="stylesheet"]'):
             stylesheet.decompose()
@@ -102,22 +105,26 @@ def stage(docs: Path, work: Path, template: Path, settings: dict, labels: dict) 
             body = '<ul class="archive-list">' + ''.join(
                 '<li><a href="' + html.escape(page['url'], quote=True) + '">' + note_title_html(page['title'], page.get('subtitle')) + '</a></li>'
                 for page in sorted(grouped, key=lambda page: page['publishedAt'], reverse=True)) + '</ul>'
-            pages.append({'route': route, 'url': baseurl + '/' + route + '/', 'title': title,
+            display_title = DISPLAY_LABELS.get(title, title) if kind == 'categories' else title
+            pages.append({'route': route, 'url': baseurl + '/' + route + '/', 'title': display_title,
                           'html': body, 'headings': [], 'breadcrumbs': [{'title': kind.title(), 'url': '/' + kind + '/'}], 'isNote': False})
         body = '<ul class="archive-list">' + ''.join(
-            '<li><a href="' + baseurl + '/' + kind + '/' + slug(title) + '/">' + html.escape(title)
+            '<li><a href="' + baseurl + '/' + kind + '/' + slug(title) + '/">' + html.escape(DISPLAY_LABELS.get(title, title) if kind == 'categories' else title)
             + '</a> <span>' + str(len(grouped)) + '</span></li>' for title, grouped in sorted(groups.items())) + '</ul>'
         pages.append({'route': kind, 'url': baseurl + '/' + kind + '/', 'title': kind.title(),
                       'html': body, 'headings': [], 'breadcrumbs': [], 'isNote': False})
 
     _, about = frontmatter((template / '_tabs/about.md').read_text())
-    about = about.replace(STEAM_MARKER, steam_card(template))
+    about = about.replace(STEAM_MARKER, steam_card(template, lang='en'))
     about_html = BeautifulSoup(render(about, 'about/index.md', baseurl, 'About', theme='pure'), 'html.parser')
     # The shared About source also has wrappers required by the old Chirpy layout.
     for wrapper in about_html.select('article, div.content'):
         wrapper.unwrap()
     for heading in about_html.select('h1'):
         heading.decompose()
+    # Pure owns the profile and contribution modules; keep Chirpy's source intact.
+    for intro in about_html.select('.about-intro, .about-activity'):
+        intro.decompose()
     pages.append({'route': 'about', 'url': baseurl + '/about/', 'title': 'About',
                   'html': str(about_html), 'headings': [], 'breadcrumbs': [], 'isNote': False})
 

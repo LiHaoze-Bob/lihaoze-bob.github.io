@@ -1,0 +1,22 @@
+---
+import config from 'virtual:config'
+---
+
+<footer class='site-footer'>
+  <div class='footer-attribution'>
+    <a href='https://creativecommons.org/licenses/by-nc-sa/4.0/' rel='license'>CC BY-NC-SA 4.0</a>
+    <span aria-hidden='true'>·</span>
+    <span>2026–PRESENT © {config.author}</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; width: 100%; margin: 4rem auto 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--main-border-color); color: var(--text-muted-color); font-size: .85rem; }
+  .footer-attribution { display: flex; align-items: baseline; flex-wrap: wrap; gap: .4rem .6rem; }
+  .footer-attribution a { color: inherit; text-decoration: underline; text-decoration-color: hsl(var(--foreground) / .25); text-underline-offset: .2em; }
+  .footer-attribution a:hover { text-decoration-color: currentColor; }
+  @media (max-width: 639px) {
+    .site-footer { flex-direction: column; }
+    .footer-attribution { justify-content: center; }
+  }
+</style>

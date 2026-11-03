@@ -1,224 +1,90 @@
 ---
 import config from 'virtual:config'
-
 import { Icon } from 'astro-pure/user'
+import { profile } from '../data/profile'
 import { href } from '../site.config'
+interface Props { lang?: 'en' | 'zh-CN' }
+const path = Astro.url.pathname
 ---
-
-<header-component
-  class='group sticky top-4 z-50 max-md:z-30 mb-12 flex items-center justify-between rounded-xl border border-transparent max-sm:py-1 sm:rounded-2xl'
->
-  <a
-    class='z-30 text-xl font-medium group-[.not-top]:ms-2 sm:group-[.not-top]:ms-3'
-    style='transition:margin-inline 0.3s'
-    href={href('/')}
-    aria-label='Brand'>{config.title}</a
-  >
-
-  <div class='flex items-center gap-x-2'>
-    {/* Menu links */}
-    <div
-      id='headerExpandContent'
-      class='end-0 start-0 top-12 grid border border-transparent group-[.not-top]:rounded-xl group-[.expanded]:opacity-100 dark:group-[.expanded.not-top]:bg-muted max-sm:absolute max-sm:opacity-0 max-sm:group-[.not-top]:border-border max-sm:group-[.expanded.not-top]:bg-background max-sm:group-[.not-top]:px-4 max-sm:group-[.not-top]:py-2 sm:grid-rows-1'
-    >
-      <div class='flex flex-col items-center justify-center overflow-hidden sm:flex-row'>
-        {
-          config.header.menu.map((item) => (
-            <a
-              href={item.link}
-              class='w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3'
-              aria-label='Nav menu item'
-              data-astro-prefetch
-            >
-              {item.title}
-            </a>
-          ))
-        }
-      </div>
-    </div>
-
-    {/* buttons */}
-    <div class='z-30 flex gap-x-4 group-[.not-top]:gap-x-2' style='transition:gap 0.3s'>
-      <a
-        class='header-search rounded-md border p-1.5 transition-colors hover:bg-border sm:group-[.not-top]:rounded-xl'
-        href={href('/search/')} title='搜索笔记（⌘ / Ctrl + K）' aria-label='搜索笔记' aria-keyshortcuts='Meta+K Control+K'
-      >
-        <Icon name='search' class='size-5' />
-      </a>
-      <button
-        id='toggleDarkMode'
-        class='group/dark box-content size-5 rounded-md border p-1.5 transition-colors hover:bg-border sm:group-[.not-top]:rounded-xl'
-      >
-        <span class='sr-only'>Dark Theme</span>
-        <Icon class='system size-5 group-hover/dark:text-primary' name='computer' />
-        <Icon class='light hidden size-5 group-hover/dark:text-primary' name='sun' />
-        <Icon class='dark hidden size-5 group-hover/dark:text-primary' name='moon' />
-      </button>
-      <button
-        id='toggleMenu'
-        class='rounded-md border p-1.5 transition-colors hover:bg-border sm:hidden sm:group-[.not-top]:rounded-xl'
-      >
-        <span class='sr-only'>Menu</span>
-        <Icon class='size-5' name='menu' />
-      </button>
-    </div>
+<header-component class='site-header'>
+  <a class='site-brand' href={href('/')} aria-label={`${profile.nickname} — Home`}>
+    <img src={href(profile.avatar)} alt='' width='36' height='36' />
+    <span>{profile.nickname}</span>
+  </a>
+  <nav id='headerExpandContent' class='site-nav' aria-label='Main navigation'>
+    {config.header.menu.map(item => <a href={item.link} aria-current={path === item.link ? 'page' : undefined}>{item.title}</a>)}
+  </nav>
+  <div class='site-controls'>
+    <a href={profile.github} rel='me' title='GitHub' aria-label='GitHub'><Icon name='github' /></a>
+    <a href={href('/feed.xml')} title='Subscribe via RSS' aria-label='RSS feed'><Icon name='rss' /></a>
+    <a class='header-search' href={href('/search/')} title='Search notes (⌘ / Ctrl + K)' aria-label='Search notes' aria-keyshortcuts='Meta+K Control+K'><Icon name='search' /></a>
+    <button id='toggleDarkMode' type='button' aria-label='Change color theme'>
+      <Icon class='system' name='computer' /><Icon class='light' name='sun' /><Icon class='dark-icon' name='moon' />
+    </button>
+    <button id='toggleMenu' class='site-menu-toggle' type='button' aria-label='Toggle navigation' aria-expanded='false' aria-controls='headerExpandContent'><Icon name='menu' /></button>
   </div>
 </header-component>
-
-{/* Use inline to load icon quicker firstly */}
 <script is:inline>
-  const toggleDarkModeElement = document.getElementById('toggleDarkMode')
-  if (toggleDarkModeElement) {
-    toggleDarkModeElement.dataset.theme = localStorage.getItem('theme') || 'system'
+  const themeControl = document.getElementById('toggleDarkMode')
+  if (themeControl) {
+    try { themeControl.dataset.theme = localStorage.getItem('theme') || 'system' }
+    catch { themeControl.dataset.theme = 'system' }
   }
 </script>
 <script>
-  import { setTheme, showToast } from 'astro-pure/utils'
-
+  import { setTheme } from 'astro-pure/utils'
   class HeaderComponent extends HTMLElement {
+    private events?: AbortController
     connectedCallback() {
-      // Header
-      let preScrollY = window.scrollY
-      this.classList.toggle('not-top', preScrollY > 20)
-      window.addEventListener('scroll', () => {
-        this.classList.toggle('not-top', window.scrollY > 20)
-        this.dataset.show = (window.scrollY < 350 || window.scrollY < preScrollY).toString()
-        preScrollY = window.scrollY
-      })
-
-      // Dark Mode
-      const darkModeBtn = this.querySelector('#toggleDarkMode') as HTMLElement
-      darkModeBtn.addEventListener('click', () => {
-        // Old way: dispatch event
-        // const toggleDarkModeEvent = new CustomEvent('theme-change', {
-        //   detail: { theme: localStorage.getItem('theme') === 'light' ? 'dark' : 'light' }
-        // })
-        // document.dispatchEvent(toggleDarkModeEvent)
-        const newTheme = setTheme(undefined, true)
-        darkModeBtn.dataset.theme = newTheme
-        showToast({ message: `Set theme to ${newTheme}` })
-      })
-
-      // Menu
-      this.querySelector('#toggleMenu')?.addEventListener('click', () => {
-        this.classList.toggle('expanded')
-      })
-
-      document.addEventListener('keydown', (event) => {
+      this.events?.abort()
+      this.events = new AbortController()
+      const options = { signal: this.events.signal }
+      this.dataset.enhanced = 'true'
+      const menu = this.querySelector<HTMLButtonElement>('#toggleMenu')!
+      const dark = this.querySelector<HTMLButtonElement>('#toggleDarkMode')!
+      const closeMenu = () => { menu.setAttribute('aria-expanded', 'false'); this.removeAttribute('data-open') }
+      dark.addEventListener('click', () => { dark.dataset.theme = setTheme(undefined, true) }, options)
+      menu.addEventListener('click', () => {
+        const open = menu.getAttribute('aria-expanded') !== 'true'
+        menu.setAttribute('aria-expanded', String(open))
+        this.toggleAttribute('data-open', open)
+      }, options)
+      this.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && this.hasAttribute('data-open')) { closeMenu(); menu.focus() }
+      }, options)
+      window.matchMedia('(min-width: 640px)').addEventListener('change', () => closeMenu(), options)
+      document.addEventListener('keydown', event => {
         if (!(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey || event.key.toLowerCase() !== 'k' || event.isComposing) return
         const target = event.target
         if (target instanceof HTMLElement && target.closest('input, textarea, select, [contenteditable="true"]') && target.id !== 'search-input') return
         event.preventDefault()
-        const searchInput = document.querySelector<HTMLInputElement>('#search-input')
-        if (searchInput) {
-          searchInput.focus()
-          searchInput.select()
-        } else {
-          window.location.assign((this.querySelector('.header-search') as HTMLAnchorElement).href)
-        }
-      })
+        const input = document.querySelector<HTMLInputElement>('#search-input')
+        if (input) { input.focus(); input.select() }
+        else window.location.assign(this.querySelector<HTMLAnchorElement>('.header-search')!.href)
+      }, options)
     }
+    disconnectedCallback() { this.events?.abort() }
   }
-
-  customElements.define('header-component', HeaderComponent)
+  if (!customElements.get('header-component')) customElements.define('header-component', HeaderComponent)
 </script>
-
 <style>
-  header-component {
-    transition:
-      padding 0.3s,
-      transform 0.3s,
-      margin-inline 0.3s,
-      border 0.15s,
-      background-color 0.15s;
-
-    &.not-top {
-      --un-border-opacity: 1;
-      border-color: hsl(var(--border) / var(--un-border-opacity));
-      --un-bg-opacity: 1;
-      background-color: hsl(var(--background) / var(--un-bg-opacity));
-      padding-left: 0.375rem;
-      padding-right: 0.375rem;
-      box-shadow:
-        rgb(255, 255, 255) 0px 0px 0px 0px,
-        rgba(24, 24, 27, 0.08) 0px 0px 0px 1px,
-        rgba(39, 39, 42, 0.08) 0px 10px 15px -3px,
-        rgba(39, 39, 42, 0.08) 0px 4px 6px -4px;
-    }
-    &[data-show='false']:not(.expanded) {
-      transform: translateY(-5rem);
-    }
-  }
-  @media (min-width: 800px) {
-    header-component.not-top {
-      margin-inline: 8%;
-    }
-  }
-  :global(.dark) header-component.not-top {
-    background-color: hsl(var(--muted) / var(--un-bg-opacity));
-  }
-
-  /* header menu */
-  @media (max-width: 640px) {
-    #headerExpandContent {
-      grid-template-rows: 0fr;
-      transition:
-        opacity 0.3s,
-        padding 0.3s,
-        border-color 0.15s,
-        grid-template-rows 0.3s;
-    }
-    .expanded #headerExpandContent {
-      grid-template-rows: 1fr;
-    }
-    .expanded.not-top #headerExpandContent {
-      box-shadow:
-        rgb(255, 255, 255) 0px 0px 0px 0px,
-        rgba(24, 24, 27, 0.08) 0px 0px 0px 1px,
-        rgba(39, 39, 42, 0.08) 0px 10px 15px -3px,
-        rgba(39, 39, 42, 0.08) 0px 4px 6px -4px;
-    }
-
-    /* header component after */
-    header-component #headerExpandContent::after {
-      box-sizing: content-box;
-      content: '';
-      position: absolute;
-      inset-inline: calc(-1rem - 1px);
-      bottom: 0;
-      top: -5rem;
-      z-index: -1;
-      transition: 0.3s;
-      visibility: hidden;
-      opacity: 0;
-      border-bottom: 1px solid transparent;
-    }
-    header-component:not(.not-top) #headerExpandContent::after {
-      visibility: visible;
-      bottom: -1rem;
-      opacity: 1;
-      background-color: hsl(var(--muted) / var(--un-bg-opacity, 1));
-      border-bottom-color: hsl(var(--border) / var(--un-border-opacity, 1));
-    }
-  }
-
-  /* dark light mode toggle */
-  #toggleDarkMode {
-    &[data-theme='dark'] {
-      & .system {
-        display: none;
-      }
-      & .dark {
-        display: block;
-      }
-    }
-    &[data-theme='light'] {
-      & .system {
-        display: none;
-      }
-      .light {
-        display: block;
-      }
-    }
+  .site-header { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.8rem; width: 100%; margin-bottom: 3.5rem; padding: .15rem 0; }
+  .site-brand { display: inline-flex; align-items: center; gap: .7rem; color: var(--text-color); font-family: var(--font-mono); font-size: 16px; font-weight: 500; white-space: nowrap; }
+  .site-brand img { border-radius: 50%; width: 36px; height: 36px; object-fit: cover; }
+  .site-nav { display: flex; align-items: center; gap: 1.5rem; margin-left: auto; font-family: var(--font-mono); font-size: 14px; font-weight: 400; }
+  .site-nav a { color: var(--text-muted-color); text-decoration: none; }
+  .site-nav a:hover, .site-nav a[aria-current] { color: var(--text-color); text-decoration: underline; text-underline-offset: .3em; }
+  .site-controls { display: flex; align-items: center; gap: .65rem; }
+  .site-controls > * { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 36px; color: var(--text-muted-color); border: 0; background: none; cursor: pointer; }
+  .site-controls :global(svg) { width: 19px; height: 19px; }
+  .site-controls .site-menu-toggle { display: none; }
+  #toggleDarkMode :global(svg) { display: none; }
+  #toggleDarkMode[data-theme='system'] :global(.system), #toggleDarkMode[data-theme='light'] :global(.light), #toggleDarkMode[data-theme='dark'] :global(.dark-icon) { display: block; }
+  @media (max-width: 639px) {
+    .site-header { gap: .8rem; margin-bottom: 2.5rem; }
+    .site-controls { margin-left: auto; gap: .2rem; }
+    .site-nav { order: 3; width: 100%; margin: 0; padding: .75rem 0 .25rem; gap: 1.5rem; }
+    .site-header[data-enhanced] .site-menu-toggle { display: inline-flex; }
+    .site-header[data-enhanced]:not([data-open]) .site-nav { display: none; }
   }
 </style>

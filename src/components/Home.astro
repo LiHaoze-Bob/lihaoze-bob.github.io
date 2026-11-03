@@ -1,75 +1,27 @@
 ---
-import NoteTitle from './NoteTitle.astro'
 import BaseLayout from '../layouts/BaseLayout.astro'
-import NoteList from './NoteList.astro'
-import RandomQuote from './RandomQuote.astro'
 import { Icon } from 'astro-pure/user'
-import { date, notes } from '../lib/content'
-import config, { href } from '../site.config'
-import '../styles/home.css'
-interface Props { current?: number }
-const { current = 1 } = Astro.props
-const count = Math.max(1, Math.ceil(notes.length / 10))
-const education = [
-  { school: '浙江大学', program: '计算机科学与技术 · 本科', period: '2025.7 – Present', url: 'https://www.zju.edu.cn/', image: 'zju.png' },
-  { school: '浙江省杭州高级中学', program: '高中', period: '2022.9 – 2025.7', url: 'http://www.hanggao.net/', image: 'hanggao.jpg' }
-]
+import { profile } from '../data/profile'
+import { href } from '../site.config'
 ---
-<BaseLayout meta={{ title: current === 1 ? '' : `Page ${current}` }} home={current === 1}>
-  {current === 1 ? <main class='home'>
-    <header class='home-profile'>
-      <img class='home-avatar' src={href('/assets/images/avatar.png')} alt={`${config.author} 的头像`} width='104' height='104' fetchpriority='high' />
-      <h1>{config.author}</h1>
-      <div class='home-profile-links'>
-        <span><i class='fa-solid fa-graduation-cap' aria-hidden='true'></i> Zhejiang University</span>
-        <a href='https://github.com/LiHaoze-Bob' rel='me'><Icon name='github' /> GitHub</a>
+<BaseLayout meta={{ title: '', description: 'Haoze Li (sychostar), a computer science undergraduate at Zhejiang University exploring deep learning and AI agents. Notes, projects, and things learned along the way.' }} lang='en' personal>
+  <main class='personal-content home'>
+    <h1>{profile.name}</h1>
+    <p class='home-handle'>@{profile.nickname}</p>
+    <div class='personal-prose'>
+      <p>Hey, I’m {profile.name}, a CS undergrad at <a href={profile.school.url}>{profile.school.name}</a> &amp; an AI enthusiast.</p>
+      <p class='home-about-link'>You can learn more about me on my <a href={href('/about/')}>about page</a>.</p>
+      <p>I’m exploring deep learning and AI agents, and I like building things as I learn. Take a look at my <a href={href('/projects/')}>projects page</a> to see what I’ve been working on.</p>
+      <p>I write <a href={href('/notes/')}>notes</a> about what I’m learning. There are <a href={href('/courses/')}>course notes</a>, <a href={href('/reading/')}>thoughts on papers and books</a>, and <a href={href('/knowledge/')}>articles</a> about things I’ve tried or figured out.</p>
+      <p>When I take a break from studying or coding, I enjoy music, games and so on.</p>
+      <hr />
+      <div class='personal-contact'>
+        <p>Find me @ <a class='social-link' href={profile.github} rel='me'><Icon name='github' color='#8957e5' />GitHub</a>
+          <span class='social-item'><span aria-hidden='true'>·</span> <a class='social-link' href={profile.bilibili} rel='me'><Icon name='bilibili' color='#fb7299' />Bilibili</a></span>
+          <span class='social-item'><span aria-hidden='true'>·</span> <a class='social-link' href={profile.zhihu} rel='me'><Icon name='zhihu' color='#0084ff' />Zhihu</a></span>
+        </p>
+        <p>Reach me @ <a class='social-link' href={`mailto:${profile.email}`}><img src={href('/assets/images/gmail.svg')} width='18' height='14' alt='' />Gmail</a></p>
       </div>
-    </header>
-
-    <div class='home-sections'>
-      <section class='home-section' aria-labelledby='home-about'>
-        <h2 id='home-about'>About</h2>
-        <div class='home-section-content home-about'>
-          <p class='home-role'>Developer / CS student / Curious learner</p>
-          <p>你好，我是 {config.author}，一名浙江大学的计算机科学与技术专业本科生。</p>
-          <p>正在探索深度学习、AI Agents，以及一切让我好奇的事物。</p>
-          <p>这里记录我的课程笔记、技术积累与阅读思考。</p>
-          <div class='home-section-action'><a class='home-more' href={href('/about/')}>More about me <span aria-hidden='true'>→</span></a></div>
-        </div>
-      </section>
-
-      <section class='home-section' aria-labelledby='home-posts'>
-        <div class='home-section-label'><h2 id='home-posts'>Posts</h2><span>{notes.length} 篇笔记</span></div>
-        <div class='home-section-content'>
-          <ul class='home-posts' id='post-list'>
-            {notes.slice(0, 10).map(note => <li>
-              <a class='home-post' href={note.url}>
-                {note.publishedAt && <time datetime={note.publishedAt}>{date(note.publishedAt)}</time>}
-                <span class='home-post-title'><NoteTitle title={note.title} subtitle={note.subtitle} /></span>
-                <span class='home-chevron' aria-hidden='true'>›</span>
-              </a>
-            </li>)}
-          </ul>
-          {notes.length === 0 && <p class='home-empty'>笔记正在整理中。</p>}
-          {count > 1 && <div class='home-section-action'><a class='home-more' href={href('/page2/')}>More notes <span aria-hidden='true'>→</span></a></div>}
-        </div>
-      </section>
-
-      <section class='home-section' aria-labelledby='home-education'>
-        <h2 id='home-education'>Education</h2>
-        <ul class='home-section-content home-education'>
-          {education.map(item => <li>
-            <a class='education-card' href={item.url} target='_blank' rel='noopener noreferrer' title={`访问${item.school}官网（新窗口）`}>
-              <div class='education-copy'><h3>{item.school}</h3><p>{item.program}</p><p>{item.period}</p></div>
-              <div class='education-art' aria-hidden='true'><img src={href(`/assets/images/education/${item.image}`)} alt='' loading='lazy' decoding='async' /></div>
-            </a>
-          </li>)}
-        </ul>
-      </section>
     </div>
-    <RandomQuote />
-  </main> : <main class='home-notes'>
-    <div class='section-heading'><h1>Notes <small>· Page {current}</small></h1><span>{notes.length} 篇公开笔记</span></div>
-    <NoteList notes={notes.slice((current - 1) * 10, current * 10)} {current} {count} />
-  </main>}
+  </main>
 </BaseLayout>

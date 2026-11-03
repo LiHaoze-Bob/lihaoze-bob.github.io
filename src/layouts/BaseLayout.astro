@@ -1,18 +1,20 @@
 ---
-import { Footer, ThemeProvider } from 'astro-pure/components/basic'
+import { ThemeProvider } from 'astro-pure/components/basic'
+import Footer from '../components/Footer.astro'
 import type { SiteMeta } from 'astro-pure/types'
 import Header from '../components/Header.astro'
 import config, { href } from '../site.config'
 import '../styles/app.css'
 import '../styles/site.css'
+import '../styles/home.css'
 
-interface Props { meta: SiteMeta; highlightColor?: string; math?: boolean; home?: boolean }
-const { meta, math = false, home = false } = Astro.props
+interface Props { meta: SiteMeta; highlightColor?: string; math?: boolean; personal?: boolean; lang?: 'en' | 'zh-CN' }
+const { meta, math = false, personal = false, lang = 'en' } = Astro.props
 const title = meta.title ? `${meta.title} • ${config.title}` : config.title
 const canonical = new URL(Astro.url.pathname, Astro.site)
 ---
 <!doctype html>
-<html lang='zh-CN' data-site-theme='pure'>
+<html lang={lang} data-site-theme='pure'>
   <head>
     <meta charset='utf-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
@@ -32,11 +34,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     <link rel='stylesheet' href={href('/assets/css/tabsdown.css')} />
     <ThemeProvider />
   </head>
-  <body class:list={['flex justify-center bg-background text-foreground', { 'home-page': home }]}>
-    <a class='skip-link' href='#main-content'>跳到正文</a>
+  <body class:list={['flex justify-center bg-background text-foreground', { 'personal-page': personal }]}>
+    <a class='skip-link' href='#main-content'>Skip to content</a>
     <div id='main-container' class='w-full max-w-[70rem] min-h-[100dvh] flex flex-col justify-between'>
-      <Header />
-      <div class='flex-1 w-full' id='main-content'><slot /></div>
+      <Header {lang} />
+      <div class='flex-1 w-full' id='main-content'>
+        <slot />
+        {Astro.url.pathname !== href('/') && <nav class='page-return' aria-label='Return home' data-pagefind-ignore>
+          <span aria-hidden='true'>&gt;</span> <a href={href('/')} aria-label='cd .. — Back to Home'>cd ..</a>
+        </nav>}
+      </div>
       <Footer />
     </div>
     <script is:inline src={href('/assets/js/tabsdown.js')}></script>
@@ -57,7 +64,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
             await navigator.clipboard.writeText(button.closest('.note-code')?.querySelector('code')?.textContent || '')
             button.textContent = 'Copied'
             setTimeout(() => { button.textContent = 'Copy' }, 1500)
-          } catch { button.textContent = '请选中代码复制' }
+          } catch { button.textContent = 'Select the code to copy it' }
         })
       })
     </script>

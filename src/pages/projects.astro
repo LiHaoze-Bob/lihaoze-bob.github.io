@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { Icon } from 'astro-pure/user'
+import { profile, projects } from '../data/profile'
+---
+<BaseLayout meta={{ title: 'Projects', description: 'LingxiGlove and ZJU Sports Hub — projects by Haoze Li.' }} lang='en' personal>
+  <main class='personal-content projects-page'>
+    <h1>Projects</h1>
+    <p class='personal-lead'>A few things I’ve built while learning and exploring.</p>
+    {projects.map(project => <section class='project-entry personal-prose' aria-labelledby={project.id}>
+      <h2 id={project.id}>
+        <span class='project-icon' aria-hidden='true'>{project.id === 'lingxiglove' ? '🧤' : '🏟️'}</span>
+        <a href={project.code}>{project.name} <span class='project-arrow' aria-hidden='true'>↗</span></a>
+      </h2>
+      <p class='project-summary'>{project.summary}</p>
+      <p class='project-links'><a href={project.code} aria-label={`${project.name} on GitHub`}><span class='github-icon' aria-hidden='true'><Icon name='github' color='#8957e5' /></span>GitHub <span aria-hidden='true'>↗</span></a></p>
+    </section>)}
+    <p class='projects-more personal-prose'>For more projects I build, visit my <a href={profile.github}>GitHub</a>.</p>
+  </main>
+</BaseLayout>
+
+<style>
+  .projects-page > h1 { margin-bottom: 1rem; }
+  .projects-page > .personal-lead { margin: 0 0 2rem; }
+  .projects-more { margin: 2rem 0 0; color: var(--text-muted-color); }
+  .projects-page .project-entry {
+    margin-top: 1rem;
+    padding: 1.35rem 1.5rem;
+    border: 1px solid var(--main-border-color);
+    border-radius: 8px;
+    transition: border-color .15s, background-color .15s;
+  }
+  .projects-page .project-entry:hover,
+  .projects-page .project-entry:focus-within {
+    border-color: hsl(var(--foreground) / .3);
+    background-color: hsl(var(--foreground) / .025);
+  }
+  .projects-page h2 { display: flex; align-items: baseline; gap: .65rem; margin: 0 0 .65rem; font-size: 1.15rem; }
+  .project-icon { flex-shrink: 0; }
+  .project-arrow { color: var(--text-muted-color); font-size: .85em; }
+  .projects-page .project-summary { margin: 0 0 .75rem; font-size: .95em; }
+  .projects-page .project-links { margin: 0; font-size: .85em; }
+  .project-links a { display: inline-flex; align-items: center; gap: .35rem; }
+  .github-icon { display: inline-flex; width: 16px; height: 16px; }
+  .github-icon :global(svg) { width: 100%; height: 100%; }
+  .projects-page a:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; border-radius: 2px; }
+  @media (max-width: 639px) {
+    .projects-page .project-entry { padding: 1.15rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .projects-page .project-entry { transition: none; }
+  }
+</style>

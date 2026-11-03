@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import NoteList from './NoteList.astro'
+import NotesNav from './NotesNav.astro'
+import { notes } from '../lib/content'
+import { paginateNotes } from '../lib/navigation.mjs'
+interface Props { current?: number }
+const { current = 1 } = Astro.props
+const page = paginateNotes(notes, current)
+---
+<BaseLayout meta={{ title: current === 1 ? 'Notes' : `Notes · Page ${current}`, description: 'Course notes, reading notes, and articles.' }}>
+  <main class='home-notes'>
+    <div class='section-heading'><h1>Notes {current > 1 && <small>· Page {current}</small>}</h1></div>
+    <NotesNav />
+    <NoteList notes={page.notes} {current} count={page.count} />
+  </main>
+</BaseLayout>

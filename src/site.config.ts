@@ -1,4 +1,5 @@
 import type { Config, IntegrationUserConfig, ThemeUserConfig } from 'astro-pure/types'
+import { profile } from './data/profile'
 
 export const base = ''
 export const href = (path: string) => base + (path.startsWith('/') ? path : '/' + path)
@@ -12,13 +13,13 @@ export const comments = {
 }
 
 export const theme: ThemeUserConfig = {
-  title: 'sychostar',
+  title: profile.nickname,
   author: 'sychostar',
-  description: '课程笔记、技术积累与阅读记录',
+  description: 'Haoze Li (sychostar) — projects, course notes, reading, and articles.',
   favicon: href('/assets/images/avatar.png'),
   socialCard: href('/assets/images/avatar.png'),
   locale: {
-    lang: 'zh-CN', attrs: 'zh_CN', dateLocale: 'en-US',
+    lang: 'en', attrs: 'en_US', dateLocale: 'en-US',
     dateOptions: { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Shanghai' }
   },
   logo: { src: href('/assets/images/avatar.png'), alt: 'sychostar' },
@@ -28,14 +29,13 @@ export const theme: ThemeUserConfig = {
   head: [], customCss: [],
   header: {
     menu: [
-      { title: 'Course', link: href('/courses/') },
-      { title: 'Reading', link: href('/reading/') },
-      { title: 'Tech', link: href('/knowledge/') },
+      { title: 'Notes', link: href('/notes/') },
+      { title: 'Projects', link: href('/projects/') },
       { title: 'About', link: href('/about/') }
     ]
   },
   footer: {
-    year: `© ${new Date().getFullYear()} `, links: [], credits: true,
+    year: `© ${new Date().getFullYear()} `, links: [], credits: false,
     social: [
       { icon: 'github', label: 'GitHub', href: 'https://github.com/LiHaoze-Bob' },
       { icon: 'rss', label: 'RSS', href: href('/feed.xml') }

@@ -1,20 +1,50 @@
 ---
-import { date, type NotePage } from '../lib/content'
+import type { NotePage } from '../lib/content'
+import { groupByYear } from '../lib/navigation.mjs'
 import { href } from '../site.config'
 interface Props { notes: NotePage[]; current?: number; count?: number }
 const { notes, current = 1, count = 1 } = Astro.props
+const listDate = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Shanghai' })
 ---
 <div id='post-list' class='note-list'>
-  {notes.map(note => (
-    <article class='note-preview'>
-      <div class='note-preview-meta'><time datetime={note.publishedAt}>{date(note.publishedAt!)}</time><span>{note.directory?.[0]}</span></div>
-      <h2><a href={note.url}>{note.title}</a></h2>
-      {note.subtitle && <p class='note-preview-subtitle'>{note.subtitle}</p>}
-      {note.cardHeadings?.length ? <p class='note-summary'>{note.cardHeadings.join(' · ')}</p> : null}
-      <p class='note-directory'>{note.directory?.join(' / ')}</p>
-    </article>
-  ))}
+  {notes.length ? groupByYear(notes).map(group => <section class='note-year' aria-label={group.year}>
+    <h2>{group.year}</h2>
+    <ol>
+      {group.notes.map(note => {
+        const subtitle = note.subtitle?.trim()
+        const title = subtitle && subtitle.toLowerCase() !== 'index' ? subtitle : note.title
+        const directory = [...(note.displayDirectory || []), ...(title !== note.title ? [note.title] : [])]
+        return <li class='note-preview'>
+        {note.publishedAt && <time datetime={note.publishedAt}>{listDate.format(new Date(note.publishedAt))}</time>}
+        <div>
+          <h3><a href={note.url}>{title}</a></h3>
+          <p class='note-directory'>{directory.join(' / ')}</p>
+        </div>
+      </li>})}
+    </ol>
+  </section>) : <p class='notes-empty'>No notes yet.</p>}
 </div>
-{count > 1 && <nav class='pagination' aria-label='文章列表分页'>
-  {Array.from({ length: count }, (_, i) => i + 1).map(number => <a aria-current={number === current ? 'page' : undefined} href={href(number === 1 ? '/' : `/page${number}/`)}>{number}</a>)}
+{count > 1 && <nav class='pagination' aria-label='Notes pagination'>
+  {Array.from({ length: count }, (_, i) => i + 1).map(number => <a aria-current={number === current ? 'page' : undefined} href={href(number === 1 ? '/notes/' : `/page${number}/`)}>{number}</a>)}
 </nav>}
+<style>
+  .note-year + .note-year { margin-top: 2.5rem; }
+  .note-year h2 { font-size: 1.1rem; font-weight: 500; color: var(--text-muted-color); margin: 0 0 1.2rem; }
+  .note-year ol { list-style: none; padding: 0; margin: 0; }
+  .note-preview { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 1rem; padding: .7rem 0; margin: 0; border: 0; }
+  .note-preview time { color: var(--text-muted-color); font-size: .75rem; line-height: 1.8rem; font-variant-numeric: tabular-nums; }
+  .note-preview h3 { font-size: 1rem; line-height: 1.7; font-weight: 500; margin: 0; overflow-wrap: anywhere; }
+  .note-preview a { text-decoration: none; }
+  .note-preview a:hover { text-decoration: underline; text-underline-offset: .2em; }
+  .note-directory { font-size: .75rem; margin: .25rem 0 0; color: var(--text-muted-color); line-height: 1.6; }
+  @media (hover: hover) and (pointer: fine) {
+    :global(.home-notes) .note-directory { opacity: 0; }
+    :global(.home-notes) .note-preview:hover .note-directory,
+    :global(.home-notes) .note-preview:focus-within .note-directory { opacity: 1; }
+  }
+  .notes-empty { color: var(--text-muted-color); }
+  @media (max-width: 479px) {
+    .note-preview { grid-template-columns: minmax(0, 1fr); gap: .1rem; padding: .8rem 0; }
+    .note-preview time { line-height: 1.5; }
+  }
+</style>

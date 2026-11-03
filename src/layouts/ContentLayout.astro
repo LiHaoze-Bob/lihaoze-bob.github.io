@@ -11,9 +11,11 @@ interface Props {
   highlightColor?: string
   back?: string
   math?: boolean
+  prose?: boolean
+  contentLang?: string
 }
 
-const { meta, highlightColor, back = '/', ...props } = Astro.props
+const { meta, highlightColor, back = '/', prose = true, contentLang, ...props } = Astro.props
 ---
 
 <PageLayout {meta} {highlightColor} {...props}>
@@ -43,9 +45,10 @@ const { meta, highlightColor, back = '/', ...props } = Astro.props
       {/* Content */}
       <div
         id='content'
+        lang={contentLang}
         class={cn(
           'max-w-none animate mt-8 md:min-w-[45ch] overflow-x-hidden',
-          integ.typography.class
+          prose && integ.typography.class
         )}
       >
         <slot />

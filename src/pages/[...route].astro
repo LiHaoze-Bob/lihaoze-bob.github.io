@@ -3,7 +3,15 @@ import { TOC } from 'astro-pure/components/pages'
 import ContentLayout from '../layouts/ContentLayout.astro'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import '../../site-template/assets/css/about.css'
-import Home from '../components/Home.astro'
+import '../styles/about.css'
+import NotesPage from '../components/NotesPage.astro'
+import NoteList from '../components/NoteList.astro'
+import NotesNav from '../components/NotesNav.astro'
+import RandomQuote from '../components/RandomQuote.astro'
+import GitHubProfile from '../components/GitHubProfile.astro'
+import BangumiWatching from '../components/BangumiWatching.astro'
+import { profile } from '../data/profile'
+import { sectionFor, paginateNotes } from '../lib/navigation.mjs'
 import PageViews from '../components/PageViews.astro'
 import Comments from '../components/Comments.astro'
 import NoteTitle from '../components/NoteTitle.astro'
@@ -14,7 +22,7 @@ import { href } from '../site.config'
 
 export function getStaticPaths() {
   const paths: { params: { route: string }; props: { page?: NotePage; current?: number } }[] = pages.map(page => ({ params: { route: page.route }, props: { page } }))
-  for (let current = 2; current <= Math.ceil(notes.length / 10); current++) {
+  for (let current = 2; current <= paginateNotes(notes).count; current++) {
     paths.push({ params: { route: `page${current}` }, props: { current } })
   }
   return paths
@@ -22,31 +30,49 @@ export function getStaticPaths() {
 interface Props { page?: NotePage; current?: number }
 const { page, current } = Astro.props
 const isSection = page && ['courses', 'reading', 'knowledge'].includes(page.route)
+const section = page && sectionFor(page.route)
+const flatSection = isSection && page?.route !== 'courses'
 ---
-{current ? <Home {current} /> : page?.route === 'tags' ? <TagsPage /> : page?.route === 'about' ? (
-  <BaseLayout meta={{ title: page.title }}>
-    <main class='about-page' data-pagefind-body>
-      <h1 data-pagefind-meta='title'>{page.title}</h1>
-      <div class='post-meta about-meta'><PageViews /></div>
-      <Fragment set:html={page.html} />
+{current ? <NotesPage {current} /> : page?.route === 'tags' ? <TagsPage /> : page?.route === 'about' ? (
+  <BaseLayout meta={{ title: page.title, description: 'About Haoze Li (sychostar), a computer science undergraduate at Zhejiang University.' }} lang='en' personal>
+    <main class='about-page personal-content'>
+      <h1>{page.title}</h1>
+      <div class='post-meta about-meta'><PageViews lang='en' /></div>
+      <GitHubProfile>
+      <section slot='education' class='personal-education' aria-labelledby='education'>
+        <h2 class='about-label' id='education'><span aria-hidden='true'>🎓</span> Education</h2>
+        <ul>{profile.education.map(item => <li>
+          <a class='education-card' href={item.url}>
+            <div class='education-copy'><h3>{item.school}</h3><p>{item.program}</p><p>{item.period}</p></div>
+            <div class='education-art' aria-hidden='true'><img src={href(`/assets/images/education/${item.image}`)} alt='' loading='lazy' decoding='async' /></div>
+          </a>
+        </li>)}</ul>
+      </section>
+      </GitHubProfile>
+      <section class='about-fun' aria-labelledby='about-fun-title'>
+        <h2 class='about-label' id='about-fun-title'><span aria-hidden='true'>🎮</span> JUST for Fun</h2>
+        <Fragment set:html={page.html.replace(/<(\/?)h2\b/g, '<$1h3')} />
+        <BangumiWatching />
+      </section>
+      <RandomQuote />
     </main>
     <script is:inline defer src={href('/assets/js/steam.js')}></script>
   </BaseLayout>
 ) : page && (
-  <ContentLayout meta={{ title: page.title, description: page.description }} back={href('/')} math={page.html.includes('arithmatex')}>
+  <ContentLayout meta={{ title: page.title, description: page.description }} back={href('/notes/')} math={page.html.includes('arithmatex')} prose={!flatSection} contentLang={page.isNote ? 'zh-CN' : undefined}>
     <Fragment slot='sidebar'>
       {isSection ? <SectionTags section={page.route} /> : page.headings.length > 0 && <TOC headings={page.headings} />}
     </Fragment>
     <Fragment slot='header'>
-      <nav id='breadcrumb' class='note-breadcrumbs' aria-label='当前位置' data-pagefind-ignore>
+      <nav id='breadcrumb' class='note-breadcrumbs' aria-label='Breadcrumb' data-pagefind-ignore>
         <a href={href('/')}>Home</a>
-        {page.breadcrumbs.map(crumb => <><span aria-hidden='true'>›</span><a href={href(crumb.url)}><NoteTitle title={crumb.title} subtitle={crumb.subtitle} /></a></>)}
+        {page.displayBreadcrumbs?.map(crumb => <><span aria-hidden='true'>›</span><a href={href(crumb.url)}><NoteTitle title={crumb.title} subtitle={crumb.subtitle} /></a></>)}
         <span aria-hidden='true'>›</span><span aria-current='page'><NoteTitle title={page.title} subtitle={page.subtitle} /></span>
       </nav>
       <div class='note-heading' data-pagefind-meta='title[data-search-title]' data-search-title={page.subtitle ? `${page.title} · ${page.subtitle}` : page.title}>
         {page.isNote && <>
           <span hidden data-pagefind-filter='kind:note' />
-          <span hidden data-pagefind-meta='directory[data-directory]' data-directory={page.directory?.join(' / ')} data-pagefind-filter='section[data-section]' data-section={{ courses: 'Course', reading: 'Reading', knowledge: 'Tech' }[page.route.split('/')[0]]} />
+          <span hidden data-pagefind-meta='directory[data-directory]' data-directory={page.displayDirectory?.join(' / ')} data-pagefind-filter='section[data-section]' data-section={page.section} />
         </>}
         <h1 class='text-2xl font-medium sm:text-3xl' data-pagefind-weight='10'>{page.title}</h1>
         {page.subtitle && <p class='note-subtitle' data-pagefind-weight='7'>{page.subtitle}</p>}
@@ -57,10 +83,11 @@ const isSection = page && ['courses', 'reading', 'knowledge'].includes(page.rout
         {page.isNote && <PageViews />}
       </div>}
       {page.description && <p class='post-desc'>{page.description}</p>}
+      {isSection && <><p class='post-desc'>{section?.description}</p><NotesNav current={page.route} /></>}
     </Fragment>
-    <Fragment set:html={page.html} />
-    {page.tagLinks?.length ? <nav class='note-tags' aria-label='标签'>{page.tagLinks.map(tag => <a href={href(tag.url)}>#{tag.title}</a>)}</nav> : null}
-    {page.isNote && <Fragment slot='bottom'><nav class='post-navigation' aria-label='同目录文章'>
+    {flatSection ? <NoteList notes={notes.filter(note => note.route.startsWith(`${page.route}/`))} /> : <Fragment set:html={page.html} />}
+    {page.tagLinks?.length ? <nav class='note-tags' aria-label='Tags'>{page.tagLinks.map(tag => <a href={href(tag.url)}>#{tag.title}</a>)}</nav> : null}
+    {page.isNote && <Fragment slot='bottom'><nav class='post-navigation' aria-label='Other notes in this folder'>
       {(['folder_previous', 'folder_next'] as const).map((key, i) => {
         const neighbor = page[key]
         return neighbor ? <a href={href(neighbor.url)} aria-label={i === 0 ? 'Older' : 'Newer'}><small>{i === 0 ? '← Older' : 'Newer →'}</small><NoteTitle title={neighbor.title} subtitle={neighbor.subtitle} /></a> : <span class='disabled' aria-label={i === 0 ? 'Older' : 'Newer'}><small>{i === 0 ? '← Older' : 'Newer →'}</small><span>—</span></span>
@@ -70,6 +97,5 @@ const isSection = page && ['courses', 'reading', 'knowledge'].includes(page.rout
 )}
 
 <style>
-  .about-page > h1 { margin-bottom: .5rem; }
-  .about-meta { margin-bottom: 2.5rem; }
+  .about-meta { margin-top: -1rem; margin-bottom: 2rem; }
 </style>
