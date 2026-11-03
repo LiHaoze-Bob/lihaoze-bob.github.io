@@ -3,29 +3,36 @@
 @font-face { font-family: 'Lato'; src: url('../../site-template/assets/lib/fonts/Lato/Lato-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
 @font-face { font-family: 'Source Sans Pro'; src: url('../../site-template/assets/lib/fonts/Source_Sans_Pro/SourceSansPro-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
 @font-face { font-family: 'Source Sans Pro'; src: url('../../site-template/assets/lib/fonts/Source_Sans_Pro/SourceSansPro-SemiBold.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+/* JetBrains Mono v2.304, distributed under the bundled SIL Open Font License. */
+@font-face { font-family: 'JetBrains Mono'; src: url('../../site-template/assets/lib/fonts/JetBrains_Mono/JetBrainsMono-Regular.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: 'JetBrains Mono'; src: url('../../site-template/assets/lib/fonts/JetBrains_Mono/JetBrainsMono-Medium.woff2') format('woff2'); font-style: normal; font-weight: 500; font-display: swap; }
+@font-face { font-family: 'JetBrains Mono'; src: url('../../site-template/assets/lib/fonts/JetBrains_Mono/JetBrainsMono-SemiBold.woff2') format('woff2'); font-style: normal; font-weight: 600; font-display: swap; }
 :root {
+  --font-body: 'Lato', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'PingFang SC', 'Microsoft YaHei', monospace;
   --text-color: hsl(var(--foreground)); --text-muted-color: hsl(var(--muted-foreground));
   --main-bg: hsl(var(--background)); --main-border-color: hsl(var(--border));
   --link-color: hsl(var(--primary)); --fa-font-solid: normal 900 1em/1 'Font Awesome 7 Free';
-  font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: var(--font-mono);
   scroll-behavior: smooth;
 }
 body {
   line-height: 1.75;
-  background-image: linear-gradient(180deg, hsl(var(--primary) / .17), hsl(var(--background) / 0) 960px);
+  background-image: none;
   background-repeat: no-repeat;
-}
-.dark body {
-  background-image: linear-gradient(180deg, hsl(205 40% 16% / .7), hsl(var(--background) / 0) 960px);
 }
 button, a, summary { -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 2px solid hsl(var(--primary)); outline-offset: 4px; }
 #main-container { padding: 1.5rem 2.5rem 0; }
 .skip-link { position: absolute; top: -80px; left: 1rem; z-index: 100; padding: .5rem 1rem; background: var(--main-bg); }
 .skip-link:focus { top: 0; }
+.page-return { margin-top: 2.5rem; font-family: var(--font-mono); font-size: 14px; color: var(--text-muted-color); }
+.page-return a { color: inherit; text-decoration: underline; text-decoration-color: hsl(var(--foreground) / .25); text-underline-offset: .2em; }
+.page-return a:hover { color: var(--text-color); text-decoration-color: currentColor; }
 .home-notes { max-width: 780px; margin-inline: auto; }
 .section-heading { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem; }
 .section-heading :is(h1, h2) { font-size: 1.25rem; font-weight: 600; }
+.home-notes .section-heading h1 { font-size: 32px; line-height: 1.2; }
 .section-heading h1 small { font-size: .85rem; font-weight: 400; color: var(--text-muted-color); }
 .section-heading > span { color: var(--text-muted-color); font-size: .85rem; }
 .note-preview { border-bottom: 1px solid var(--main-border-color); padding: 1.8rem 0; }
@@ -48,6 +55,7 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .note-breadcrumbs > [aria-current] { flex: 0 0 auto; }
 .note-breadcrumbs .note-title-pair { flex-wrap: nowrap; }
 .post-meta { display: flex; flex-wrap: wrap; gap: 1rem; color: var(--text-muted-color); font-size: .85rem; }
+:is(.note-preview time, .note-year h2, .post-meta, .note-breadcrumbs, .note-directory, .note-tags, .section-tags li a, .tag-chip, .search-result-directory) { font-family: var(--font-mono); }
 .post-desc { color: var(--text-muted-color); margin-top: 1rem; }
 .note-tags { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; font-size: .8rem; }
 .note-tags a { text-decoration: none; border: 1px solid var(--main-border-color); border-radius: .4rem; padding: .15rem .5rem; }
@@ -65,6 +73,8 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .search-page .search-note-link .note-title-primary { display: block; color: var(--text-color); font-size: 1.15rem; font-weight: 600; line-height: 1.5; }
 .search-page .search-note-link .note-title-secondary { display: block; margin-top: .15rem; font-size: .9rem; line-height: 1.6; }
 .prose { line-height: 1.9; overflow-wrap: anywhere; }
+.prose[lang='zh-CN'] { font-family: var(--font-body); font-size: 17px; line-height: 1.8; }
+.prose :not(pre) > code { font-family: var(--font-mono); font-size: 14px; }
 .prose h2 { font-weight: 600; font-size: 1.55rem; margin: 2.5rem 0 1rem; }
 .prose h3 { font-weight: 600; }
 .prose :is(h2,h3,h4,h5,h6) { scroll-margin-top: 5rem; }
@@ -107,6 +117,7 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 768px) {
   .note-code[data-language="mermaid"] .mermaid svg { min-width: min(var(--mermaid-width, 100%), 48rem); }
   #main-container { padding: 1rem 1.25rem 0; }
+  .home-notes .section-heading h1 { font-size: 28px; }
   .note-preview h2 { font-size: 1.25rem; }
   .note-subtitle { font-size: 1rem; }
   .home-post-title .note-title-pair { display: flex; flex-direction: column; align-items: flex-start; }

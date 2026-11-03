@@ -1,106 +1,57 @@
-/* Personal homepage: centered profile and a quiet, two-column reading rhythm. */
-.home { width: 100%; }
-.home-profile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin: .5rem auto 3.5rem;
+/* Personal pages share a quiet, text-first layout; note readers keep their layout. */
+body.personal-page {
+  background-color: hsl(var(--background));
+  background-image: radial-gradient(hsl(var(--foreground) / .03) .7px, transparent .8px);
+  background-size: 20px 20px;
+  background-repeat: repeat;
 }
-.home-avatar {
-  width: 104px;
-  height: 104px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 5px solid hsl(var(--background) / .85);
-  box-shadow: 0 0 0 1px hsl(var(--border) / .4), 0 5px 20px hsl(var(--primary) / .08);
-  transition: transform .25s ease, box-shadow .25s ease;
+.dark body.personal-page {
+  background-image: radial-gradient(hsl(var(--foreground) / .025) .7px, transparent .8px);
 }
-@media (hover: hover) {
-  .home-avatar:hover { transform: scale(1.08); box-shadow: 0 0 0 1px hsl(var(--border) / .4), 0 8px 24px hsl(var(--primary) / .16); }
-}
-.home-profile h1 { font-size: 2rem; font-weight: 600; line-height: 1.3; margin: 1.4rem 0 .9rem; letter-spacing: -.035em; }
-.home-profile-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem 1.5rem; font-size: .9rem; }
-.home-profile-links > * { display: inline-flex; align-items: center; gap: .5rem; }
-.home-profile-links i { font-size: 1rem; }
-.home-profile-links svg { width: 1.2rem; height: 1.2rem; }
-.home-sections { width: min(100%, 54rem); margin-inline: auto; display: flex; flex-direction: column; gap: 3rem; }
-.home-section { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 1.5rem; }
-.home-section h2 { font-size: 1.25rem; line-height: 1.5; font-weight: 600; }
-.home-section-label > span { display: block; margin-top: .45rem; font-size: .78rem; color: var(--text-muted-color); }
-.home-section-content { min-width: 0; }
-.home-about { color: var(--text-muted-color); }
-.home-about p + p { margin-top: .65rem; }
-.home-about .home-role { font-size: .9rem; margin-bottom: 1rem; }
-.home-section-action { display: flex; justify-content: flex-end; margin-top: 1.1rem; }
-.home-more { display: inline-flex; align-items: center; gap: .5rem; border: 1px solid hsl(var(--border) / .8); border-radius: .5rem; padding: .2rem .65rem; font-size: .8rem; color: var(--text-muted-color); background: hsl(var(--background) / .5); transition: background .2s, color .2s, border-color .2s; }
-.home-more:hover { background: hsl(var(--background)); border-color: hsl(var(--primary) / .45); }
-.home-posts, .home-education { list-style: none; margin: 0; padding: 0; }
-.home-posts { display: flex; flex-direction: column; gap: .65rem; }
-.home-post {
-  display: grid;
-  grid-template-columns: 6.6rem minmax(0, 1fr) .8rem;
-  align-items: baseline;
-  gap: .8rem;
-  padding: .65rem 1rem;
-  border: 1px solid hsl(var(--border) / .7);
-  border-radius: .85rem;
-  background: hsl(var(--background) / .6);
-  line-height: 1.55;
-  transition: background .2s, border-color .2s, color .2s;
-}
-.home-post:hover { background: hsl(var(--background)); border-color: hsl(var(--primary) / .4); }
-.home-post time { font-size: .75rem; color: var(--text-muted-color); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.home-post-title { min-width: 0; font-size: .95rem; overflow-wrap: anywhere; }
-.home-chevron { color: var(--text-muted-color); font-size: 1.2rem; line-height: 1; align-self: center; justify-self: end; }
-.home-empty { color: var(--text-muted-color); }
-.home-education { display: flex; flex-direction: column; gap: .85rem; }
-.education-card {
-  position: relative;
-  isolation: isolate;
-  display: block;
-  overflow: hidden;
-  padding: 1rem 1.25rem;
-  border: 1px solid var(--main-border-color);
-  border-radius: 1rem;
-  background: hsl(var(--muted));
-  color: var(--text-color);
-  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
-}
-.education-card:is(:hover, :focus-visible) { transform: translateY(-3px); color: var(--text-color); border-color: hsl(var(--foreground) / .25); box-shadow: 0 8px 20px hsl(var(--foreground) / .07); }
+.personal-content { width: 100%; max-width: 680px; margin: 1rem auto 5rem; font-size: 17px; line-height: 1.8; color: var(--text-color); overflow-wrap: anywhere; }
+.personal-content > h1 { font-size: 40px; font-weight: 600; line-height: 1.2; letter-spacing: -.035em; margin: 0 0 2rem; }
+.personal-content h2 { font-size: 1.35rem; font-weight: 600; line-height: 1.4; margin: 0 0 1rem; scroll-margin-top: 2rem; }
+.personal-prose p { margin: 0 0 1.35rem; }
+.personal-prose a, .personal-education a { color: inherit; text-decoration: underline; text-decoration-color: hsl(var(--foreground) / .25); text-underline-offset: .2em; text-decoration-thickness: 1px; transition: text-decoration-color .15s; }
+.personal-prose a:hover, .personal-education a:hover { color: var(--text-color); text-decoration-color: currentColor; }
+.personal-prose hr { width: 3rem; margin: 2.5rem 0; border: 0; border-top: 1px solid hsl(var(--foreground) / .15); }
+.personal-contact { font-size: .95em; }
+.personal-content.home > h1 { margin-bottom: 8px; font-family: var(--font-mono); font-size: 36px; letter-spacing: -.025em; }
+.home .home-handle { margin: 0 0 28px; font-family: var(--font-mono); font-size: 14px; font-weight: 400; color: var(--text-muted-color); }
+.home .home-about-link { font-weight: 600; }
+.home .home-about-link a { text-decoration-color: currentColor; text-decoration-thickness: 2px; }
+.home .personal-contact p { margin-bottom: .5rem; }
+.home .social-item { display: inline-block; white-space: nowrap; }
+.home .social-link { white-space: nowrap; }
+.home .social-link svg { display: inline-block; width: 16px; height: 16px; margin-right: 4px; vertical-align: -.15em; }
+.home .social-link img { display: inline-block; width: 18px; height: 14px; margin-right: 4px; vertical-align: -.1em; }
+.personal-lead, .project-summary { color: var(--text-muted-color); }
+.project-entry { margin-top: 3rem; }
+.personal-education { margin: 2.75rem 0; }
+.personal-education ul { list-style: none; padding: 0; margin: 0; }
+.personal-education li + li { margin-top: .85rem; }
+.personal-education p { margin: .15rem 0 0; font-size: .9rem; color: var(--text-muted-color); }
+.personal-education .education-card { position: relative; isolation: isolate; display: block; overflow: hidden; padding: 1rem 1.25rem; border: 1px solid var(--main-border-color); border-radius: 1rem; background: hsl(var(--muted)); color: var(--text-color); text-decoration: none; }
+.personal-education .education-card:is(:hover, :focus-visible) { border-color: hsl(var(--foreground) / .25); }
 .education-copy { position: relative; z-index: 1; }
-.education-copy h3 { font-size: 1.1rem; font-weight: 600; }
-.education-copy p { font-size: .9rem; color: var(--text-muted-color); margin-top: .15rem; }
+.education-copy h3 { margin: 0; font-size: 1.1rem; font-weight: 600; }
 .education-art { position: absolute; z-index: 0; top: 50%; right: -.75rem; width: 46%; max-width: 19rem; aspect-ratio: 1; transform: translateY(-50%); overflow: hidden; pointer-events: none; opacity: .25; mix-blend-mode: multiply; mask-image: linear-gradient(to right, transparent, #000 35%); }
-.education-art img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: left center; transition: transform .3s ease; }
-.education-card:hover .education-art img { transform: scale(1.04); }
+.education-art img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: left center; }
 .dark .education-art { filter: grayscale(1) invert(1); mix-blend-mode: screen; opacity: .2; }
-.home-quote-wrap { display: flex; justify-content: center; margin: 3.5rem auto 0; max-width: 45rem; }
-.home-quote { display: inline-flex; align-items: center; gap: .75rem; border: 1px solid var(--main-border-color); border-radius: 1.5rem; padding: .5rem 1rem; font-size: .875rem; color: var(--text-muted-color); box-shadow: 0 2px 4px hsl(var(--foreground) / .04); overflow-wrap: anywhere; }
-.home-quote::before { content: ''; flex: 0 0 .45rem; height: .45rem; border-radius: 50%; background: #79c98e; }
-
-@media (max-width: 767px) {
-  .home-profile { margin: .25rem auto 2.75rem; }
-  .home-profile h1 { font-size: 1.85rem; }
-  .home-sections { max-width: 38rem; gap: 2.5rem; }
-  .home-section { grid-template-columns: minmax(0, 1fr); gap: 1.1rem; }
-  .home-section-label { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
-  .home-section-label > span { margin: 0; }
-}
-@media (max-width: 639px) {
-  .home-page header-component:not(.expanded) #headerExpandContent { visibility: hidden; }
-  .home-page header-component:not(.expanded) #headerExpandContent::after { visibility: hidden; opacity: 0; }
-}
 @media (max-width: 479px) {
-  .home-profile-links { font-size: .8rem; gap: .5rem 1rem; }
-  .home-post { grid-template-columns: minmax(0, 1fr) .8rem; gap: .2rem .7rem; padding: .7rem .9rem; }
-  .home-post time { grid-column: 1; font-size: .7rem; }
-  .home-post-title { grid-column: 1; }
-  .home-post .home-chevron { grid-column: 2; grid-row: 1 / 3; }
-  .education-card { padding: .85rem 1rem; }
+  .personal-education .education-card { padding: .85rem 1rem; }
   .education-copy h3 { font-size: 1rem; }
   .education-art { width: 52%; opacity: .18; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .home-avatar:hover, .education-card:is(:hover, :focus-visible), .education-card:hover .education-art img { transform: none; }
+.personal-content.about-page { max-width: 680px; margin: 1rem auto 5rem; }
+.personal-content.about-page > h1 { font-size: 40px; margin-bottom: 2rem; }
+.personal-content .about-profile { min-width: 0; }
+.personal-content .about-profile img { max-width: 100%; }
+.home-quote-wrap { margin: 3rem 0 0; }
+.home-quote { color: var(--text-muted-color); font-size: .9rem; font-style: italic; border-left: 2px solid var(--main-border-color); padding-left: 1rem; }
+@media (max-width: 639px) {
+  .personal-content, .personal-content.about-page { margin-top: .5rem; margin-bottom: 3rem; }
+  .personal-content > h1, .personal-content.about-page > h1 { font-size: 32px; }
+  .personal-content.home > h1 { font-size: 30px; }
+  .personal-content .steam-header { flex-wrap: wrap; }
 }
