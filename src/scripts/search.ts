@@ -1,3 +1,5 @@
+import { normalizeSection } from '../lib/navigation.mjs'
+
 interface SearchData {
   url: string
   excerpt: string
@@ -19,7 +21,6 @@ export function setupSearch(root: HTMLElement) {
   const results = root.querySelector<HTMLUListElement>('.search-results')!
   const more = root.querySelector<HTMLButtonElement>('.search-more')!
   const retry = root.querySelector<HTMLButtonElement>('.search-retry')!
-  const recent = root.querySelector<HTMLElement>('.search-recent')!
   const shortcut = root.querySelector<HTMLElement>('.search-shortcut')!
   const entries: { url: string; title: string; subtitle?: string }[] = JSON.parse(root.dataset.noteTitles || '[]')
   const path = (url: string) => new URL(url, window.location.origin).pathname.replace(/\/$/, '')
@@ -60,12 +61,6 @@ export function setupSearch(root: HTMLElement) {
 
   function updateFilters() {
     filters.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.section === section)))
-    let visible = 0
-    recent.querySelectorAll<HTMLElement>('li').forEach(item => {
-      item.hidden = (!!section && item.dataset.section !== section) || visible >= 8
-      if (!item.hidden) visible++
-    })
-    recent.querySelector<HTMLElement>('.search-recent-empty')!.hidden = visible > 0
   }
 
   function reset() {
@@ -82,7 +77,7 @@ export function setupSearch(root: HTMLElement) {
   function showError() {
     // Pagefind caches rejected fragment/index promises. Retry with a fresh module.
     enginePromise = undefined
-    status.textContent = '搜索暂时无法加载，请检查网络后重试。'
+    status.textContent = 'Search unavailable.'
     retry.hidden = false
     more.hidden = true
     results.setAttribute('aria-busy', 'false')
@@ -93,7 +88,7 @@ export function setupSearch(root: HTMLElement) {
     item.className = 'search-result'
     const directory = document.createElement('p')
     directory.className = 'search-result-directory'
-    directory.textContent = data.meta.directory || '公开笔记'
+    directory.textContent = data.meta.directory || 'Notes'
     const heading = document.createElement('h2')
     const link = document.createElement('a')
     link.className = 'search-result-title search-note-link'
@@ -101,7 +96,7 @@ export function setupSearch(root: HTMLElement) {
     const entry = titles.get(path(data.url))
     const primary = document.createElement('span')
     primary.className = 'note-title-primary'
-    primary.textContent = entry?.title || data.meta.title || '未命名笔记'
+    primary.textContent = entry?.title || data.meta.title || 'Untitled note'
     link.append(primary)
     if (entry?.subtitle && entry.subtitle !== entry.title) {
       const secondary = document.createElement('span')
@@ -114,8 +109,8 @@ export function setupSearch(root: HTMLElement) {
     excerpt.className = 'search-result-excerpt'
     // Pagefind escapes content before adding its own <mark> elements.
     excerpt.innerHTML = data.excerpt
-    item.append(directory, heading, excerpt)
-    const anchors = data.sub_results?.filter(result => result.url.includes('#')).slice(0, 2) || []
+    item.append(heading, directory, excerpt)
+    const anchors = data.sub_results?.filter(result => result.url.includes('#')).slice(0, 1) || []
     if (anchors.length) {
       const links = document.createElement('div')
       links.className = 'search-result-sections'
@@ -143,7 +138,7 @@ export function setupSearch(root: HTMLElement) {
       results.setAttribute('aria-busy', 'false')
       more.hidden = displayed >= matches.length
       more.disabled = false
-      status.textContent = `找到 ${matches.length} 篇笔记${more.hidden ? '' : `，已显示 ${displayed} 篇`}`
+      status.textContent = `${matches.length} ${matches.length === 1 ? 'result' : 'results'}`
       if (focusNew) cards[0]?.querySelector<HTMLAnchorElement>('a')?.focus()
     } catch {
       if (current === version) showError()
@@ -159,7 +154,7 @@ export function setupSearch(root: HTMLElement) {
       if (current !== version) return
       matches = response.results
       if (!matches.length) {
-        status.textContent = `没有找到「${query}」${section ? `在 ${section} 栏目中` : ''}的相关笔记。试试更短的关键词${section ? '，或切换到「全部」' : ''}。`
+        status.textContent = 'No results.'
         results.setAttribute('aria-busy', 'false')
         return
       }
@@ -176,13 +171,12 @@ export function setupSearch(root: HTMLElement) {
     const query = input.value.trim()
     clear.hidden = !input.value
     shortcut.hidden = !!input.value
-    recent.hidden = !!query
     updateURL()
     if (!query) {
       status.textContent = ''
       return
     }
-    status.textContent = '正在搜索…'
+    status.textContent = 'Searching…'
     results.setAttribute('aria-busy', 'true')
     timer = setTimeout(() => { void search(current) }, immediate ? 0 : 180)
   }
@@ -190,7 +184,7 @@ export function setupSearch(root: HTMLElement) {
   function restoreURL() {
     const parameters = new URL(window.location.href).searchParams
     input.value = parameters.get('q') || ''
-    const selected = parameters.get('section') || ''
+    const selected = normalizeSection(parameters.get('section') || '')
     section = filters.some(button => button.dataset.section === selected) ? selected : ''
     updateFilters()
     schedule(true)

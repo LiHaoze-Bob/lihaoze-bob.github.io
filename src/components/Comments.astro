@@ -2,15 +2,15 @@
 import { comments } from '../site.config'
 ---
 
-{comments.enable && <section id='comments-title' class='comments' aria-label='评论' data-pagefind-ignore>
+{comments.enable && <section id='comments-title' class='comments' aria-label='Comments' data-pagefind-ignore>
   <div class='giscus'
     data-repo={comments.repo}
     data-repo-id={comments.repoId}
     data-category={comments.category}
     data-category-id={comments.categoryId}
   ></div>
-  <p class='comments-fallback'>若评论区未加载，可前往 <a href={`https://github.com/${comments.repo}/discussions`}>GitHub Discussions</a>。</p>
-  <noscript><p>启用 JavaScript 后即可在此查看和发表评论。</p></noscript>
+  <p class='comments-fallback'>If comments do not load, visit <a href={`https://github.com/${comments.repo}/discussions`}>GitHub Discussions</a>.</p>
+  <noscript><p>Enable JavaScript to view and post comments here.</p></noscript>
 </section>}
 
 <script>
@@ -29,7 +29,7 @@ import { comments } from '../site.config'
       emitMetadata: '0',
       inputPosition: 'top',
       theme: getTheme(),
-      lang: 'zh-CN',
+      lang: 'en',
       loading: 'lazy'
     })
 

@@ -10,13 +10,13 @@ const tags = collectTags(notes)
   <Button title='Back' href={href('/')} variant='back' />
   <main class='tags-page' data-pagefind-body>
     <h1 data-pagefind-meta='title'>Tags</h1>
-    {tags.length ? <ul class='tag-cloud' aria-label='所有标签'>
+    {tags.length ? <ul class='tag-cloud' aria-label='All tags'>
       {tags.map(tag => <li>
-        <a href={href(tag.url)} class:list={['tag-chip', { 'tag-medium': tag.count === 2, 'tag-large': tag.count >= 3 }]} aria-label={`${tag.title}，${tag.count} 篇笔记`}>
+        <a href={href(tag.url)} class:list={['tag-chip', { 'tag-medium': tag.count === 2, 'tag-large': tag.count >= 3 }]} aria-label={`${tag.title}, ${tag.count} ${tag.count === 1 ? 'note' : 'notes'}`}>
           <span>{tag.title}</span><span class='tag-count'>{tag.count}</span>
         </a>
       </li>)}
-    </ul> : <p class='empty-tags'>暂无公开笔记标签。</p>}
+    </ul> : <p class='empty-tags'>No tags yet.</p>}
   </main>
 </BaseLayout>
 

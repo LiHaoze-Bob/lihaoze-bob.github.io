@@ -28,7 +28,7 @@ def test_pure_code_displays_language_without_including_label_in_copied_code():
         assert label is not None
         assert label.get_text() == language
         assert soup.select_one('.note-code code').get_text() == source
-        assert soup.select_one('.code-header button[aria-label="复制代码"]')
+        assert soup.select_one('.code-header button[aria-label="Copy code"]')
 
 
 def test_pure_code_preserves_informal_json_http_and_literal_html_without_error_tokens():
@@ -135,7 +135,7 @@ def test_filename_titles_work_with_existing_snapshot_and_keep_body_anchors(tmp_p
     assert not soup.select('h1')
     assert soup.select_one('#示例')
     assert page['cardHeadings'] == ['中文章节']
-    assert pages['courses']['title'] == 'Course'
+    assert pages['courses']['title'] == 'Courses'
     assert not pages['courses'].get('subtitle')
     listing = BeautifulSoup(pages['courses']['html'], 'html.parser')
     link = listing.select_one('a[href$="/Lecture10/"]')
@@ -185,10 +185,10 @@ def test_pure_production_build_has_search_navigation_dates_and_assets(tmp_path):
     assert soup.select_one('.note-heading').get('data-search-title') == 'Lecture2 中文 · 示例'
     assert soup.select_one('[data-pagefind-filter="kind:note"]')
     search_metadata = soup.select_one('[data-pagefind-meta="directory[data-directory]"]')
-    assert search_metadata['data-directory'] == 'Course / 测试'
-    assert search_metadata['data-section'] == 'Course'
+    assert search_metadata['data-directory'] == 'Courses / 测试'
+    assert search_metadata['data-section'] == 'Courses'
     assert search_metadata['data-pagefind-filter'] == 'section[data-section]'
-    assert [a.get_text(strip=True) for a in soup.select('#headerExpandContent > div > a')] == ['Course', 'Reading', 'Tech', 'About']
+    assert [a.get_text(strip=True) for a in soup.select('#headerExpandContent a')] == ['Notes', 'Projects', 'About']
     assert soup.select_one('toc-heading a')['href'] == '#中文章节'
     assert 'Posted Sep 14, 2026' in soup.select_one('.post-meta').get_text(' ', strip=True)
     assert 'Updated Sep 16, 2026' in soup.select_one('.post-meta').get_text(' ', strip=True)
@@ -197,6 +197,8 @@ def test_pure_production_build_has_search_navigation_dates_and_assets(tmp_path):
     assert soup.select_one('.post-navigation a[aria-label="Newer"]')['href'].endswith('/Lecture10/')
     assert not soup.select_one('.post-navigation a[aria-label="Older"]')
     assert (site / 'pagefind/pagefind.js').is_file()
+    search_index = json.loads((site / 'pagefind/pagefind-entry.json').read_text())
+    assert set(search_index['languages']) == {'zh'}  # Chinese segmentation, independent of English UI.
     assert (site / 'tags/ai-agent/index.html').is_file()
     assert (site / 'feed.xml').is_file()
     assert (site / 'assets/lib/fontawesome-free/webfonts/fa-solid-900.woff2').is_file()
@@ -214,6 +216,122 @@ def test_pure_production_build_has_search_navigation_dates_and_assets(tmp_path):
     assert chips[0]['href'] == '/tags/ai-agent/'
     assert [chip.select_one('.tag-count').get_text() for chip in chips] == ['2', '1', '1']
     assert not tags.select_one('#sidebar')
+
+    home = BeautifulSoup((site / 'index.html').read_text(), 'html.parser')
+    assert home.html['lang'] == 'en'
+    assert home.select_one('h1').get_text(strip=True) == 'Haoze Li'
+    assert home.title.get_text() == 'sychostar'
+    assert home.select_one('meta[property="og:title"]')['content'] == 'sychostar'
+    assert home.select_one('.site-brand').get_text(strip=True) == 'sychostar'
+    assert home.select_one('.site-brand')['aria-label'] == 'sychostar — Home'
+    assert home.select_one('h1 + .home-handle').get_text(strip=True) == '@sychostar'
+    assert not home.select_one('.home-handle a')
+    intro = home.select('.home .personal-prose > p')
+    assert len(intro) == 5
+    assert intro[1].select_one('a')['href'] == '/about/'
+    assert 'a CS undergrad at Zhejiang University & an AI enthusiast.' in intro[0].get_text()
+    assert home.select_one('a[href="https://space.bilibili.com/2118021600"]')
+    assert home.select_one('a[href="https://www.zhihu.com/people/sychostar"]')
+    assert not home.select_one('#post-list')
+    assert home.select_one('a[href="mailto:haozeli2025@gmail.com"]')
+    projects = BeautifulSoup((site / 'projects/index.html').read_text(), 'html.parser')
+    assert projects.select_one('#lingxiglove') and projects.select_one('#zju-sports-hub')
+    assert projects.html['lang'] == 'en'
+    about = BeautifulSoup((site / 'about/index.html').read_text(), 'html.parser')
+    assert about.html['lang'] == 'en'
+    assert not about.select_one('.about-greeting')
+    assert about.select_one('.about-music') and about.select_one('.about-activity')
+    assert about.select_one('.github-greeting img')['alt'] == 'Hi, I’m sychostar'
+    assert len(about.select('.github-note-links li')) == 4
+    assert len(about.select('.github-stats img')) == 2
+    assert len(about.select('.github-contributions img')) == 2
+    assert len(about.select('.about-activity')) == 1
+    assert 'Asia/Shanghai' in about.select_one('[data-github-weekly]').get_text()
+    assert about.select_one('[data-github-snapshot]')
+    assert about.select_one('#education')
+    notes = BeautifulSoup((site / 'notes/index.html').read_text(), 'html.parser')
+    assert len(notes.select('.note-preview')) == 4
+    assert notes.html['lang'] == 'en'
+    assert not notes.select_one('.section-heading > span')
+    assert soup.select_one('#content')['lang'] == 'zh-CN'
+    assert notes.title.get_text() == 'Notes • sychostar'
+    assert notes.select_one('.site-brand')['aria-label'] == 'sychostar — Home'
+    search = BeautifulSoup((site / 'search/index.html').read_text(), 'html.parser')
+    assert search.html['lang'] == 'en'
+    assert search.select_one('#search-input')['placeholder'] == 'Search notes…'
+    assert search.select_one('h1').get_text() == 'Search'
+    assert search.select_one('.search-clear')['aria-label'] == 'Clear search'
+    assert search.select_one('.search-clear').get_text() == '×'
+    assert not search.select_one('.search-eyebrow, .search-intro p, .search-filters button span')
+    assert not search.select_one('.search-recent')
+    assert search.select_one('.search-more').get_text() == 'Load more'
+    assert about.select_one('.about-steam')['data-ui-lang'] == 'en'
+    assert 'Snapshot at publication' in about.select_one('.about-steam').get_text()
+    assert '2 notes' in course.select_one('.course-tree').get_text()
+    assert not (site / 'page2').exists()
+    assert next(a for a in soup.select('a') if a.get_text(strip=True) == 'Back')['href'] == '/notes/'
+
+
+def test_pure_taxonomy_preserves_raw_paths_and_legacy_category_routes(tmp_path):
+    docs = snapshot(tmp_path)
+    data = stage(docs, tmp_path / 'stage', ROOT / 'site-template', {'baseurl': ''}, {})
+    pages = {p['route']: p for p in json.loads(data.read_text())['pages']}
+    assert pages['knowledge']['title'] == 'Articles'
+    assert pages['courses']['title'] == 'Courses'
+    assert pages['knowledge/示例']['directory'] == ['Tech']
+    assert 'categories/tech' in pages and 'categories/course' in pages
+    assert pages['categories/tech']['title'] == 'Articles'
+    assert pages['categories/course']['title'] == 'Courses'
+    about = BeautifulSoup(pages['about']['html'], 'html.parser')
+    assert not about.select_one('.about-intro')
+    assert not about.select_one('.about-activity')
+    assert about.select_one('.about-music')
+    assert 'about-intro' in (ROOT / 'site-template/_tabs/about.md').read_text()
+
+
+def test_notes_hub_and_flat_sections_keep_deep_links_and_all_eleven_notes(tmp_path):
+    docs = snapshot(tmp_path)
+    manifest_path = docs / 'publication.json'
+    manifest = json.loads(manifest_path.read_text())
+    for index in range(7):
+        path = f'knowledge/tech/AI/Example{index}.md'
+        target = docs / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(f'---\ntitle: Example{index}\n---\nA practical example.')
+        manifest['notes'].append({'path': path, 'title': f'Example{index}', 'published_at': '2026-12-31T16:30:00Z'})
+    (docs / 'knowledge/tech/index.md').write_text('# 技术积累\n')
+    (docs / 'knowledge/tech/AI/index.md').write_text('# AI\n')
+    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False))
+    before = {p: p.read_bytes() for p in docs.rglob('*') if p.is_file()}
+    work = tmp_path / 'build'
+    build_snapshot(docs, work, theme='pure')
+    site = work / 'site'
+    hub = BeautifulSoup((site / 'notes/index.html').read_text(), 'html.parser')
+    second = BeautifulSoup((site / 'page2/index.html').read_text(), 'html.parser')
+    first_urls = [link['href'] for link in hub.select('.note-preview h3 a')]
+    second_urls = [link['href'] for link in second.select('.note-preview h3 a')]
+    assert len(first_urls) == 10 and len(second_urls) == 1
+    assert len(set(first_urls + second_urls)) == 11
+    assert second.select_one('.pagination a')['href'] == '/notes/'
+    assert second.html['lang'] == 'en'
+    assert [h.get_text(strip=True) for h in hub.select('.note-year > h2')] == ['2027', '2026']
+    articles = BeautifulSoup((site / 'knowledge/index.html').read_text(), 'html.parser')
+    assert len(articles.select('.note-preview')) == 8
+    assert not articles.select_one('.course-tree')
+    assert 'prose' not in articles.select_one('#content')['class'], 'article typography hides heading links in listings'
+    reading = BeautifulSoup((site / 'reading/index.html').read_text(), 'html.parser')
+    assert len(reading.select('.note-preview')) == 1
+    assert not reading.select_one('.course-tree')
+    assert 'prose' not in reading.select_one('#content')['class']
+    article = BeautifulSoup((site / 'knowledge/tech/AI/Example0/index.html').read_text(), 'html.parser')
+    metadata = article.select_one('[data-pagefind-meta="directory[data-directory]"]')
+    assert metadata['data-section'] == 'Articles'
+    assert metadata['data-directory'] == 'Articles / AI'
+    assert article.select_one('#breadcrumb a[href="/knowledge/tech/AI/"]')
+    assert not article.select_one('#breadcrumb a[href="/knowledge/tech/"]')
+    assert (site / 'knowledge/tech/index.html').is_file()
+    assert (site / 'categories/tech/index.html').is_file()
+    assert before == {p: p.read_bytes() for p in docs.rglob('*') if p.is_file()}
 
 
 def test_pure_feed_contains_full_readable_articles_and_absolute_resources(tmp_path):
@@ -268,3 +386,15 @@ $$
     assert item.findtext('pubDate') == 'Mon, 14 Sep 2026 04:30:00 GMT'
     assert item.findtext('guid') == item.findtext('link')
     assert 'PRIVATE_SENTINEL' not in body
+
+
+def test_english_directory_counts_preserve_content_and_legacy_output():
+    from scripts.jekyll import folder_tree, section_list
+    notes = {'courses/中文课程/子目录/笔记.md': {'title': '中文标题'}}
+    english = BeautifulSoup(folder_tree(notes, 'courses', '', {}, lang='en'), 'html.parser')
+    assert english.select_one('.small').get_text() == '1 folder · 1 note'
+    assert '中文标题' in english.get_text()
+    assert '个子目录' in folder_tree(notes, 'courses', '', {})
+    for renderer in (folder_tree, section_list):
+        assert 'No notes yet.' in renderer({}, 'reading', '', {}, lang='en')
+        assert '暂无公开笔记。' in renderer({}, 'reading', '', {})

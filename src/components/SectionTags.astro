@@ -9,8 +9,8 @@ const sortedTags = collectTags(notes.filter(note => note.route.startsWith(`${sec
 <section class='section-tags' aria-labelledby='section-tags-heading' data-pagefind-ignore>
   <h2 id='section-tags-heading'><i class='fa-solid fa-tags' aria-hidden='true'></i> Tags</h2>
   {sortedTags.length ? <ul>
-    {sortedTags.map(tag => <li><a href={href(tag.url)} title={`${tag.count} 篇本栏目笔记`}>{tag.title}</a></li>)}
-  </ul> : <p class='empty-tags'>本栏目暂无标签</p>}
+    {sortedTags.map(tag => <li><a href={href(tag.url)} title={`${tag.count} ${tag.count === 1 ? 'note' : 'notes'} in this section`}>{tag.title}</a></li>)}
+  </ul> : <p class='empty-tags'>No tags in this section.</p>}
   <a class='all-tags' href={href('/tags/')}>View all <span aria-hidden='true'>→</span></a>
 </section>
 

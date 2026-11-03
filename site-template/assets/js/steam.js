@@ -8,12 +8,15 @@
   } catch { return }
   card.dataset.steamStarted = 'true'
 
-  const labels = { offline: '离线', online: '在线', 'in-game': '游戏中', away: '离开',
+  const english = card.dataset.uiLang === 'en'
+  const ui = (en, zh) => english ? en : zh
+  const labels = english ? { offline: 'Offline', online: 'Online', 'in-game': 'In game', away: 'Away',
+    busy: 'Busy', snooze: 'Snooze', trade: 'Looking to trade', play: 'Looking to play', unknown: 'Status is private' } : { offline: '离线', online: '在线', 'in-game': '游戏中', away: '离开',
     busy: '忙碌', snooze: '睡眠', trade: '想要交易', play: '想要玩游戏', unknown: '状态未公开' }
   const query = selector => card.querySelector(selector)
   const message = query('.steam-refresh')
   const status = query('.steam-status')
-  const formatter = new Intl.DateTimeFormat('zh-CN', {
+  const formatter = new Intl.DateTimeFormat(english ? 'en-GB' : 'zh-CN', {
     timeZone: 'Asia/Shanghai', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false,
   })
   const validDate = value => typeof value === 'string' && Number.isFinite(Date.parse(value))
@@ -46,7 +49,7 @@
     level.hidden = data.level === null
     const stats = query('.steam-stats')
     stats.replaceChildren()
-    for (const [key, label] of [['badges', '徽章'], ['games', '游戏']]) {
+    for (const [key, label] of [['badges', ui('Badges', '徽章')], ['games', ui('Games', '游戏')]]) {
       if (data[key] === null) continue
       const item = element('div')
       item.append(element('dt', label), element('dd', data[key]))
@@ -54,12 +57,12 @@
     }
     const playtime = query('.steam-playtime')
     playtime.replaceChildren()
-    if (data.recentHours === null) playtime.textContent = '游玩信息未公开'
-    else playtime.append('近两周 ', element('strong', data.recentHours), ' 小时')
+    if (data.recentHours === null) playtime.textContent = ui('Playtime is private', '游玩信息未公开')
+    else playtime.append(ui('Past two weeks: ', '近两周 '), element('strong', data.recentHours), ui(' hours', ' 小时'))
     const recent = query('.steam-recent')
     recent.replaceChildren()
     recent.hidden = data.recentGames.length === 0
-    recent.setAttribute('aria-label', '近两周游玩的游戏')
+    recent.setAttribute('aria-label', ui('Recently played games', '近两周游玩的游戏'))
     for (const game of data.recentGames) {
       const link = element('a', undefined, 'steam-game')
       link.href = `https://store.steampowered.com/app/${game.appid}/`
@@ -70,7 +73,7 @@
         link.append(image)
       }
       link.append(element('strong', game.name))
-      if (game.hours !== null) link.append(element('span', `${game.hours} h 总计`))
+      if (game.hours !== null) link.append(element('span', `${game.hours} h ${ui('total', '总计')}`))
       recent.append(link)
     }
     setTime('.steam-stats-updated', data.updatedAt)
@@ -99,16 +102,16 @@
       const src = imageURL(data.avatar)
       if (src && avatar) avatar.src = src
       status.dataset.status = data.status
-      status.textContent = data.status === 'in-game' && data.currentGame ? `正在玩 ${data.currentGame}` : labels[data.status]
-      status.title = '每 60 秒查询；Steam 数据与缓存可能有延迟'
+      status.textContent = data.status === 'in-game' && data.currentGame ? `${ui('Playing ', '正在玩 ')}${data.currentGame}` : labels[data.status]
+      status.title = ui('Checked every 60 seconds; Steam data and caches may be delayed', '每 60 秒查询；Steam 数据与缓存可能有延迟')
       setTime('.steam-status-updated', data.updatedAt)
       if (!data.isPublic) {
         renderStats({ level: null, badges: null, games: null, recentHours: null, recentGames: [], updatedAt: data.updatedAt })
       } else if (data.stats) renderStats(data.stats)
-      message.textContent = data.isPublic && !data.stats ? '状态每 60 秒更新 · 资料更新暂不可用' : '每 60 秒自动更新'
+      message.textContent = data.isPublic && !data.stats ? ui('Status updates every 60 seconds · Profile update unavailable', '状态每 60 秒更新 · 资料更新暂不可用') : ui('Updates every 60 seconds', '每 60 秒自动更新')
     } catch {
-      message.textContent = '更新暂不可用，保留上次数据'
-      status.title = '上次采集的状态；请查看下方采集时间'
+      message.textContent = ui('Update unavailable; showing previous data', '更新暂不可用，保留上次数据')
+      status.title = ui('Previously collected status; see the collection time below', '上次采集的状态；请查看下方采集时间')
     } finally {
       clearTimeout(timeout)
       pending = false
@@ -123,6 +126,6 @@
   document.addEventListener('visibilitychange', resume)
   window.addEventListener('pagehide', () => { clearInterval(timer); controller?.abort() })
   window.addEventListener('pageshow', event => { if (event.persisted) resume() })
-  message.textContent = '正在更新…'
+  message.textContent = ui('Updating…', '正在更新…')
   resume()
 })()

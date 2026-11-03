@@ -7,7 +7,7 @@ const site = 'https://lihaoze-bob.github.io'
 
 export async function GET() {
   return rss({
-    title: 'sychostar', description: '课程笔记、技术积累与阅读记录',
+    title: 'sychostar', description: 'Course notes, reading notes, and articles',
     site,
     customData: `<follow_challenge>
       <feedId>1349994631041386854</feedId>
