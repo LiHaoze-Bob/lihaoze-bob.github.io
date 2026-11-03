@@ -1,0 +1,56 @@
+---
+import snapshot from '../data/bangumi.json'
+
+const profileUrl = `https://bgm.tv/user/${snapshot.username}`
+---
+<section class='bangumi-watching' aria-labelledby='bangumi-watching-title' data-bangumi-watching data-username={snapshot.username}>
+  <div class='bangumi-heading'>
+    <h3 id='bangumi-watching-title'>WATCHING</h3>
+    <a class='bangumi-profile' href={profileUrl} aria-label='View my Bangumi profile'>Bangumi <span aria-hidden='true'>↗</span></a>
+  </div>
+  <div class='personal-prose'>
+    <p lang='ja'>私、気になります！</p>
+  </div>
+  <ul class='bangumi-grid' data-bangumi-grid>
+    {snapshot.cards.map(card => <li>
+      <a class='bangumi-card' href={`https://bgm.tv/subject/${card.id}`}>
+        <div class='bangumi-poster'>
+          <span class='bangumi-cover-fallback' aria-hidden='true'>BGM</span>
+          {card.image && <img src={card.image} alt='' width='240' height='340' loading='lazy' decoding='async' referrerpolicy='no-referrer' />}
+          <span class='bangumi-badge'><span aria-hidden='true'></span>Watching</span>
+        </div>
+        <span class='bangumi-title'>{card.title}</span>
+      </a>
+    </li>)}
+  </ul>
+  <p class='bangumi-empty' data-bangumi-empty hidden={snapshot.cards.length > 0}>Nothing on my watchlist right now.</p>
+  <p class='bangumi-updated' data-bangumi-updated role='status'>Saved list · {snapshot.fetchedAt.slice(0, 10)}</p>
+</section>
+<script>
+  import { setupBangumiWatching } from '../scripts/bangumi'
+  const root = document.querySelector<HTMLElement>('[data-bangumi-watching]')
+  if (root) setupBangumiWatching(root)
+</script>
+<style is:global>
+  .about-page .bangumi-watching { margin-top: 2.25rem; min-width: 0; }
+  .bangumi-watching .bangumi-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+  .about-page .bangumi-watching h3 { margin: 0; }
+  .bangumi-watching .bangumi-profile { color: var(--text-muted-color); font-size: .7rem; text-decoration: none; }
+  .bangumi-watching .bangumi-profile:hover { color: var(--text-color); text-decoration: underline; text-underline-offset: 3px; }
+  .bangumi-watching .bangumi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; padding: 0; margin: 0; list-style: none; }
+  .bangumi-watching .bangumi-grid li { min-width: 0; }
+  .bangumi-watching .bangumi-card { display: block; color: var(--text-color); text-decoration: none; border-radius: .8rem; }
+  .bangumi-watching .bangumi-card:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+  .bangumi-watching .bangumi-poster { position: relative; isolation: isolate; overflow: hidden; aspect-ratio: 12 / 17; border-radius: .8rem; background: hsl(var(--muted)); border: 1px solid var(--main-border-color); }
+  .bangumi-watching .bangumi-cover-fallback { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-mono); font-size: 1.2rem; letter-spacing: .18em; color: var(--text-muted-color); }
+  .bangumi-watching .bangumi-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; margin: 0; border-radius: 0; transition: filter .2s; }
+  .bangumi-watching .bangumi-card:hover img { filter: brightness(.9); }
+  .bangumi-watching .bangumi-badge { position: absolute; bottom: .55rem; left: .55rem; display: inline-flex; align-items: center; gap: .3rem; padding: .15rem .45rem; border: 1px solid #ffffff30; border-radius: 999px; background: #171717df; color: #fff; font-family: var(--font-mono); font-size: .55rem; line-height: 1.7; letter-spacing: 0; }
+  .bangumi-watching .bangumi-badge > span { width: 4px; height: 4px; border-radius: 50%; background: #a9d5b2; }
+  .bangumi-watching .bangumi-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin-top: .65rem; font-size: .78rem; line-height: 1.65; font-weight: 500; overflow-wrap: anywhere; }
+  .bangumi-watching .bangumi-card:hover .bangumi-title { text-decoration: underline; text-underline-offset: 3px; }
+  .bangumi-watching .bangumi-updated, .bangumi-watching .bangumi-empty { margin: .85rem 0 0; color: var(--text-muted-color); font-size: .65rem; }
+  .bangumi-watching [hidden] { display: none; }
+  @media (max-width: 540px) { .bangumi-watching .bangumi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem .9rem; } }
+  @media (prefers-reduced-motion: reduce) { .bangumi-watching .bangumi-poster img { transition: none; } }
+</style>

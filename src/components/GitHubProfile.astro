@@ -1,0 +1,112 @@
+---
+import { Icon } from 'astro-pure/user'
+import { profile } from '../data/profile'
+import snapshot from '../data/github-profile.json'
+import { notes, date } from '../lib/content'
+import { href } from '../site.config'
+
+const themes = ['light', 'dark'] as const
+const stats = 'https://github-stats-extended.vercel.app/api?username=LiHaoze-Bob&show_icons=true&hide_border=true'
+---
+<div class='github-profile' data-github-profile>
+  <section class='github-intro personal-prose' aria-label='Introduction'>
+    <h2 class='github-greeting' data-profile-image>
+      <img src="https://glitch-art.vercel.app/api/simple?word=Hi%20I%27m%20sychostar&amp;font=Doto" width='220' height='25' alt="Hi, I’m sychostar" />
+      <span class='image-fallback' hidden>Hi, I’m sychostar</span><span aria-hidden='true'>👋</span>
+    </h2>
+    <p>I’m {profile.name}, an undergrad at <a href={profile.school.url}>{profile.school.name}</a>, majoring in computer science. Currently exploring deep learning, AI agents, and whatever sparks my curiosity.</p>
+    <p>Read my <a class='github-notes-link' href={href('/notes/')}><img src={href(profile.avatar)} width='16' height='16' alt='' /> notes</a> on things I’m learning along the way.</p>
+    <nav class='github-socials' aria-label='Social profiles and contact'>
+      <p class='github-social-row'><strong>Find me @</strong><span class='github-social-links'>
+        <a href={profile.github} rel='me'><Icon name='github' color='#8957e5' />GitHub</a>
+        <a href={profile.bilibili} rel='me'><Icon name='bilibili' color='#fb7299' />Bilibili</a>
+        <a href={profile.zhihu} rel='me'><Icon name='zhihu' color='#0084ff' />Zhihu</a>
+      </span></p>
+      <p class='github-social-row'><strong>Reach me @</strong><span class='github-social-links'>
+        <a href={`mailto:${profile.email}`}><img src={href('/assets/images/gmail.svg')} width='18' height='14' alt='' />Email</a>
+      </span></p>
+    </nav>
+  </section>
+
+  <section class='github-recent' aria-labelledby='github-recent-title'>
+    <h2 class='about-label' id='github-recent-title'><span aria-hidden='true'>📝</span> Recent Notes</h2>
+    <div class='personal-prose'>
+      <p>I use Obsidian to work through what I’m learning.</p>
+    </div>
+    <ol class='github-note-links'>
+      {notes.slice(0, 5).map((note, index) => <li><span aria-hidden='true'>#{String(index + 1).padStart(2, '0')}</span><a href={note.url}>{note.subtitle || note.title}</a></li>)}
+    </ol>
+    <p class='github-obsidian'>Time @<span class='obsidian-brand'><img src={href('/assets/images/obsidian.svg')} width='16' height='18' alt='' />Obsidian</span> · <span data-github-obsidian>{snapshot.obsidian.replace(/^Time @Obsidian · /, '')}</span></p>
+  </section>
+
+  <section class='github-coding about-activity' aria-labelledby='github-coding-title'>
+    <h2 class='about-label' id='github-coding-title'><span aria-hidden='true'>💻</span> Coding</h2>
+    <div class='personal-prose'>
+      <p>I keep the code on <a href={profile.github}>GitHub</a>, along with my coursework and other projects.</p>
+    </div>
+    <h3>GitHub activity</h3>
+    {themes.map(theme => <div class={`github-stats github-${theme}`} data-profile-image>
+      <a href={profile.github} aria-label='View LiHaoze-Bob on GitHub'><img src={`${stats}&theme=${theme === 'dark' ? 'github_dark' : 'default'}`} width='467' height='195' alt="sychostar’s GitHub statistics" /></a>
+      <p class='image-fallback' hidden>Statistics are unavailable. <a href={profile.github}>View my GitHub profile →</a></p>
+    </div>)}
+    <h3>This week</h3>
+    <div class='personal-prose'>
+      <p>Here’s what my coding time looked like over the past week.</p>
+    </div>
+    <pre class='github-weekly' tabindex='0' aria-label='Weekly coding activity' data-github-weekly>{snapshot.weekly}</pre>
+    <p class='github-snapshot' data-github-snapshot>Saved GitHub snapshot · {date(snapshot.sourceUpdatedAt)}</p>
+    <p class='github-refresh' data-github-refresh role='status' aria-live='polite'></p>
+    <h3>Contribution trail</h3>
+    <div class='personal-prose'>
+      <p>And here’s a playful look at my GitHub contributions.</p>
+    </div>
+    {themes.map(theme => <div class={`github-contributions github-${theme}`} data-profile-image>
+      <a href={profile.github} aria-label='View contributions on GitHub'><img src={`https://raw.githubusercontent.com/LiHaoze-Bob/LiHaoze-Bob/output/github-snake${theme === 'dark' ? '-dark' : ''}.svg`} width='680' alt='LiHaoze-Bob contribution snake' /></a>
+      <p class='image-fallback' hidden>Contribution trail is unavailable. <a href={profile.github}>View it on GitHub →</a></p>
+    </div>)}
+  </section>
+  <slot name='education' />
+</div>
+<script>
+  import { setupGitHubProfile } from '../scripts/github-profile'
+  const root = document.querySelector<HTMLElement>('[data-github-profile]')
+  if (root) setupGitHubProfile(root)
+</script>
+<style>
+  .github-profile { min-width: 0; }
+  .github-greeting { display: flex; align-items: center; flex-wrap: wrap; gap: .65rem; font-size: 1.25rem; margin: 0 0 1.5rem; }
+  .github-greeting img { width: 220px; height: 25px; max-width: 100%; }
+  .github-notes-link { white-space: nowrap; }
+  .github-notes-link img { display: inline-block; width: 16px; height: 16px; border-radius: 50%; object-fit: cover; vertical-align: -.15em; }
+  .github-socials { display: grid; gap: .7rem; margin-top: 1.5rem; font-size: .85rem; }
+  .github-socials .github-social-row { display: grid; grid-template-columns: 6.4rem minmax(0, 1fr); align-items: baseline; gap: .5rem; margin: 0; }
+  .github-social-row strong { font-weight: 600; white-space: nowrap; }
+  .github-social-links { display: flex; flex-wrap: wrap; align-items: baseline; gap: .45rem 1.1rem; }
+  .github-socials a { display: inline-flex; align-items: center; gap: .35rem; white-space: nowrap; }
+  .github-socials :global(svg), .github-socials img { display: inline-block; width: 16px; height: 16px; vertical-align: -.15em; margin-right: 4px; }
+  .github-socials img { width: 18px; height: 14px; }
+  .github-recent, .github-coding { margin-top: 3rem; }
+  .github-coding { border-top: 0; padding-top: 0; }
+  .github-obsidian, .github-snapshot, .github-refresh, .image-fallback { color: var(--text-muted-color); font-size: .8rem; }
+  .github-greeting .image-fallback { font-size: 1.25rem; color: var(--text-color); }
+  .github-obsidian { margin: 1rem 0 0; font-size: .75rem; }
+  .obsidian-brand { white-space: nowrap; }
+  .obsidian-brand img { display: inline-block; width: 16px; height: 18px; object-fit: contain; margin-right: 3px; vertical-align: -.25em; }
+  .github-note-links { list-style: none; padding: 0; margin: 0 0 .6rem; }
+  .github-note-links li { display: flex; align-items: baseline; gap: .85rem; padding: .55rem 0; }
+  .github-note-links li + li { border-top: 1px solid hsl(var(--foreground) / .07); }
+  .github-note-links span { color: var(--text-muted-color); font-family: var(--font-mono); font-size: .78rem; flex-shrink: 0; }
+  .github-note-links a { font-size: .95rem; text-decoration: none; }
+  .github-note-links a:hover, .image-fallback a { text-decoration: underline; text-decoration-color: hsl(var(--foreground) / .25); text-underline-offset: .2em; }
+  .github-coding h3 { font-family: var(--font-mono); color: var(--text-muted-color); font-size: .8rem; font-weight: 500; margin: 1.75rem 0 .85rem; }
+  .github-coding .about-label + h3 { margin-top: 0; }
+  .github-stats img { width: min(100%, 467px); height: auto; border-radius: .65rem; }
+  .github-contributions img { width: 100%; height: auto; }
+  .github-weekly { max-width: 100%; overflow-x: auto; padding: 1.1rem; margin: 0; font-family: var(--font-mono); font-size: .75rem; line-height: 1.8; background: hsl(var(--muted)); border: 1px solid var(--main-border-color); border-radius: .75rem; }
+  .github-snapshot, .github-refresh { margin: .5rem 0 0; font-size: .75rem; }
+  .github-refresh:empty { display: none; }
+  .github-dark { display: none; }
+  :global(.dark) .github-dark { display: block; }
+  :global(.dark) .github-light { display: none; }
+  .github-profile [hidden] { display: none; }
+</style>

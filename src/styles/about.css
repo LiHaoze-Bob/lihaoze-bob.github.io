@@ -1,0 +1,32 @@
+/* About-only hierarchy: quiet section labels, with the content doing the talking. */
+.personal-content.about-page .about-label {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  margin: 0 0 1.25rem;
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-muted-color);
+}
+.about-page .personal-education { margin: 3rem 0 0; }
+.about-page .education-card { padding: 1.2rem 1.35rem; }
+.about-page .education-copy h3 { font-size: 1rem; line-height: 1.5; }
+.about-page .education-copy p { font-size: .8rem; }
+.about-page .education-copy p:last-child { margin-top: .5rem; font-size: .72rem; }
+.about-page .about-fun { margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--main-border-color); }
+.about-page .about-fun > .about-label { text-transform: none; font-size: .85rem; letter-spacing: .08em; color: var(--text-color); }
+.about-page .about-label > span[aria-hidden] { flex-shrink: 0; font-size: 1rem; line-height: 1; letter-spacing: 0; }
+.about-page .about-fun .about-music { margin-top: 1.75rem; }
+.about-page .about-fun .about-steam { margin-top: 2rem; }
+.about-page .about-profile .about-personal-note { margin: 0 0 1.1rem; }
+.about-page .about-fun h3 { margin: 0 0 1rem; font-family: var(--font-mono); font-size: .7rem; font-weight: 500; letter-spacing: .14em; line-height: 1.5; color: var(--text-muted-color); }
+.about-page .about-fun .steam-card { background: hsl(var(--muted)); }
+.about-page .about-fun .about-player img { box-shadow: none; }
+@media (max-width: 479px) {
+  .about-page .education-card { padding: 1rem; }
+  .about-page .about-fun { margin-top: 3rem; }
+}

@@ -16,6 +16,7 @@ permalink: /about/
     </section>
     <section class="about-music" aria-labelledby="about-music-title">
       <h2 id="about-music-title">NOW PLAYING</h2>
+      <p class="about-personal-note">Here’s what I’ve been listening to lately. I listen to a lot of R&amp;B, Jay Chou, and rock ’n’ roll.</p>
       <a class="about-player" href="https://www.last.fm/user/sychostar7" aria-label="Now Playing — view sychostar7 on Last.fm">
         <img src="https://nowplaying-beryl.vercel.app/api/now-playing?user=sychostar7&amp;width=420&amp;cover=cd&amp;spin=always&amp;spin_speed=8&amp;v=da4f80e" width="420" height="118" alt="Now Playing — current or last played track on Last.fm" />
       </a>
