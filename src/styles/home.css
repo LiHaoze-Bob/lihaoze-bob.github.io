@@ -37,7 +37,8 @@ body.personal-page {
 .education-copy h3 { margin: 0; font-size: 1.1rem; font-weight: 600; }
 .education-art { position: absolute; z-index: 0; top: 50%; right: -.75rem; width: 46%; max-width: 19rem; aspect-ratio: 1; transform: translateY(-50%); overflow: hidden; pointer-events: none; opacity: .25; mix-blend-mode: multiply; mask-image: linear-gradient(to right, transparent, #000 35%); }
 .education-art img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: left center; }
-.dark .education-art { filter: grayscale(1) invert(1); mix-blend-mode: screen; opacity: .2; }
+/* Preserve school colors and keep the artwork visible against dark cards. */
+.dark .education-art { mix-blend-mode: screen; opacity: .35; }
 @media (max-width: 479px) {
   .personal-education .education-card { padding: .85rem 1rem; }
   .education-copy h3 { font-size: 1rem; }
