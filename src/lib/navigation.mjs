@@ -9,7 +9,7 @@ export function sectionFor(route) {
 
 /** @param {string} value */
 export function normalizeSection(value) {
-  return sections.find(section => section.label === value || section.legacyLabel === value)?.label || ''
+  return sections.find(section => section.label === value || section.legacyLabel === value || section.aliases?.includes(value))?.label || ''
 }
 
 /** @param {string} route @param {string[]} [directory] */

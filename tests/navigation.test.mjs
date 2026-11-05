@@ -3,24 +3,25 @@ import assert from 'node:assert/strict'
 import { sectionFor, normalizeSection, displayDirectory, displayBreadcrumbs, paginateNotes, groupByYear } from '../src/lib/navigation.mjs'
 
 test('legacy search links select the same content type as current links', () => {
-  for (const [input, expected] of [['Course', 'Courses'], ['Tech', 'Articles'], ['Reading', 'Reading'], ['Articles', 'Articles'], ['', ''], ['unknown', '']]) {
+  for (const [input, expected] of [['Course', 'Courses'], ['Tech', 'Blog'], ['Reading', 'Reading'], ['Articles', 'Blog'], ['Blog', 'Blog'], ['', ''], ['unknown', '']]) {
     assert.equal(normalizeSection(input), expected)
   }
-  assert.equal(sectionFor('knowledge/tools/IPA 自动续签').label, 'Articles')
+  assert.equal(sectionFor('knowledge/tools/IPA 自动续签').label, 'Blog')
   assert.equal(sectionFor('courses/ADS-ZJU/Dynamic Programming').label, 'Courses')
   assert.equal(sectionFor('reading/paper/Toolformer').label, 'Reading')
   assert.equal(sectionFor('knowledgeable/example'), undefined)
 })
 
 test('display paths hide only known storage folders and retain meaningful descendants', () => {
-  assert.deepEqual(displayDirectory('knowledge/tech/AI/Example', ['Tech', '技术积累', '人工智能']), ['Articles', '人工智能'])
-  assert.deepEqual(displayDirectory('knowledge/tools/Example', ['Tech', 'Tools']), ['Articles'])
+  assert.deepEqual(displayDirectory('knowledge/tech/AI/Example', ['Tech', '技术积累', '人工智能']), ['Blog', '人工智能'])
+  assert.deepEqual(displayDirectory('knowledge/tools/Example', ['Tech', 'Tools']), ['Blog'])
   assert.deepEqual(displayDirectory('reading/paper/Example', ['Reading', 'Paper']), ['Reading'])
   assert.deepEqual(displayDirectory('reading/reading/Example', ['Reading', 'Reading']), ['Reading'])
+  assert.deepEqual(displayDirectory('reading/articles/AI/Example', ['Reading', 'Articles', 'AI']), ['Reading', 'AI'])
   assert.deepEqual(displayDirectory('reading/reader/Example', ['Reading', 'Reader']), ['Reading', 'Reader'])
   assert.deepEqual(displayDirectory('courses/FDS/notes/Example', ['Course', 'FDS', 'notes']), ['Courses', 'FDS', 'notes'])
   const crumbs = [{ title: 'Tech', url: '/knowledge/' }, { title: '技术积累', url: '/knowledge/tech/' }, { title: '人工智能', url: '/knowledge/tech/AI/' }]
-  assert.deepEqual(displayBreadcrumbs(crumbs), [{ title: 'Articles', url: '/knowledge/' }, { title: '人工智能', url: '/knowledge/tech/AI/' }])
+  assert.deepEqual(displayBreadcrumbs(crumbs), [{ title: 'Blog', url: '/knowledge/' }, { title: '人工智能', url: '/knowledge/tech/AI/' }])
   assert.equal(crumbs[0].title, 'Tech', 'raw metadata must not be mutated')
 })
 

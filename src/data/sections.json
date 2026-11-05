@@ -1,5 +1,5 @@
 [
   { "route": "courses", "label": "Courses", "legacyLabel": "Course", "description": "Course notes, labs, and related topics.", "storageFolders": [] },
-  { "route": "reading", "label": "Reading", "legacyLabel": "Reading", "description": "Notes on papers, books, and articles.", "storageFolders": ["paper", "reading"] },
-  { "route": "knowledge", "label": "Articles", "legacyLabel": "Tech", "description": "Explanations, practical guides, and personal reflections.", "storageFolders": ["tech", "tools"] }
+  { "route": "reading", "label": "Reading", "legacyLabel": "Reading", "description": "Notes on papers, books, and articles.", "storageFolders": ["paper", "reading", "articles"] },
+  { "route": "knowledge", "label": "Blog", "legacyLabel": "Tech", "aliases": ["Articles"], "description": "Explanations, practical guides, and personal reflections.", "storageFolders": ["tech", "tools"] }
 ]

@@ -18,7 +18,7 @@ cp local.example.toml local.toml
 .venv/bin/python scripts/site.py publish
 ```
 
-`local.toml` holds machine-specific settings and is ignored by Git. `publish.toml` limits exports to five configured source directories: courses, technical notes, tools, reading notes, and papers. GitHub Actions builds the exported public snapshot without access to the vault.
+`local.toml` holds machine-specific settings and is ignored by Git. `publish.toml` limits exports to `30_Courses`, `50_Blog/Archive`, and `40_Reading/{Books,Papers,Articles}`. `40_Reading/News` is excluded. Nested source mappings take precedence. `30_Courses/Archive` also maps to `courses`, preserving archived course URLs. For Blog, `50_Blog/Archive/Notes` retains `knowledge/tech`, `50_Blog/Archive/Tools` retains `knowledge/tools`, and other archived Blog notes use `knowledge`. The Blog root is a writing area and is excluded even when a draft has `publish: true`; move a finished note into `Archive` to make it eligible for publication. Reading articles use `reading/articles`; existing book, paper, and course destinations remain unchanged. GitHub Actions builds the exported public snapshot without access to the vault.
 
 ## Publishing from Obsidian
 
@@ -70,7 +70,7 @@ Pure provides the header, reading layout, right-hand table of contents, theme sw
 
 The RSS feed at `/feed.xml` includes the full rendered body of every public note in `content:encoded`, alongside its summary. Body links and images use absolute URLs, callouts become always-visible blockquotes with bold titles, and script-dependent buttons are removed for feed readers. MathJax 3.2.2 renders inline and display formulas at build time into PNGs under `/assets/rss-math/`, with TeX source as alt text. These images are hosted with the site and have a white background for readability in light and dark readers; invalid TeX stays visible as literal text. Article URLs, GUIDs, and publication dates stay stable.
 
-The header links to Notes, Projects, and About. Notes provides All / Courses / Reading / Articles links. The three section landing pages show a sidebar tag cloud for their public notes, ordered by frequency. On narrow screens, a sidebar button reveals it. Empty sections show an empty state; View all opens the global tag page. That page uses a wrapping tag cloud with public-note counts, sorted by frequency, with larger text for common tags. Image zoom, code copying, MathJax, and RSS remain available. PWA offline caching is not configured.
+The header links to Notes, Projects, and About. Notes provides All / Courses / Reading / Blog links. The three section landing pages show a sidebar tag cloud for their public notes, ordered by frequency. On narrow screens, a sidebar button reveals it. Empty sections show an empty state; View all opens the global tag page. That page uses a wrapping tag cloud with public-note counts, sorted by frequency, with larger text for common tags. Image zoom, code copying, MathJax, and RSS remain available. PWA offline caching is not configured.
 
 ### Files to edit
 
@@ -86,13 +86,13 @@ The header links to Notes, Projects, and About. Notes provides All / Courses / R
 
 ### Sections and navigation
 
-The public content types are **Courses** (`/courses/`), **Reading** (`/reading/`), and **Articles** (`/knowledge/`). `src/data/sections.json` owns their displayed labels, old search aliases, and storage-only folder names. Sources and destination paths in `publish.toml` remain unchanged.
+The public content types are **Courses** (`/courses/`), **Reading** (`/reading/`), and **Blog** (`/knowledge/`). `src/data/sections.json` owns their displayed labels, old search aliases, and storage-only folder names. The Blog label retains the `/knowledge/` route, and existing note URLs remain unchanged.
 
-Courses contains notes organized around a course, including labs and supporting topics, and preserves the directory tree. Reading contains source-centered notes on papers, books, and articles. Articles contains standalone explanations, practical guides, and reflections. Reading and Articles show flat date-ordered lists, including all their public descendants. Topics remain searchable through existing tags; no extra frontmatter is required.
+Courses contains notes organized around a course, including labs and supporting topics, and preserves the directory tree. Reading contains source-centered notes on papers, books, and articles. Blog contains standalone explanations, practical guides, and reflections. Reading and Blog show flat date-ordered lists, including all their public descendants. Topics remain searchable through existing tags; no extra frontmatter is required.
 
 `/notes/` is the complete feed, ten notes per page. `/page2/` and later URLs remain valid, and page one links to `/notes/`. Each page groups its own entries by year in Asia/Shanghai. Lists retain filename titles, original subtitles, dates, and display directories; they do not show long summaries.
 
-The display paths of Reading and Articles omit only their known storage folders (`reading/paper`, `reading/reading`, `knowledge/tech`, `knowledge/tools`), retaining deeper meaningful directories. Courses keeps its full hierarchy. Raw paths, old intermediate indexes, category/tag URLs, and comment mappings remain stable. Article Back links return to Notes; breadcrumb Home links return to the personal homepage.
+The display paths of Reading and Blog omit only their known storage folders (`reading/paper`, `reading/reading`, `reading/articles`, `knowledge/tech`, `knowledge/tools`), retaining deeper meaningful directories. Courses keeps its full hierarchy. Raw paths, old intermediate indexes, category/tag URLs, and comment mappings remain stable. Article Back links return to Notes; breadcrumb Home links return to the personal homepage.
 
 ### Publication dates and directory indexes
 
@@ -149,11 +149,11 @@ Pure displays page views beneath About and note titles using [Busuanzi](https://
 
 The header search button works on desktop and mobile. Press `⌘K` on macOS or `Ctrl+K` elsewhere to open search; pressing it again on the search page selects the current query.
 
-Search covers titles, headings, and body text, with Courses / Reading / Articles filters and space-separated keywords. Results include only public notes, excluding directory pages, tag indexes, and About.
+Search covers titles, headings, and body text, with Courses / Reading / Blog filters and space-separated keywords. Results include only public notes, excluding directory pages, tag indexes, and About.
 
 Each result shows the full directory path, a prominent filename title, a smaller original-note subtitle, a highlighted excerpt, and matching section links. Title matches receive extra weight, and results are sorted by relevance. Ten notes load at a time, with a button to load more. Search waits for input-method composition to finish and only displays results for the latest query. Empty queries show recently published notes; failed network loads can be retried.
 
-Old `section=Course` and `section=Tech` links normalize to `Courses` and `Articles`, matching the rebuilt Pagefind index. The URL stores the query and section in `q` and `section`, allowing sharing and restoring state after refresh or returning from an article. Use `↑` / `↓` to move between result links, `Enter` to open one, and `Esc` to clear the query. The component, behavior, and styles live in `src/components/NoteSearch.astro`, `src/scripts/search.ts`, and `src/styles/search.css`.
+Old `section=Course` links normalize to `Courses`; `section=Tech` and `section=Articles` normalize to `Blog`, matching the rebuilt Pagefind index. The URL stores the query and section in `q` and `section`, allowing sharing and restoring state after refresh or returning from an article. Use `↑` / `↓` to move between result links, `Enter` to open one, and `Esc` to clear the query. The component, behavior, and styles live in `src/components/NoteSearch.astro`, `src/scripts/search.ts`, and `src/styles/search.css`.
 
 ## Switching to Chirpy
 

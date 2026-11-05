@@ -6,25 +6,41 @@ branch = "main"
 theme = "pure"
 
 [[sources]]
-path = "30_课程"
+path = "30_Courses"
 destination = "courses"
 
+# Archived courses retain the same public hierarchy as active courses.
 [[sources]]
-path = "60_研究/62_技术积累"
+path = "30_Courses/Archive"
+destination = "courses"
+
+# Only archived Blog notes are eligible; root drafts are excluded.
+# Nested sources retain their existing URLs.
+[[sources]]
+path = "50_Blog/Archive"
+destination = "knowledge"
+
+[[sources]]
+path = "50_Blog/Archive/Notes"
 destination = "knowledge/tech"
 
 [[sources]]
-path = "50_资源/53_Tools"
+path = "50_Blog/Archive/Tools"
 destination = "knowledge/tools"
 
 [[sources]]
-path = "60_研究/63_Reading"
+path = "40_Reading/Books"
 destination = "reading/reading"
 
 [[sources]]
-path = "60_研究/61_Paper"
+path = "40_Reading/Papers"
 destination = "reading/paper"
 
+[[sources]]
+path = "40_Reading/Articles"
+destination = "reading/articles"
+
+# Historical labels keep category URLs stable; Pure displays Blog via sections.json.
 [labels]
 knowledge = "Tech"
 "knowledge/tech" = "技术积累"
@@ -32,3 +48,4 @@ knowledge = "Tech"
 reading = "Reading"
 "reading/reading" = "Reading"
 "reading/paper" = "Paper"
+"reading/articles" = "Articles"

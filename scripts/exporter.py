@@ -204,11 +204,19 @@ class Exporter:
 
     def discover(self) -> None:
         destinations = set()
+        source_roots = {root for root, _ in self.roots}
         for root, destination in self.roots:
             if not root.is_dir():
                 raise ExportError(f'配置的源目录不存在：{root.name}')
             for current, directories, filenames in os.walk(root, followlinks=False):
-                directories[:] = sorted(d for d in directories if not d.startswith('.') and d != 'node_modules' and not (Path(current) / d).is_symlink())
+                # Nested configured sources own their subtree, preserving their URLs
+                # regardless of whether the parent or child appears first in config.
+                directories[:] = sorted(
+                    d for d in directories
+                    if not d.startswith('.') and d != 'node_modules'
+                    and not (Path(current) / d).is_symlink()
+                    and (Path(current) / d).resolve() not in source_roots
+                )
                 for filename in sorted(filenames):
                     path = Path(current) / filename
                     if filename.startswith('.') or path.suffix.lower() != '.md' or path.is_symlink():

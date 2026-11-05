@@ -329,3 +329,57 @@ def test_callout_with_leading_spaces_is_not_literal(setup):
     rendered=markdown.markdown(text,extensions=['admonition'])
     assert 'class="admonition note"' in rendered
     assert '!!! note' not in rendered
+
+
+@pytest.mark.parametrize('reverse_sources', [False, True])
+def test_vault_mapping_preserves_nested_urls_without_duplicates_or_private_content(tmp_path, reverse_sources):
+    import tomllib
+
+    config = tomllib.loads((Path(__file__).resolve().parents[1] / 'publish.toml').read_text())
+    if reverse_sources:
+        config['sources'].reverse()
+    vault = tmp_path / 'vault'
+    for source in config['sources']:
+        (vault / source['path']).mkdir(parents=True, exist_ok=True)
+    public = {
+        '30_Courses/CS/Lecture.md': '[[30_Courses/Archive/FDS/Graph]]',
+        '30_Courses/Archive/FDS/Graph.md': 'Archived course note',
+        '50_Blog/Archive/Notes/Practice.md': '[[Tool]]',
+        '50_Blog/Archive/Tools/Tool.md': '[[Practice]]',
+        '50_Blog/Archive/Thought.md': '[[Practice]] [[Tool]] [[Private]]',
+        '50_Blog/Archive/Experiments/Result.md': 'Experiment result',
+        '40_Reading/Books/Book.md': 'Book note',
+        '40_Reading/Papers/Paper.md': 'Paper note',
+        '40_Reading/Articles/Article.md': 'Article reflection',
+        '40_Reading/News/News.md': 'EXCLUDED_NEWS_SENTINEL',
+        '50_Blog/In Progress.md': 'ROOT_DRAFT_SENTINEL',
+    }
+    for name, body in public.items():
+        path = vault / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text('---\npublish: true\n---\n' + body)
+    (vault / '50_Blog/Archive/Private.md').write_text('---\npublish: false\n---\nPRIVATE_SENTINEL')
+    (vault / '50_Blog/Archive/Draft.md').write_text('UNMARKED_SENTINEL')
+    output = tmp_path / 'output'
+    exporter = Exporter(vault, config, tmp_path / 'template')
+    manifest = exporter.export(output)
+
+    paths = [note['path'] for note in manifest['notes']]
+    assert len(paths) == 9
+    assert set(paths) == {
+        'courses/CS/Lecture.md', 'courses/FDS/Graph.md',
+        'knowledge/tech/Practice.md', 'knowledge/tools/Tool.md',
+        'knowledge/Thought.md', 'knowledge/Experiments/Result.md',
+        'reading/reading/Book.md', 'reading/paper/Paper.md',
+        'reading/articles/Article.md',
+    }
+    assert len(exporter.notes) == len({note.source for note in exporter.notes})
+    assert '[30_Courses/Archive/FDS/Graph](../FDS/Graph.md)' in (output / 'courses/CS/Lecture.md').read_text()
+    assert '[Tool](../tools/Tool.md)' in (output / 'knowledge/tech/Practice.md').read_text()
+    thought = (output / 'knowledge/Thought.md').read_text()
+    assert '[Practice](tech/Practice.md)' in thought
+    assert '[Tool](tools/Tool.md)' in thought
+    assert '[Private]' not in thought
+    exported = ''.join(path.read_text() for path in output.rglob('*.md'))
+    for sentinel in ['PRIVATE_SENTINEL', 'UNMARKED_SENTINEL', 'EXCLUDED_NEWS_SENTINEL', 'ROOT_DRAFT_SENTINEL']:
+        assert sentinel not in exported

@@ -22,13 +22,13 @@ const text = n => typeof n === 'string' ? n : n.textContent + n.children.map(tex
 function searchHarness() {
   const root = new Element(); root.dataset.noteTitles = '[]'
   for (const key of ['#search-input','form','.search-clear','.search-status','.search-results','.search-more','.search-retry','.search-shortcut']) root.nodes[key] = new Element()
-  root.nodes['.search-filters button'] = ['', 'Courses', 'Reading', 'Articles'].map(section => { const e = new Element(); e.dataset.section = section; return e })
+  root.nodes['.search-filters button'] = ['', 'Courses', 'Reading', 'Blog'].map(section => { const e = new Element(); e.dataset.section = section; return e })
   const location = { href: 'https://example.com/search/?q=树&section=Tech', origin: 'https://example.com' }
   const tasks = new Map(); let id = 0; let count = 1; let failed = false
   const engine = { options: async () => {}, search: async (_q, options) => {
-    assert.equal(options.filters.section, 'Articles')
+    assert.equal(options.filters.section, 'Blog')
     if (failed) throw Error('offline')
-    return { results: Array.from({length:count}, () => ({data:async () => ({url:'/knowledge/中文/',excerpt:'中文内容',meta:{title:'中文标题',directory:'Articles / 中文目录'}})})) }
+    return { results: Array.from({length:count}, () => ({data:async () => ({url:'/knowledge/中文/',excerpt:'中文内容',meta:{title:'中文标题',directory:'Blog / 中文目录'}})})) }
   } }
   // Match Vite's build-time environment substitution; TypeScript lowers imports to require.
   const compiled = ts.transpile(readFileSync(new URL('../src/scripts/search.ts', import.meta.url),'utf8').replaceAll('import.meta.env.BASE_URL', "'/'"), {module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022})
@@ -41,7 +41,7 @@ function searchHarness() {
 test('English search handles loading, singular/plural, pagination and Chinese results with legacy filters',async () => {
   const h=searchHarness(), r=h.root
   assert.equal(r.nodes['.search-status'].textContent,'Searching…')
-  assert.match(h.location.href,/section=Articles/)
+  assert.match(h.location.href,/section=Blog/)
   await h.run()
   assert.equal(r.nodes['.search-status'].textContent,'1 result')
   assert.match(text(r.nodes['.search-results']),/中文标题/)

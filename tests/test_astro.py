@@ -276,11 +276,11 @@ def test_pure_taxonomy_preserves_raw_paths_and_legacy_category_routes(tmp_path):
     docs = snapshot(tmp_path)
     data = stage(docs, tmp_path / 'stage', ROOT / 'site-template', {'baseurl': ''}, {})
     pages = {p['route']: p for p in json.loads(data.read_text())['pages']}
-    assert pages['knowledge']['title'] == 'Articles'
+    assert pages['knowledge']['title'] == 'Blog'
     assert pages['courses']['title'] == 'Courses'
     assert pages['knowledge/示例']['directory'] == ['Tech']
     assert 'categories/tech' in pages and 'categories/course' in pages
-    assert pages['categories/tech']['title'] == 'Articles'
+    assert pages['categories/tech']['title'] == 'Blog'
     assert pages['categories/course']['title'] == 'Courses'
     about = BeautifulSoup(pages['about']['html'], 'html.parser')
     assert not about.select_one('.about-intro')
@@ -325,8 +325,8 @@ def test_notes_hub_and_flat_sections_keep_deep_links_and_all_eleven_notes(tmp_pa
     assert 'prose' not in reading.select_one('#content')['class']
     article = BeautifulSoup((site / 'knowledge/tech/AI/Example0/index.html').read_text(), 'html.parser')
     metadata = article.select_one('[data-pagefind-meta="directory[data-directory]"]')
-    assert metadata['data-section'] == 'Articles'
-    assert metadata['data-directory'] == 'Articles / AI'
+    assert metadata['data-section'] == 'Blog'
+    assert metadata['data-directory'] == 'Blog / AI'
     assert article.select_one('#breadcrumb a[href="/knowledge/tech/AI/"]')
     assert not article.select_one('#breadcrumb a[href="/knowledge/tech/"]')
     assert (site / 'knowledge/tech/index.html').is_file()
