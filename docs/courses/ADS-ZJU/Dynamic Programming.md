@@ -66,6 +66,11 @@ title: Dynamic Programming
 大多数情况下，子问题的偏序关系是和i一致的，如果偏序关系是复杂的，那么可以[拓扑排序](../FDS-ZJU/notes/%E5%9B%BE.md#%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F)
 ### Time analysis {#time-analysis}
 
+!!! tip
+    当子问题的时间复杂度很大时，可以考虑子问题是否也是一个dp问题
+
+
+
 总时间为：
 
 
@@ -85,7 +90,7 @@ title: Dynamic Programming
 ---
 下面举几个🌰
 
-### DAG Shortest Paths {#dag-shortest-paths}
+## DAG Shortest Paths {#dag-shortest-paths}
 
 ![](../../assets/notes/910f1545b5ddb23ff45c.png)
 我们会发现，这和在FDS中学的松弛操作得出的结果一样，[带权图](../FDS-ZJU/notes/%E5%9B%BE.md#%E5%B8%A6%E6%9D%83%E5%9B%BE)
@@ -100,12 +105,53 @@ $$
 
 
 
-### Bowling {#bowling}
+## Bowling {#bowling}
 大致意思是：保龄球分数为所有打倒的分数乘积之和。
 ![](../../assets/notes/0cfc71af767e038f1b1d.png)
 发现，它实质上就是换了边权的一个DAG最短路径问题，也就是上个例子是这一类问题的`meta problem`
 
 建立子问题之间的关联，实际上相比于全局的暴力枚举，归约的本质是局部的枚举，只不过需要的结果其他子问题已经给出。“提高的关键在于：该问题可能的答案数量应较少（呈多项式级），从而确保穷举过程的开销不会过大。”
+
+## subproblem expansion {#subproblem-expansion}
+> If you find yourself lacking information to check the desired conditions of the problem, or
+> lack the natural subproblem to recurse on, try subproblem constraint/expansion!
+
+
+!!! example
+    me和you表示现在是谁的回合
+    轮到我：
+
+
+
+    $$
+    x(i,j,\mathrm{me})=
+    \max\left\{
+    v_i+x(i+1,j,\mathrm{you}),\;
+    v_j+x(i,j-1,\mathrm{you})
+    \right\}.
+    $$
+
+
+
+    我选左端或右端，硬币归我，所以加上 $v_i$ 或 $v_j$，然后轮到对手。我选择让我收益**最大**的方案。
+
+    轮到对手：
+
+
+
+    $$
+    x(i,j,\mathrm{you})=
+    \min\left\{
+    x(i+1,j,\mathrm{me}),\;
+    x(i,j-1,\mathrm{me})
+    \right\}.
+    $$
+
+
+
+    对手选左端或右端，硬币归对手，**我的收益不加任何值**，然后轮到我。对手为了最大化自己的收益，会让我得到的价值**最小**，所以取 $\min$。
+
+
 
 ## 空间优化 {#空间优化}
 可以观察dp表，新数据从哪里来的？我们就可以将dp表优化成一位，将新数据覆盖旧数据，可以结合：正序、倒序、临时变量

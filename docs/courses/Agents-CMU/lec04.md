@@ -2,9 +2,9 @@
 tags:
 - skill
 - memory
-title: Skills and Memory
+title: 'Agent Capabilities 3: Skills and Memory'
 ---
-# Skills and Memory {#skills-and-memory}
+# Agent Capabilities 3: Skills and Memory {#agent-capabilities-3-skills-and-memory}
 
 
 !!! tip "Readings"

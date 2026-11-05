@@ -4,7 +4,8 @@
       "path": "courses/ADS-ZJU/Dynamic Programming.md",
       "title": "Dynamic Programming",
       "published_at": "2026-11-01T22:21:15+08:00",
-      "content_hash": "dee013854f34837bdfe225290361e8b7ebc866963616a22ba57e0b73055eb9a2"
+      "content_hash": "9ef84bdea957e349035bef7d1f8f0d1fdb80efa90294e0f79398fc11083f1e4e",
+      "updated_at": "2026-11-05T17:41:17+08:00"
     },
     {
       "path": "courses/Agents-CMU/Agents-CMU.md",
@@ -35,10 +36,16 @@
     },
     {
       "path": "courses/Agents-CMU/lec04.md",
-      "title": "Skills and Memory",
+      "title": "Agent Capabilities 3: Skills and Memory",
       "published_at": "2026-11-03T12:21:33+08:00",
-      "content_hash": "4d2b34f81c997d5916865af75d8259fe844bef4c3e7ef3e1938d9cc5722d4c34",
-      "updated_at": "2026-11-03T12:28:27+08:00"
+      "content_hash": "ecb6c81780951aa418ad4e7eb139cdd9c7fe5565a5bcb11e306365a423879acb",
+      "updated_at": "2026-11-05T17:41:17+08:00"
+    },
+    {
+      "path": "courses/CO-ZJU/01-Prelude.md",
+      "title": "01-Prelude",
+      "published_at": "2026-11-05T17:41:17+08:00",
+      "content_hash": "e11318ae5dd7f3785789b4310a1c09585be0bc31dc131afbfe7f89f58ddb982c"
     },
     {
       "path": "courses/CO-ZJU/lab0.md",
@@ -249,9 +256,11 @@
     "assets/notes/0cebe0a3046f2bd6dfa4.png",
     "assets/notes/0cfc71af767e038f1b1d.png",
     "assets/notes/0eb5cb5f46f2e47afc90.png",
+    "assets/notes/0f9873ffde253fd29faa.png",
     "assets/notes/0ffa82664e2832635e1f.png",
     "assets/notes/14faf63c3287fb8a7184.png",
     "assets/notes/1816cef0788618fdefb5.png",
+    "assets/notes/18f9149905b7f17fe6e6.png",
     "assets/notes/20ddae621e3ba084d548.png",
     "assets/notes/211aca860efab9a6be12.png",
     "assets/notes/2141b4c2f17e56881ee8.png",
@@ -264,6 +273,7 @@
     "assets/notes/2fccd259a700719dac8a.png",
     "assets/notes/2fde707798cda7c47666.png",
     "assets/notes/33af53353a00dd106edf.png",
+    "assets/notes/3652719c5f604f329c7f.png",
     "assets/notes/390011c95c1baea7d43a.png",
     "assets/notes/391704b2dab004e565bd.png",
     "assets/notes/3d02587ba6ddf7dad184.png",
@@ -299,11 +309,13 @@
     "assets/notes/87c576923c31c9a2a4fc.png",
     "assets/notes/89c189d210ac45a77db3.png",
     "assets/notes/8b42f8f96b8bb372e7f4.png",
+    "assets/notes/8d634db36ddd5fd96a26.png",
     "assets/notes/910f1545b5ddb23ff45c.png",
     "assets/notes/91d3b3f25362a6e87630.png",
     "assets/notes/9241e3388440ac1b1513.png",
     "assets/notes/939a8c2cfef10bbb095b.png",
     "assets/notes/9403f73b095fd1c06b19.png",
+    "assets/notes/942e89fe16061043aefc.png",
     "assets/notes/98d4a8f3f6ebea9f2b4c.png",
     "assets/notes/98dfe7a6b98486cc3cf8.png",
     "assets/notes/9905beb0d0a42e457c9f.png",
@@ -335,6 +347,7 @@
     "assets/notes/dbbaa754916f6ba258db.png",
     "assets/notes/dcb05e9bacf0ddbfdebe.png",
     "assets/notes/decf3e5f5b3d8a417507.png",
+    "assets/notes/dfc9c7c97f681e82f50f.png",
     "assets/notes/e100146b9bce6b1f7a76.png",
     "assets/notes/e1e026b565692a48f8b2.png",
     "assets/notes/e328359bc46d616548ae.png",
