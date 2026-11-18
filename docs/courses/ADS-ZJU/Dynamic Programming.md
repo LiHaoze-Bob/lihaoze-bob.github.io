@@ -7,7 +7,7 @@ title: Dynamic Programming
 !!! links
     - [hello-algo](https://www.hello-algo.com/chapter_dynamic_programming/)
     - MIT 6.006（2020） [Introduction to Algorithms](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/) lecture 15-18
-
+    - [丁老师代课的PPT](https://yaoxiangding.github.io/ADS/slides/L06-Dynamic-Programming.pdf) 有一些RL的拓展，但是我并没有看完
 
 ## Def {#def}
 简单来说，动态规划先定义足以描述子问题的状态，再建立状态之间的依赖关系，最后让每个需要的状态只计算一次。
@@ -60,6 +60,9 @@ title: Dynamic Programming
     $$
 
 
+
+
+错误的子问题定义可能导致答案并不是最优，因为有些依赖关系可能会很隐蔽
 
 ### Topological order {#topological-order}
 采用bottom-up方式时，需要找到根节点，即入度为0的结点，为什么存在？因为如果没有，那么顺着一个节点往回推，一定会走完所有的结点，就形成环了，矛盾。

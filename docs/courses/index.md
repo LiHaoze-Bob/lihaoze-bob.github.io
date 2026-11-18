@@ -4,6 +4,7 @@
 - [Agents-CMU](Agents-CMU/index.md)
 - [CO-ZJU](CO-ZJU/index.md)
 - [CS312-Stanford](CS312-Stanford/index.md)
+- [Diy-LLM](Diy-LLM/index.md)
 - [DL-ZJU](DL-ZJU/index.md)
 - [DM-ZJU](DM-ZJU/index.md)
 - [FDS-ZJU](FDS-ZJU/index.md)
