@@ -35,6 +35,20 @@ def test_only_explicit_true_and_removal(setup):
     assert not (output/'courses/公开.md').exists()
 
 
+@pytest.mark.parametrize(('suffix', 'extra', 'expected'), [
+    ('', '', 'Lesson'),
+    ('# Real heading', '', 'Real heading'),
+    ('# Real heading', 'title: Explicit title\n', 'Explicit title'),
+])
+def test_title_skips_code_examples(setup, suffix, extra, expected):
+    _, note, export = setup
+    body = '```python\n# Training comment\n```\n\n## Section\n\n' + suffix
+    note('Lesson.md', body, extra=extra)
+    output, manifest, _ = export()
+    assert manifest['notes'][0]['title'] == expected
+    assert '# Training comment' in (output / 'courses/Lesson.md').read_text()
+
+
 def test_update_time_changes_only_when_public_content_changes(setup):
     source, note, export = setup
     selected = note('公开.md', '# 公开\n第一版')

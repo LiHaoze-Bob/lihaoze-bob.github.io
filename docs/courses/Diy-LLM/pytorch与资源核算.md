@@ -5,7 +5,7 @@ tags:
 - memory-bound
 - roofline
 - mixed-precision
-title: 再把切分改成 [:1600] 和 [1600:]，epochs 改成 500
+title: pytorch与资源核算
 ---
 ## 资源核算 {#资源核算}
 用napkin math快速估算LLM的训练

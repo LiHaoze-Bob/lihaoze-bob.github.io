@@ -94,9 +94,10 @@
     },
     {
       "path": "courses/Diy-LLM/pytorch与资源核算.md",
-      "title": "再把切分改成 [:1600] 和 [1600:]，epochs 改成 500",
+      "title": "pytorch与资源核算",
       "published_at": "2026-11-25T21:55:28+08:00",
-      "content_hash": "b13ce013bb906a6dd574fc801a830f2b1d93177d94c5673d18248fdac35e252e"
+      "content_hash": "db5415577b1489a64cedc0c2ae546f9f7409541883ca652e4c8d167f255042ee",
+      "updated_at": "2026-11-25T22:08:38+08:00"
     },
     {
       "path": "courses/Diy-LLM/分词器.md",

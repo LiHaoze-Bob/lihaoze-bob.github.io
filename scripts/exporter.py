@@ -268,9 +268,14 @@ class Exporter:
                         _, body = frontmatter(path.read_text())
                         if not body.strip():
                             raise ExportError(f'{path.name} 已标记公开，但没有正文')
-                        heading = re.search(r'^#\s+(.+)$', body, re.M)
-                        if not metadata.get('title') and heading:
-                            title = heading[1].strip()
+                        if not metadata.get('title'):
+                            tokens = MarkdownIt().parse(body)
+                            for index, token in enumerate(tokens):
+                                if token.type == 'heading_open' and token.tag == 'h1' and token.level == 0:
+                                    heading = tokens[index + 1].content.strip()
+                                    if heading:
+                                        title = heading
+                                        break
                     order = metadata.get('nav_order', 1000)
                     if published and (not isinstance(order, (int, float)) or isinstance(order, bool)):
                         raise ExportError(f'{path.name}：nav_order 必须是数字')
