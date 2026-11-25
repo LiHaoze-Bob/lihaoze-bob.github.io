@@ -4,8 +4,8 @@
       "path": "courses/ADS-ZJU/Dynamic Programming.md",
       "title": "Dynamic Programming",
       "published_at": "2026-11-01T22:21:15+08:00",
-      "content_hash": "822bb6504b67fbc5ff16e4929cd4a24359719452cb66feab2ab886de8543271d",
-      "updated_at": "2026-11-18T14:25:04+08:00"
+      "content_hash": "ca222d3a8935be87f51891bd153fa4906445e47366f4b4179c90a5081290776c",
+      "updated_at": "2026-11-25T21:55:28+08:00"
     },
     {
       "path": "courses/Agents-CMU/Agents-CMU.md",
@@ -91,6 +91,12 @@
       "title": "LLMs 101",
       "published_at": "2026-09-26T20:37:23+08:00",
       "content_hash": "44ea612bf97c118f4bdbbeac29a83de2758dc19eed26392316fde8a23ab911bb"
+    },
+    {
+      "path": "courses/Diy-LLM/pytorch与资源核算.md",
+      "title": "再把切分改成 [:1600] 和 [1600:]，epochs 改成 500",
+      "published_at": "2026-11-25T21:55:28+08:00",
+      "content_hash": "b13ce013bb906a6dd574fc801a830f2b1d93177d94c5673d18248fdac35e252e"
     },
     {
       "path": "courses/Diy-LLM/分词器.md",

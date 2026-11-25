@@ -2,6 +2,7 @@
 tags:
 - dynamic-programming
 - topological
+- RL
 title: Dynamic Programming
 ---
 !!! links
