@@ -17,20 +17,21 @@ import Comments from '../components/Comments.astro'
 import NoteTitle from '../components/NoteTitle.astro'
 import SectionTags from '../components/SectionTags.astro'
 import TagsPage from '../components/TagsPage.astro'
-import { pages, notes, date, type NotePage } from '../lib/content'
+import { pages, notes, hubNotes, date, type NotePage } from '../lib/content'
 import { href } from '../site.config'
 
 export function getStaticPaths() {
   const paths: { params: { route: string }; props: { page?: NotePage; current?: number } }[] = pages.map(page => ({ params: { route: page.route }, props: { page } }))
-  for (let current = 2; current <= paginateNotes(notes).count; current++) {
+  for (let current = 2; current <= paginateNotes(hubNotes).count; current++) {
     paths.push({ params: { route: `page${current}` }, props: { current } })
   }
   return paths
 }
 interface Props { page?: NotePage; current?: number }
 const { page, current } = Astro.props
-const isSection = page && ['courses', 'reading', 'knowledge'].includes(page.route)
 const section = page && sectionFor(page.route)
+const isSection = section && page?.route === section.route
+const isBlog = section?.route === 'blog'
 const flatSection = isSection && page?.route !== 'courses'
 ---
 {current ? <NotesPage {current} /> : page?.route === 'tags' ? <TagsPage /> : page?.route === 'about' ? (
@@ -59,7 +60,7 @@ const flatSection = isSection && page?.route !== 'courses'
     <script is:inline defer src={href('/assets/js/steam.js')}></script>
   </BaseLayout>
 ) : page && (
-  <ContentLayout meta={{ title: page.title, description: page.description }} back={href('/notes/')} math={page.html.includes('arithmatex')} prose={!flatSection} contentLang={page.isNote ? 'zh-CN' : undefined}>
+  <ContentLayout meta={{ title: page.title, description: page.description }} back={href(isBlog ? (isSection ? '/' : '/blog/') : '/notes/')} math={page.html.includes('arithmatex')} prose={!flatSection} contentLang={page.isNote ? 'zh-CN' : undefined}>
     <Fragment slot='sidebar'>
       {isSection ? <SectionTags section={page.route} /> : page.headings.length > 0 && <TOC headings={page.headings} />}
     </Fragment>
@@ -83,9 +84,12 @@ const flatSection = isSection && page?.route !== 'courses'
         {page.isNote && <PageViews />}
       </div>}
       {page.description && <p class='post-desc'>{page.description}</p>}
-      {isSection && <><p class='post-desc'>{section?.description}</p><NotesNav current={page.route} /></>}
+      {isSection && <><p class='post-desc'>{section?.description}</p>{!isBlog && <NotesNav current={page.route} />}</>}
     </Fragment>
-    {flatSection ? <NoteList notes={notes.filter(note => note.route.startsWith(`${page.route}/`))} /> : <Fragment set:html={page.html} />}
+    {flatSection ? <>
+      {page.html && <div class='prose' set:html={page.html} />}
+      <NoteList notes={notes.filter(note => note.route.startsWith(`${page.route}/`))} />
+    </> : <Fragment set:html={page.html} />}
     {page.tagLinks?.length ? <nav class='note-tags' aria-label='Tags'>{page.tagLinks.map(tag => <a href={href(tag.url)}>#{tag.title}</a>)}</nav> : null}
     {page.isNote && <Fragment slot='bottom'><nav class='post-navigation' aria-label='Other notes in this folder'>
       {(['folder_previous', 'folder_next'] as const).map((key, i) => {

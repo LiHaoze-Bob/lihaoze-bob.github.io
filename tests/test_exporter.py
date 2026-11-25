@@ -352,7 +352,7 @@ def test_vault_mapping_preserves_nested_urls_without_duplicates_or_private_conte
         '40_Reading/Papers/Paper.md': 'Paper note',
         '40_Reading/Articles/Article.md': 'Article reflection',
         '40_Reading/News/News.md': 'EXCLUDED_NEWS_SENTINEL',
-        '50_Note/In Progress.md': 'ROOT_DRAFT_SENTINEL',
+        '50_Note/In Progress.md': 'Explicitly published root note',
     }
     for name, body in public.items():
         path = vault / name
@@ -365,11 +365,11 @@ def test_vault_mapping_preserves_nested_urls_without_duplicates_or_private_conte
     manifest = exporter.export(output)
 
     paths = [note['path'] for note in manifest['notes']]
-    assert len(paths) == 9
+    assert len(paths) == 10
     assert set(paths) == {
         'courses/CS/Lecture.md', 'courses/FDS/Graph.md',
         'knowledge/tech/Can I Run AI.md', 'knowledge/tools/IPA 自动续签.md',
-        'knowledge/Thought.md', 'knowledge/Experiments/Result.md',
+        'knowledge/Thought.md', 'knowledge/Experiments/Result.md', 'knowledge/In Progress.md',
         'reading/reading/Book.md', 'reading/paper/Paper.md',
         'reading/articles/Article.md',
     }
@@ -381,5 +381,39 @@ def test_vault_mapping_preserves_nested_urls_without_duplicates_or_private_conte
     assert '[IPA 自动续签](tools/IPA%20%E8%87%AA%E5%8A%A8%E7%BB%AD%E7%AD%BE.md)' in thought
     assert '[Private]' not in thought
     exported = ''.join(path.read_text() for path in output.rglob('*.md'))
-    for sentinel in ['PRIVATE_SENTINEL', 'UNMARKED_SENTINEL', 'EXCLUDED_NEWS_SENTINEL', 'ROOT_DRAFT_SENTINEL']:
+    for sentinel in ['PRIVATE_SENTINEL', 'UNMARKED_SENTINEL', 'EXCLUDED_NEWS_SENTINEL']:
         assert sentinel not in exported
+
+
+def test_site_section_routes_notes_and_links_to_generated_directories(setup):
+    _, note, export = setup
+    note('Local/Lesson.md', '[[Reflection]]', extra='site_section: Courses/概率论/第一单元/例题\n')
+    note('Reflection.md', '[[Lesson]]', extra='site_section: blog/大学生活\n')
+    note('Misc.md', 'A note', extra='site_section: others/随想\n')
+    note('Default.md', 'Default', extra='site_section:\n')
+    note('Private.md', 'PRIVATE', False, extra='site_section: blog/private\n')
+    output, manifest, _ = export()
+    lesson = 'courses/概率论/第一单元/例题/Lesson.md'
+    assert {item['path'] for item in manifest['notes']} == {
+        lesson, 'blog/大学生活/Reflection.md', 'knowledge/随想/Misc.md', 'courses/Default.md'}
+    for folder in ['courses/概率论', 'courses/概率论/第一单元', 'courses/概率论/第一单元/例题', 'blog/大学生活']:
+        assert (output / folder / 'index.md').is_file()
+    assert '../../../../blog/' in (output / lesson).read_text()
+    assert '../../courses/' in (output / 'blog/大学生活/Reflection.md').read_text()
+    assert not (output / 'blog/private').exists()
+
+
+@pytest.mark.parametrize('value', ['"blog/../escape"', '"/blog"', '"blog//topic"', '"missing/topic"', '[blog]'])
+def test_invalid_site_section_stops_export(setup, value):
+    _, note, export = setup
+    note('Invalid.md', 'Test', extra=f'site_section: {value}\n')
+    with pytest.raises(ExportError, match='Invalid.md.*site_section'):
+        export()
+
+
+def test_section_subfolder_cannot_shadow_an_article_url(setup):
+    _, note, export = setup
+    note('Topic.md', 'Article', extra='site_section: blog\n')
+    note('Detail.md', 'Detail', extra='site_section: blog/Topic\n')
+    with pytest.raises(ExportError, match='blog/Topic'):
+        export()

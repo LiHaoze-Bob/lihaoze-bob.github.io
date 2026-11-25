@@ -18,6 +18,11 @@ from markdown_it import MarkdownIt
 from scripts.tabsdown import TabsdownError, parse as parse_tabsdown, serialize as serialize_tabsdown, transform_blocks
 
 
+SECTIONS = json.loads((Path(__file__).resolve().parents[1] / 'src/data/sections.json').read_text())
+SECTION_ROUTES = {name.casefold(): section['route'] for section in SECTIONS
+                  for name in (section['label'], section['route'])}
+
+
 class ExportError(Exception):
     pass
 
@@ -58,6 +63,20 @@ def page_url(destination: str) -> str:
         return './'
     path = destination[:-8] if destination.endswith('/index.md') else destination.removesuffix('.md') + '/'
     return quote(path, safe='/.-_~')
+
+
+def section_directory(value: object, filename: str) -> str | None:
+    if value is None or (isinstance(value, str) and not value.strip()):
+        return None
+    if not isinstance(value, str):
+        raise ExportError(f'{filename}：site_section 必须是栏目或子目录路径')
+    root, *folders = value.strip().split('/')
+    route = SECTION_ROUTES.get(root.casefold())
+    invalid_folder = any(not part.strip() or part.startswith('.') for part in folders)
+    if not route or invalid_folder or '\\' in value or any(ord(char) < 32 for char in value):
+        raise ExportError(f'{filename}：无效的 site_section 路径 {value!r}')
+    return '/'.join([route, *folders])
+
 
 class Protected:
     def __init__(self, text: str):
@@ -257,12 +276,14 @@ class Exporter:
                         raise ExportError(f'{path.name}：nav_order 必须是数字')
                     target = destination + '/' + path.relative_to(root).as_posix()
                     legacy_directory = self.legacy_directories.get(path.relative_to(self.vault).as_posix())
-                    if legacy_directory:
-                        target = legacy_directory + '/' + filename
-                    if published and target in destinations:
+                    directory = section_directory(metadata.get('site_section'), filename) if published else None
+                    directory = directory or legacy_directory
+                    if directory:
+                        target = directory + '/' + filename
+                    if published and target.casefold() in destinations:
                         raise ExportError(f'重复输出路径：{target}')
                     if published:
-                        destinations.add(target)
+                        destinations.add(target.casefold())
                     self.notes.append(Note(path.resolve(), target, metadata, published, title, order if isinstance(order, (int, float)) else 1000))
 
     def resolve_note(self, target: str, current: Note) -> Note | None:
@@ -466,6 +487,14 @@ class Exporter:
     def export(self, destination: Path, publication_dates: dict | None = None) -> dict:
         self.discover()
         published = sorted((n for n in self.notes if n.published), key=lambda n: (n.order, natural_key(n.destination)))
+        configured_destinations = [item['destination'].strip('/') for item in self.config['sources']]
+        # Every directory owns its URL, including a directory with an authored index.
+        folders = {parent.as_posix().casefold() for note in published for parent in Path(note.destination).parents}
+        folders.update(path.casefold() for path in configured_destinations)
+        for note in published:
+            article = note.destination.removesuffix('.md')
+            if not note.destination.endswith('/index.md') and article.casefold() in folders:
+                raise ExportError(f'文章与目录使用同一网址：{article}')
         destination.mkdir(parents=True, exist_ok=True)
         content_hashes = {}
         for note in published:
@@ -479,7 +508,6 @@ class Exporter:
             output.parent.mkdir(parents=True, exist_ok=True)
             output.write_bytes(data)
         labels = self.config.get('labels', {})
-        configured_destinations = [item['destination'].strip('/') for item in self.config['sources']]
         def directory_nav(folder: str):
             children = [n for n in published if posixpath.dirname(n.destination) == folder]
             below = [n for n in published if n.destination.startswith(folder + '/')]
@@ -491,7 +519,7 @@ class Exporter:
             # published. Keep their declared order, then append nested note folders.
             directories = list(dict.fromkeys(configured))
             directories += sorted(discovered.difference(directories), key=natural_key)
-            title = labels.get(folder, {'courses': '课程笔记', 'knowledge': '知识积累', 'reading': '阅读记录'}.get(folder, folder.split('/')[-1]))
+            title = labels.get(folder, {'courses': '课程笔记', 'knowledge': '知识积累', 'reading': '阅读记录', 'blog': 'Blog'}.get(folder, folder.split('/')[-1]))
             index = folder + '/index.md'
             if any(n.destination == index for n in published):
                 # 公开的 index.md 本身担任目录首页，不覆盖原笔记。
@@ -513,9 +541,8 @@ class Exporter:
                 items.append({labels.get(child_folder, directory): directory_nav(child_folder)})
             items += [{n.title: n.destination} for n in children if n.destination != index]
             return items
-        sections = [('courses', '课程笔记'), ('reading', '阅读记录'), ('knowledge', '技术积累')]
-        for folder, _ in sections:
-            directory_nav(folder)
+        for section in SECTIONS:
+            directory_nav(section['route'])
         (destination / 'index.md').write_text('# ' + self.config['site']['name'] + '\n')
         # 首次发布时间不变；只在已发布笔记的公开内容发生变化时刷新更新时间。
         history = publication_dates or {}

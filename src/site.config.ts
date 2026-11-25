@@ -30,6 +30,7 @@ export const theme: ThemeUserConfig = {
   header: {
     menu: [
       { title: 'Notes', link: href('/notes/') },
+      { title: 'Blog', link: href('/blog/') },
       { title: 'Projects', link: href('/projects/') },
       { title: 'About', link: href('/about/') }
     ]

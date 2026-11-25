@@ -3,7 +3,7 @@ import { sections } from '../lib/navigation.mjs'
 import { href } from '../site.config'
 interface Props { current?: string }
 const { current = '' } = Astro.props
-const links = [{ route: '', label: 'All' }, ...sections]
+const links = [{ route: '', label: 'All' }, ...sections.filter(section => section.route !== 'blog')]
 ---
 <nav class='notes-nav' aria-label='Note categories' data-pagefind-ignore>
   <div>{links.map(section => <a href={href(section.route ? `/${section.route}/` : '/notes/')} aria-current={current === section.route ? 'page' : undefined}>{section.label}</a>)}</div>

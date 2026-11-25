@@ -12,12 +12,12 @@ from urllib.parse import unquote
 from bs4 import BeautifulSoup
 import markdown
 
-from scripts.exporter import frontmatter, page_url
+from scripts.exporter import SECTIONS, frontmatter, page_url
 from scripts.steam import MARKER as STEAM_MARKER, render_card as steam_card
 from scripts.jekyll import (breadcrumbs, card_directory, card_headings, custom_callout_styles,
                             folder_navigation, folder_tree, note_title_html, post_date, render, section_list)
 
-SECTIONS = json.loads((Path(__file__).resolve().parents[1] / 'src/data/sections.json').read_text())
+CATEGORY_LABELS = {section['route']: section['legacyLabel'] for section in SECTIONS}
 DISPLAY_LABELS = {section['legacyLabel']: section['label'] for section in SECTIONS}
 
 
@@ -45,21 +45,22 @@ def stage(docs: Path, work: Path, template: Path, settings: dict, labels: dict) 
     available = {path.relative_to(docs).as_posix() for path in docs.rglob('*.md')}
     pages = []
 
-    for path in sorted(docs.rglob('*.md')):
-        source = path.relative_to(docs).as_posix()
+    # Older public snapshots may predate a section. Its landing page still exists.
+    for source in sorted(available.union(sections)):
         if source == 'index.md' or source.startswith('assets/'):
             continue
-        metadata, body = frontmatter(path.read_text())
+        metadata, body = frontmatter((docs / source).read_text()) if source in available else ({}, '')
         heading = BeautifulSoup(markdown.markdown(body), 'html.parser').find('h1')
         original_title = sections.get(source) or metadata.get('title') or (heading.get_text() if heading else posixpath.basename(source).removesuffix('.md'))
         title = notes.get(source, {}).get('title', original_title) if source not in sections else sections[source]
         subtitle = notes.get(source, {}).get('subtitle')
         content = render(body, source, baseurl, original_title, theme='pure')
         folder = posixpath.dirname(source)
+        root = source.split('/', 1)[0]
         if source in sections:
-            introduction = content if source in notes else ''
-            tree = section_list if source.startswith('knowledge/') else folder_tree
-            content = introduction + tree(notes, folder, baseurl, labels, available, lang='en')
+            content = content if source in notes else ''
+            if folder == 'courses':
+                content += folder_tree(notes, folder, baseurl, labels, available, lang='en')
         elif source.endswith('/index.md') and source not in notes:
             tree = section_list if source.startswith('knowledge/') else folder_tree
             anchor = BeautifulSoup(content, 'html.parser').find('span', id=True, recursive=False)
@@ -88,7 +89,7 @@ def stage(docs: Path, work: Path, template: Path, settings: dict, labels: dict) 
             'updatedAt': post_date(record['updated_at']) if record.get('updated_at') else None,
             'tags': tags,
             'tagLinks': [{'title': tag, 'url': '/tags/' + slug(tag) + '/'} for tag in tags],
-            'category': labels.get(folder, {'courses': 'Course', 'reading': 'Reading', 'knowledge': 'Tech'}.get(source.split('/')[0])),
+            'category': labels.get(folder, CATEGORY_LABELS.get(root, root)),
             'isNote': source in notes and source not in sections,
             **navigation.get(source, {})
         })

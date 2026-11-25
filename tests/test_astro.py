@@ -188,7 +188,7 @@ def test_pure_production_build_has_search_navigation_dates_and_assets(tmp_path):
     assert search_metadata['data-directory'] == 'Courses / 测试'
     assert search_metadata['data-section'] == 'Courses'
     assert search_metadata['data-pagefind-filter'] == 'section[data-section]'
-    assert [a.get_text(strip=True) for a in soup.select('#headerExpandContent a')] == ['Notes', 'Projects', 'About']
+    assert [a.get_text(strip=True) for a in soup.select('#headerExpandContent a')] == ['Notes', 'Blog', 'Projects', 'About']
     assert soup.select_one('toc-heading a')['href'] == '#中文章节'
     assert 'Posted Sep 14, 2026' in soup.select_one('.post-meta').get_text(' ', strip=True)
     assert 'Updated Sep 16, 2026' in soup.select_one('.post-meta').get_text(' ', strip=True)
@@ -274,13 +274,15 @@ def test_pure_production_build_has_search_navigation_dates_and_assets(tmp_path):
 
 def test_pure_taxonomy_preserves_raw_paths_and_legacy_category_routes(tmp_path):
     docs = snapshot(tmp_path)
+    (docs / 'blog/index.md').unlink()  # Snapshots created before Blog have no landing page.
     data = stage(docs, tmp_path / 'stage', ROOT / 'site-template', {'baseurl': ''}, {})
     pages = {p['route']: p for p in json.loads(data.read_text())['pages']}
-    assert pages['knowledge']['title'] == 'Blog'
+    assert pages['blog']['title'] == 'Blog'
+    assert pages['knowledge']['title'] == 'Others'
     assert pages['courses']['title'] == 'Courses'
     assert pages['knowledge/示例']['directory'] == ['Tech']
     assert 'categories/tech' in pages and 'categories/course' in pages
-    assert pages['categories/tech']['title'] == 'Blog'
+    assert pages['categories/tech']['title'] == 'Others'
     assert pages['categories/course']['title'] == 'Courses'
     about = BeautifulSoup(pages['about']['html'], 'html.parser')
     assert not about.select_one('.about-intro')
@@ -299,6 +301,11 @@ def test_notes_hub_and_flat_sections_keep_deep_links_and_all_eleven_notes(tmp_pa
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(f'---\ntitle: Example{index}\n---\nA practical example.')
         manifest['notes'].append({'path': path, 'title': f'Example{index}', 'published_at': '2026-12-31T16:30:00Z'})
+    (docs / 'blog/index.md').write_text('# Blog\n\nWelcome to the blog.')
+    manifest['notes'].append({'path': 'blog/index.md', 'title': 'Blog', 'published_at': '2026-12-31T16:30:00Z'})
+    blog_post = docs / 'blog/Reflection.md'
+    blog_post.write_text('# Reflection\n')
+    manifest['notes'].append({'path': 'blog/Reflection.md', 'title': 'Reflection', 'published_at': '2026-12-31T16:30:00Z'})
     (docs / 'knowledge/tech/index.md').write_text('# 技术积累\n')
     (docs / 'knowledge/tech/AI/index.md').write_text('# AI\n')
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False))
@@ -312,6 +319,15 @@ def test_notes_hub_and_flat_sections_keep_deep_links_and_all_eleven_notes(tmp_pa
     second_urls = [link['href'] for link in second.select('.note-preview h3 a')]
     assert len(first_urls) == 10 and len(second_urls) == 1
     assert len(set(first_urls + second_urls)) == 11
+    assert '/blog/Reflection/' not in first_urls + second_urls
+    assert [a.get_text(strip=True) for a in hub.select('.notes-nav a')] == ['All', 'Courses', 'Reading', 'Others']
+    blog = BeautifulSoup((site / 'blog/index.html').read_text(), 'html.parser')
+    assert [a['href'] for a in blog.select('.note-preview h3 a')] == ['/blog/Reflection/']
+    assert 'Welcome to the blog.' in blog.get_text()
+    assert not blog.select_one('.notes-nav')
+    post = BeautifulSoup((site / 'blog/Reflection/index.html').read_text(), 'html.parser')
+    assert next(a for a in post.select('a') if a.get_text(strip=True) == 'Back')['href'] == '/blog/'
+    assert post.select_one('[data-section="Blog"]')
     assert second.select_one('.pagination a')['href'] == '/notes/'
     assert second.html['lang'] == 'en'
     assert [h.get_text(strip=True) for h in hub.select('.note-year > h2')] == ['2027', '2026']
@@ -325,8 +341,8 @@ def test_notes_hub_and_flat_sections_keep_deep_links_and_all_eleven_notes(tmp_pa
     assert 'prose' not in reading.select_one('#content')['class']
     article = BeautifulSoup((site / 'knowledge/tech/AI/Example0/index.html').read_text(), 'html.parser')
     metadata = article.select_one('[data-pagefind-meta="directory[data-directory]"]')
-    assert metadata['data-section'] == 'Blog'
-    assert metadata['data-directory'] == 'Blog / AI'
+    assert metadata['data-section'] == 'Others'
+    assert metadata['data-directory'] == 'Others / AI'
     assert article.select_one('#breadcrumb a[href="/knowledge/tech/AI/"]')
     assert not article.select_one('#breadcrumb a[href="/knowledge/tech/"]')
     assert (site / 'knowledge/tech/index.html').is_file()

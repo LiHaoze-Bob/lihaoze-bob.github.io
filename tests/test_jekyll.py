@@ -305,7 +305,7 @@ def test_staging_uses_only_public_notes_and_keeps_paths_and_dates(tmp_path):
     assert '{{ site.title }}' in body
     assert '自己整理的索引' in (output / '_tabs/course.html').read_text()
     assert 'PRIVATE_SENTINEL' not in ''.join(p.read_text() for p in output.rglob('*.html'))
-    assert sorted(frontmatter(p.read_text())[0]['order'] for p in (output / '_tabs').iterdir()) == [1, 2, 3, 4]
+    assert sorted(frontmatter(p.read_text())[0]['order'] for p in (output / '_tabs').iterdir()) == [1, 2, 3, 4, 5]
 
 
 def test_invalid_date_blocks_build():
@@ -348,7 +348,7 @@ def test_built_breadcrumbs_link_every_public_parent(tmp_path):
         ('courses', ['Home', 'Course'], ['index.md']),
         ('reading/书/第一章', ['Home', 'Reading', '书', '第一章'],
          ['index.md', 'reading/index.md', 'reading/书/index.md']),
-        ('knowledge/tech/工具', ['Home', 'Tech', '技术积累', '工具'],
+        ('knowledge/tech/工具', ['Home', 'Others', '技术积累', '工具'],
          ['index.md', 'knowledge/index.md', 'knowledge/tech/index.md']),
     ]
     for path, titles, parents in cases:
@@ -490,7 +490,7 @@ tags: [test]
     assert pages >= 10
     site = tmp_path / 'build/site'
     soup = BeautifulSoup((site / 'courses/FDS-ZJU/notes/示例/index.html').read_text(), 'html.parser')
-    assert [link.get_text(strip=True) for link in soup.select('#sidebar a.nav-link')] == ['HOME', 'COURSE', 'READING', 'TECH', 'ABOUT']
+    assert [link.get_text(strip=True) for link in soup.select('#sidebar a.nav-link')] == ['HOME', 'COURSE', 'READING', 'OTHERS', 'BLOG', 'ABOUT']
     assert soup.select_one('.rouge-code').get_text().strip() == '<img src="literal"> & {{ site.title }} {% include missing.html %}'
     assert soup.find('del').get_text() == '划分策略'
     assert soup.select_one('.code-header button') and soup.find(id='fn:1')

@@ -35,6 +35,9 @@ export const pages: NotePage[] = data.pages.map((page: NotePage) => ({
 export const notes = pages.filter(page => page.isNote).sort((a, b) =>
   Date.parse(b.publishedAt || '') - Date.parse(a.publishedAt || '') || a.route.localeCompare(b.route))
 
+// Search, feeds and tags use all published articles. The Notes hub has its own list.
+export const hubNotes = notes.filter(note => sectionFor(note.route)?.route !== 'blog')
+
 export function collectTags(articles: NotePage[]) {
   const tags = new Map<string, { title: string; url: string; count: number }>()
   for (const note of articles) {

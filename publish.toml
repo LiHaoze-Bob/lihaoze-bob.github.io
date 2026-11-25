@@ -14,7 +14,11 @@ destination = "courses"
 path = "30_Courses/Archive"
 destination = "courses"
 
-# Finished notes share one archive. Root drafts stay private.
+# Archive is a storage folder. Both sources use the same public hierarchy.
+[[sources]]
+path = "50_Note"
+destination = "knowledge"
+
 [[sources]]
 path = "50_Note/Archive"
 destination = "knowledge"
@@ -37,7 +41,7 @@ destination = "reading/articles"
 "50_Note/Archive/What to commit in Github.md" = "knowledge/tech"
 "50_Note/Archive/IPA 自动续签.md" = "knowledge/tools"
 
-# Historical labels keep category URLs stable; Pure displays Blog via sections.json.
+# Historical labels keep category URLs stable; Pure displays Others via sections.json.
 [labels]
 knowledge = "Tech"
 "knowledge/tech" = "技术积累"
