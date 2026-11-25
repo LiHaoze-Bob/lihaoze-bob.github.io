@@ -156,6 +156,10 @@ class Exporter:
         self.assets: dict[str, bytes] = {}
         self.callouts = self.custom_callouts()
         self.roots: list[tuple[Path, str]] = []
+        self.legacy_directories = config.get('legacy_directories', {})
+        for directory in self.legacy_directories.values():
+            if Path(directory).is_absolute() or '..' in Path(directory).parts or not directory:
+                raise ExportError('历史发布目录必须是安全的相对路径')
         for item in config['sources']:
             source = Path(item['path'])
             destination = item['destination']
@@ -252,6 +256,9 @@ class Exporter:
                     if published and (not isinstance(order, (int, float)) or isinstance(order, bool)):
                         raise ExportError(f'{path.name}：nav_order 必须是数字')
                     target = destination + '/' + path.relative_to(root).as_posix()
+                    legacy_directory = self.legacy_directories.get(path.relative_to(self.vault).as_posix())
+                    if legacy_directory:
+                        target = legacy_directory + '/' + filename
                     if published and target in destinations:
                         raise ExportError(f'重复输出路径：{target}')
                     if published:

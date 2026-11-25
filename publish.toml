@@ -14,19 +14,10 @@ destination = "courses"
 path = "30_Courses/Archive"
 destination = "courses"
 
-# Only archived Blog notes are eligible; root drafts are excluded.
-# Nested sources retain their existing URLs.
+# Finished notes share one archive. Root drafts stay private.
 [[sources]]
-path = "50_Blog/Archive"
+path = "50_Note/Archive"
 destination = "knowledge"
-
-[[sources]]
-path = "50_Blog/Archive/Notes"
-destination = "knowledge/tech"
-
-[[sources]]
-path = "50_Blog/Archive/Tools"
-destination = "knowledge/tools"
 
 [[sources]]
 path = "40_Reading/Books"
@@ -39,6 +30,12 @@ destination = "reading/paper"
 [[sources]]
 path = "40_Reading/Articles"
 destination = "reading/articles"
+
+# Retain existing article URLs after the archive was flattened.
+[legacy_directories]
+"50_Note/Archive/Can I Run AI.md" = "knowledge/tech"
+"50_Note/Archive/What to commit in Github.md" = "knowledge/tech"
+"50_Note/Archive/IPA 自动续签.md" = "knowledge/tools"
 
 # Historical labels keep category URLs stable; Pure displays Blog via sections.json.
 [labels]

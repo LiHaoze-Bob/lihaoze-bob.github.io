@@ -18,7 +18,7 @@ cp local.example.toml local.toml
 .venv/bin/python scripts/site.py publish
 ```
 
-`local.toml` holds machine-specific settings and is ignored by Git. `publish.toml` limits exports to `30_Courses`, `50_Blog/Archive`, and `40_Reading/{Books,Papers,Articles}`. `40_Reading/News` is excluded. Nested source mappings take precedence. `30_Courses/Archive` also maps to `courses`, preserving archived course URLs. For Blog, `50_Blog/Archive/Notes` retains `knowledge/tech`, `50_Blog/Archive/Tools` retains `knowledge/tools`, and other archived Blog notes use `knowledge`. The Blog root is a writing area and is excluded even when a draft has `publish: true`; move a finished note into `Archive` to make it eligible for publication. Reading articles use `reading/articles`; existing book, paper, and course destinations remain unchanged. GitHub Actions builds the exported public snapshot without access to the vault.
+`local.toml` holds machine-specific settings and is ignored by Git. `publish.toml` limits exports to `30_Courses`, `50_Note/Archive`, and `40_Reading/{Books,Papers,Articles}`. `40_Reading/News` is excluded. Nested source mappings take precedence. `30_Courses/Archive` also maps to `courses`, preserving archived course URLs. New notes from `50_Note/Archive` use `knowledge`. The `legacy_directories` table keeps previously published articles at their original URLs after the archive was flattened. The `50_Note` root is a writing area. Move a finished note into `Archive` and set `publish: true` to publish it. Reading articles use `reading/articles`; existing book, paper, and course destinations remain unchanged. GitHub Actions builds the exported public snapshot without access to the vault.
 
 ## Publishing from Obsidian
 
